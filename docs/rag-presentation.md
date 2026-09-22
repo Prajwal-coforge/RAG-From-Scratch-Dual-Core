@@ -5,8 +5,6 @@ Internal Q&A over Coforge policy PDFs
 **Dual-core:** Qwen on Mac · extractive stub in CI  
 **Chunking:** section-aware recursive split
 
-Open in Markdown preview or Marp. Charts render as Mermaid.
-
 ---
 
 # The job
