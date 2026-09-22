@@ -42,7 +42,6 @@ def ollama_host() -> str:
 
 OLLAMA_HOST = os.environ.get("OLLAMA_HOST", "http://127.0.0.1:11434").rstrip("/")
 EMBED_MODEL = os.environ.get("EMBED_MODEL", "qwen3-embedding:0.6b")
-CHAT_MODEL = os.environ.get("CHAT_MODEL", "qwen")
 
 CHUNK_MAX_CHARS = int(os.environ.get("CHUNK_MAX_CHARS", "1500"))
 CHUNK_OVERLAP_CHARS = int(os.environ.get("CHUNK_OVERLAP_CHARS", "180"))
@@ -55,7 +54,6 @@ CROSS_ENCODER_MODEL = os.environ.get(
     "CROSS_ENCODER_MODEL",
     "cross-encoder/ms-marco-MiniLM-L-6-v2",
 )
-CHAT_TEMPERATURE = 0.0
 
 QUERY_INSTRUCT = (
     "Given a company policy question, retrieve the relevant policy passage"
