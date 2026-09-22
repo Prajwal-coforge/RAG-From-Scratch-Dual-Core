@@ -1,8 +1,8 @@
 # Policy RAG execution graph
 
-This is a **vertical swimlane pipeline architecture** (stage-based RAG system map): Data → Retrieval → Generation → Evals, plus the build / experiment / debug loops.
+Vertical swimlane pipeline: **Data → Retrieval → Generation → Evals**, plus build / experiment / debug loops.
 
-Local stack is Qwen-only. Dual-core generation: Ollama Qwen on Mac, extractive stub in CI. Do not embed with the Qwen chat model. Do not use Mistral.
+Corpus is the Coforge PDFs in `policies/`. Chunking is **section-aware recursive split**. Local stack is Qwen-only. Dual-core generation: Ollama Qwen on Mac, extractive stub in CI. MiniLM is only the CrossEncoder.
 
 ## Locked model stack
 
@@ -22,9 +22,47 @@ Instruct: Given a company policy question, retrieve the relevant policy passage
 Query: {question}
 ```
 
+## Data ingest and chunking flow
+
+These PDFs are numbered legal policies (`1.0 Context`, `8.0 Reporting a Concern`). The citation unit is **document + section**, so the chunk boundary is the section heading. Recurse only when a section is too long. Do not split on page breaks: sections already wrap across pages.
+
+```mermaid
+flowchart TD
+    pdfs[PDFs in policies/]
+    extract[Extract text]
+    clean[Strip headers footers TOC]
+    version[Version to doc metadata]
+    split[Split on numbered headings]
+    long{Section over 1500 chars?}
+    recurse[Recurse: clauses then paragraphs]
+    chunk[Chunk 800-1500 overlap 150-200]
+    meta[Attach name section version]
+    embed[Embed raw text qwen3-embedding]
+    store[ChromaDB]
+
+    pdfs --> extract --> clean --> version --> split --> long
+    long -->|no| chunk
+    long -->|yes| recurse --> chunk
+    chunk --> meta --> embed --> store
+```
+
+**Split on:** `1.0`, `2.1`, `8.0 Reporting a Concern`.  
+**Then, if needed:** `(a)` / `(b)` definitions, blank lines, sentences.  
+**Skip:** table of contents, running headers, page numbers.  
+**Keep:** version history as document metadata, not mixed into body chunks.
+
+| Knob | Value | Why |
+| --- | --- | --- |
+| Primary split | numbered section (`N.0` / `N.N`) | hybrid and cites use section codes |
+| Target size | 800–1500 characters | one clause, not half a definition |
+| Overlap | 150–200 characters | clauses that span subsections |
+| Rejected | page chunks, 400–500 char windows | page breaks cut sections; 400 chars cuts definitions |
+
+Plant one **outdated duplicate** of a policy with conflicting details. That plant is the data-quality probe, not a retrieval bug.
+
 ## Main runtime flow
 
-This is the live query path. Vector and keyword run in parallel, merge with RRF, then rerank. Generation branches on whether Ollama is up.
+Vector and keyword run in parallel, merge with RRF, then rerank. Generation branches on whether Ollama is up.
 
 ```mermaid
 flowchart TD
@@ -47,16 +85,16 @@ flowchart TD
     ollama -->|no_CI| stub --> out
 ```
 
-`EmbedQuery_QwenEmbed` is `qwen3-embedding:0.6b` with the query prefix. `Ollama_Qwen` is the instruct chat tag at temperature 0. MiniLM is only the CrossEncoder, not the embedder.
+`EmbedQuery_QwenEmbed` is `qwen3-embedding:0.6b` with the query prefix. `Ollama_Qwen` is the instruct chat tag at temperature 0.
 
 ## End-to-end query path
 
 ```mermaid
 flowchart LR
     subgraph dataCol [Data]
-        docs[Policy docs]
+        docs[Coforge policy PDFs]
         plant[Outdated duplicate]
-        chunk[Chunk 400-500]
+        chunk[Section-aware recursive chunk]
         meta[Name section version]
         docs --> plant
         docs --> chunk
@@ -113,8 +151,8 @@ Prove each layer before adding the next. If anything breaks, fall back to the tw
 flowchart TD
     oneChunk[1 text embed-store]
     twoText[2-text retrieve]
-    scale[Chunk full corpus]
-    addHybrid[Add hybrid]
+    scale[Section-chunk full corpus]
+    addHybrid[Add hybrid RRF]
     addRerank[Add CrossEncoder]
     addEval[Eval harness]
     stuck[Stuck?]
@@ -131,7 +169,7 @@ flowchart TD
     stuck -->|yes| twoText
 ```
 
-Prove the 2-text loop with `qwen3-embedding:0.6b` → Chroma before writing chunking, hybrid, or generation.
+Prove the 2-text loop with `qwen3-embedding:0.6b` → Chroma **before** writing the PDF chunker.
 
 ## Experiment loop
 
@@ -152,7 +190,7 @@ flowchart TD
     revert --> knob
 ```
 
-Knobs: chunk size, top-k, hybrid vs vector, rerank on/off, extractive stub vs Qwen.
+Knobs: section max size 800 vs 1500, overlap 150 vs 200, top-k, hybrid vs vector, rerank on/off, extractive stub vs Qwen.
 
 ## Two-question debug loop
 
@@ -179,7 +217,7 @@ flowchart TD
 
 | Stage | What runs | Stack |
 | --- | --- | --- |
-| Data | Generate 3-4 policies, plant one outdated duplicate, chunk with overlap, attach metadata | Remote / expense / PTO docs |
+| Data | Coforge PDFs in `policies/`, plant one outdated duplicate, section-aware recursive chunk, attach metadata | Whistleblower, RPT, Dividend, Materiality |
 | Retrieval | Minimal 2-text loop, then scale; vector + keyword in parallel; RRF merge; CrossEncoder rerank | Ollama `qwen3-embedding:0.6b`, ChromaDB, `cross-encoder/ms-marco-MiniLM-L-6-v2` |
 | Generation | Build prompt from top-k + metadata; Qwen on Mac, extractive stub in CI | Ollama Qwen instruct temp 0 · ExtractiveStub |
 | Evals | 8+ gold questions, recall + key-fact accuracy, data-quality probe | pytest, CI |

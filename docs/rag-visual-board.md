@@ -4,7 +4,7 @@ Whiteboard type: **vertical swimlane pipeline architecture** (stage-based RAG sy
 
 Open this file in Markdown preview to render the charts.
 
-Local stack is Qwen-only. Dual-core generation: Ollama Qwen on Mac, extractive stub in CI. Do not embed with the chat model. Do not use Mistral. MiniLM is only the CrossEncoder.
+Corpus: Coforge PDFs in `policies/`. Chunking: **section-aware recursive split**. Dual-core generation: Ollama Qwen on Mac, extractive stub in CI. Do not embed with the chat model. Do not use Mistral. MiniLM is only the CrossEncoder.
 
 ---
 
@@ -28,17 +28,45 @@ Query: {question}
 
 ---
 
+## 0. Data ingest and chunking flow
+
+Numbered headings are the chunk boundaries. Recurse only when a section is still too long. Page-based and 400–500 character windows are out: pages already split sections, and 400 characters splits definitions.
+
+```mermaid
+flowchart TD
+    pdfs[PDFs in policies/]
+    extract[Extract text]
+    clean[Strip headers footers TOC]
+    version[Version to doc metadata]
+    split[Split on numbered headings]
+    long{Section over 1500 chars?}
+    recurse[Recurse: clauses then paragraphs]
+    chunk[Chunk 800-1500 overlap 150-200]
+    meta[Attach name section version]
+    embed[Embed raw text qwen3-embedding]
+    store[ChromaDB]
+
+    pdfs --> extract --> clean --> version --> split --> long
+    long -->|no| chunk
+    long -->|yes| recurse --> chunk
+    chunk --> meta --> embed --> store
+```
+
+Example: Whistleblower `2.0 Objective` stays one chunk. `5.0 Definitions` splits on `(a)` / `(i)` but every piece still carries `section: 5.0 Definitions`.
+
+---
+
 ## 1. Four-stage swimlane
 
 ```mermaid
 flowchart LR
     subgraph dataCol ["1 · Data"]
         direction TB
-        d1[3-4 policy docs]
-        d2[500-800 words]
-        d3[Remote / expense / PTO]
-        d4[Plant outdated duplicate]
-        d5[Chunk 400-500 + overlap]
+        d1[Coforge policy PDFs]
+        d2[Whistleblower / RPT / Dividend / Materiality]
+        d3[Plant outdated duplicate]
+        d4[Strip TOC headers footers]
+        d5[Section-aware recursive chunk]
         d6[Meta: name, section, version]
         d1 --> d2 --> d3 --> d4 --> d5 --> d6
     end
@@ -80,7 +108,7 @@ flowchart LR
     d6 --> r1
     r7 --> g1
     g5 --> e1
-    e4 -.->|debug| d4
+    e4 -.->|debug| d3
     e5 -.->|stuck| r1
 ```
 
@@ -111,7 +139,7 @@ flowchart TD
     ollama -->|no_CI| stub --> out
 ```
 
-`EmbedQuery_QwenEmbed` is `qwen3-embedding:0.6b` with the query prefix. `Ollama_Qwen` is the instruct chat tag at temperature 0. MiniLM is only the CrossEncoder, not the embedder.
+`EmbedQuery_QwenEmbed` is `qwen3-embedding:0.6b` with the query prefix. Hybrid wins on section codes such as `8.0` or `5.0 Definitions`.
 
 ```mermaid
 sequenceDiagram
@@ -149,8 +177,8 @@ sequenceDiagram
 flowchart TD
     A[1 text: embed + store] --> B[2 texts: retrieve]
     B -->|fail| A
-    B -->|pass| C[Chunk full corpus]
-    C --> D[Add hybrid]
+    B -->|pass| C[Section-chunk full corpus]
+    C --> D[Add hybrid RRF]
     D --> E[Add CrossEncoder]
     E --> F[Eval harness + CI]
     D -->|stuck| B
@@ -178,7 +206,8 @@ flowchart LR
 
 | Knob | Compare |
 | --- | --- |
-| chunk size | 400 vs 500 chars |
+| section max size | 800 vs 1500 chars |
+| overlap | 150 vs 200 chars |
 | top-k | default vs wider candidate set |
 | retrieval | vector-only vs hybrid |
 | rerank | CrossEncoder on vs off |
@@ -208,7 +237,7 @@ Diagnosis target: source data is wrong; retrieval and generation did their job.
 
 | Stage | Work | Stack |
 | --- | --- | --- |
-| Data | 3-4 policies, plant outdated duplicate, chunk, attach metadata | Remote / expense / PTO |
+| Data | Coforge PDFs, plant outdated duplicate, section-aware recursive chunk, attach metadata | Whistleblower / RPT / Dividend / Materiality |
 | Retrieval | 2-text loop, then scale; vector + keyword in parallel; RRF merge; CrossEncoder | Ollama `qwen3-embedding:0.6b`, ChromaDB, `cross-encoder/ms-marco-MiniLM-L-6-v2` |
 | Generation | Prompt from top-k + metadata; Qwen on Mac, extractive stub in CI | Ollama Qwen instruct temp 0 · ExtractiveStub |
 | Evals | 8+ gold items, recall + key facts, data-quality probe | pytest, CI |

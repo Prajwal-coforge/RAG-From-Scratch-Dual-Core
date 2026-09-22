@@ -1,63 +1,103 @@
-Lab: Build a RAG System from Scratch
-Overview
+# Policy RAG from scratch (dual-core)
 
-This week you'll build a working RAG pipeline from the ground up, applying every concept covered this week: chunking, embeddings, vector search, hybrid/agentic retrieval, failure modes, reranking, an evaluation harness, and data quality/lineage. You'll also debug a deliberately broken version of your own pipeline where the root cause is bad source data, not retrieval logic. No provided corpus, no starter files.
-If you're unsure how a tool or concept works beyond what the lesson covered, ask Claude (in a regular conversation, separate from your script) to explain it, or to help you research an unfamiliar library, technique, or error message before you implement it.
-Suggested Approach (Read This Before Starting)
+Internal Q&A over Coforge policy PDFs. Retrieval is shared; generation is dual-core: **Qwen on Mac**, **extractive stub in CI**.
 
-The lesson this week covered embeddings and vector stores conceptually. Here's the concrete path to a real, working pipeline:
-Install a real embedding library and vector store. A practical, low-friction combination for this lab: sentence-transformers (pip install sentence-transformers) for generating embeddings locally and for free, no API key needed, paired with chromadb (pip install chromadb) as your vector store, which runs locally and requires no external service or account setup. If you'd rather use a hosted embedding API instead (e.g., OpenAI's or Anthropic's), that's fine too, but the local option above avoids API costs and account setup entirely for this lab.
-Get one chunk embedded and stored before building the full pipeline. Write the smallest possible script: take one short piece of text, generate its embedding with sentence-transformers, and store it in a chromadb collection. Confirm this works end to end before writing your chunking logic.
-Confirm retrieval works on that same minimal example. Add a second, different piece of text to your collection, then run a query and confirm the vector store returns the more relevant of the two results. This proves your embed-store-retrieve loop actually works before you layer chunking, hybrid search, or reranking on top of it.
-Only once that minimal loop works, build your actual chunking function and run it on your real generated documents, then repeat steps 2-3 at that larger scale.
-Add hybrid retrieval, reranking, and the evaluation harness incrementally, one at a time, confirming each works on its own before adding the next, rather than building all of them before testing anything.
-If you get stuck, go back to step 3, a working retrieval loop on two known pieces of text, before adding more complexity on top of something uncertain.
-The Scenario
+Architecture docs (same design, three views):
 
-You're building an internal Q&A assistant over a set of company policy documents. As with prior weeks, you'll generate your own source material rather than being handed a corpus.
-What You'll Do
+- [`docs/execution-graph.md`](docs/execution-graph.md) — pipelines and loops
+- [`docs/rag-visual-board.md`](docs/rag-visual-board.md) — swimlane whiteboard
+- [`docs/rag-presentation.md`](docs/rag-presentation.md) — slide deck (Markdown / Marp)
 
-Part 1: Generate Source Documents
-Use an LLM to generate 3-4 policy documents (e.g., a remote work policy, an expense reimbursement policy, a PTO policy), each 500-800 words. Deliberately introduce one realistic data quality issue into your set: either an outdated duplicate of one document (an old version with conflicting details) or an incomplete document missing a section it references.
-Part 2: Build the Pipeline
-Following the Suggested Approach above, implement chunking (with a documented chunk size and overlap rationale), embedding each chunk with sentence-transformers, and storing embeddings in chromadb. Write a script that takes a natural language question, embeds it, retrieves the top-k most similar chunks, and passes them to an LLM (via its API) to generate an answer.
-Part 3: Add Hybrid Retrieval
-Add a keyword-based search alongside your vector search (a simple substring or grep-style match against your chunk text is sufficient here, you don't need a dedicated keyword search library), and combine/re-rank results from both. Demonstrate at least one query where hybrid retrieval succeeds where vector-only search would likely miss (e.g., a query containing an exact policy section name or code).
-Part 4: Add Reranking
-Add a reranking step after initial retrieval. A practical option: sentence-transformers also provides cross-encoder models purpose-built for reranking (e.g., loading a CrossEncoder model), which you can use to re-score your initial candidate set before selecting the final top few chunks.
-Part 5: Build an Evaluation Harness
-Create a fixed test set of at least 8 questions with known expected answers or expected source chunks. Write automated tests (pytest) that measure retrieval recall (did the right chunk get retrieved) and check that generated answers contain expected key information. Run this harness and record your results.
-Part 6: Diagnose the Planted Data Quality Issue
-Ask your system at least one question that should surface the data quality issue you planted in Part 1. Using the two-question debugging approach from this week (was it retrieval, or was it the source data), diagnose and document what actually went wrong, and confirm it traces back to the source data, not your retrieval or generation logic.
-Part 7: Source Attribution
-Add source metadata (document name, section) to each chunk, and have your system surface which source(s) informed each generated answer.
-Part 8: Pipeline Submission
-Push all of the above through your CI pipeline, with your evaluation harness tests running as part of it.
-Deliverable
+## End-to-end flow
 
-Submit a single PDF containing screenshots, in order, of:
-Your generated source documents, with the planted data quality issue identified
-Terminal output of your minimal embed-store-retrieve loop working on two known pieces of text (Suggested Approach steps 2-3)
-Your chunking, embedding, and vector store code (full pipeline)
-Your basic RAG pipeline running end to end on a sample question
-Your hybrid retrieval code, and a query demonstrating it outperforming vector-only search
-Your reranking code
-Your evaluation test set and harness code
-Terminal output of your evaluation harness running, with recall/accuracy results
-The question that surfaced your planted data quality issue, the system's (flawed) answer, and your written diagnosis tracing it to the source data
-Your source attribution output, showing an answer with its cited source(s)
-A passing pipeline run confirming the full submission
-Rubric (100 points)
+```text
+policies/*.pdf
+    → extract + strip headers / TOC
+    → section-aware recursive chunk (800–1500, overlap 150–200)
+    → metadata: name, section, version
+    → qwen3-embedding:0.6b → ChromaDB
+                                    ┌→ vector top-k ─┐
+question ──┬────────────────────────┤                ├→ RRF → CrossEncoder
+           └→ keyword substring ────┘                      ↓
+                                            prompt + top-k + metadata
+                                                      ↓
+                                         Ollama up? ──┬─ Mac: Qwen instruct (temp 0)
+                                                      └─ CI: ExtractiveStub
+                                                      ↓
+                                            answer + document/section cites
+```
 
-Criteria	Points
-Source documents generated with a realistic, identifiable data quality issue planted	8
-Minimal embed-store-retrieve loop confirmed working before full build (Suggested Approach)	7
-Chunking, embedding, and vector store implemented correctly at full scale	10
-Basic RAG pipeline runs end to end and produces reasonable answers	10
-Hybrid retrieval implemented and demonstrated to outperform vector-only search on at least one query	12
-Reranking implemented correctly	8
-Evaluation harness includes 8+ test cases and measures both retrieval recall and answer accuracy	15
-Data quality issue correctly diagnosed, with clear reasoning tracing it to source data rather than retrieval/generation	15
-Source attribution correctly implemented and surfaced with answers	5
-Submitted and passing through the pipeline	10
-Total	100
+## Corpus
+
+PDFs live in `policies/`:
+
+| Document | Notes |
+| --- | --- |
+| Whistleblower Policy | Numbered `1.0`–`14.0` (Context, Definitions, Reporting a Concern, …) |
+| Related Party Transactions (RPT) | Numbered legal policy |
+| Dividend Distribution Policy | Short `1.0` / `2.0` / `3.0` / `4.0` |
+| Policy on Materiality of Events | Disclosure / materiality events |
+
+Plant **one outdated duplicate** with conflicting details. That is the data-quality probe: if the right chunks come back, the bug is source data, not retrieval.
+
+## Chunking
+
+These files are numbered policies, so the chunk is a **section**, not a page and not a 400–500 character window.
+
+1. Extract text; drop running headers, page numbers, and the table of contents.
+2. Split on headings such as `1.0 Context` and `8.0 Reporting a Concern`.
+3. If a section is still over ~1500 characters (Definitions, Investigation), recurse on `(a)` / `(b)`, then paragraphs, then sentences.
+4. Target **800–1500 characters**, overlap **150–200**.
+5. Attach `name`, `section`, `version` on every chunk.
+
+`2.0 Objective` stays one chunk. `5.0 Definitions` becomes several chunks, all still labeled `5.0 Definitions`. Hybrid retrieval is meant to win on those section codes.
+
+## Stack
+
+| Role | Choice |
+| --- | --- |
+| Embeddings | Ollama `qwen3-embedding:0.6b` (query prefix only; chunks stored raw) |
+| Vector store | ChromaDB |
+| Hybrid | Vector top-k + keyword substring, merged with RRF |
+| Rerank | `cross-encoder/ms-marco-MiniLM-L-6-v2` |
+| Generation · Mac | Local Qwen instruct, temperature 0 |
+| Generation · CI | ExtractiveStub from top chunks + citations |
+
+Do not embed with the Qwen chat model. Do not use Mistral. MiniLM is the reranker only.
+
+Query prefix:
+
+```text
+Instruct: Given a company policy question, retrieve the relevant policy passage
+Query: {question}
+```
+
+## Build order
+
+Prove each layer before adding the next. If anything breaks, fall back to the two-text retrieve loop.
+
+1. One text: embed + store in Chroma
+2. Two texts: retrieve the relevant one
+3. Section-chunk the full `policies/` corpus
+4. Hybrid (vector + keyword → RRF)
+5. CrossEncoder rerank
+6. Eval harness (8+ gold questions) + CI
+
+## Experiment knobs
+
+Change one at a time: section max size (800 vs 1500), overlap (150 vs 200), top-k, hybrid vs vector, rerank on/off, Qwen vs extractive stub. Do not swap the embedder and the chat model in the same run.
+
+## Lab mapping
+
+This repo implements the from-scratch RAG lab against real Coforge policies instead of generated remote / expense / PTO text.
+
+| Lab part | This project |
+| --- | --- |
+| 1 Source documents + planted issue | PDFs in `policies/` + one outdated duplicate |
+| 2 Pipeline | Section chunk → Qwen embed → Chroma → Qwen / stub |
+| 3 Hybrid retrieval | Substring + vector, RRF merge (wins on `8.0`, `5.0`) |
+| 4 Rerank | CrossEncoder |
+| 5 Eval harness | pytest: retrieval recall + key-fact accuracy, 8+ items |
+| 6 Data-quality diagnosis | Two-question debug: retrieval vs source |
+| 7 Source attribution | `name` + `section` on chunks and answers |
+| 8 CI | ExtractiveStub so tests run without a chat model |
