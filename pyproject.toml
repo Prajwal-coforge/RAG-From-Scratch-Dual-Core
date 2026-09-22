@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "policy-rag"
 version = "0.1.0"
-description = "Dual-core policy RAG over Coforge PDFs"
+description = "Policy RAG data and retrieval over Coforge PDFs"
 requires-python = ">=3.10"
 dependencies = [
   "chromadb>=0.5.0",
