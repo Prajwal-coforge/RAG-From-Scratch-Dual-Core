@@ -18,7 +18,7 @@ The assignment in `airport-policy-rag-spec/ORIGINAL_ASSIGNMENT.txt` suggests a l
 
 Chroma stays out. Cloud inference stays out. The previous repository pass (`policies/*.pdf`, `qwen3-embedding:0.6b`, ChromaDB) is the prior retrieval exercise. It is not the corpus or the index for this overhaul.
 
-`qwen3:8b` is already present locally (architecture qwen3, Q4_K_M, blob `sha256:a3de86cd1c132c822487ededd47a324c50491393e6565cd14bafa40d0b8e686f`). Its Modelfile temperature is 0.6; answer calls must still set the handoff's low-variance settings explicitly. Tool-call compatibility is not yet proven on this machine.
+`qwen3:8b` is present locally (architecture qwen3, Q4_K_M, blob `sha256:a3de86cd1c132c822487ededd47a324c50491393e6565cd14bafa40d0b8e686f`). Its Modelfile temperature is 0.6; answer calls must still set the handoff's low-variance settings explicitly. On 2026-09-24, `policy-rag doctor` sent a temperature-0 tool request and `qwen3:8b` called `add`.
 
 ## Corpus interpretation
 

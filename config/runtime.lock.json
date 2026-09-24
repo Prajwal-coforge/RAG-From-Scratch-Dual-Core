@@ -1,0 +1,31 @@
+{
+  "python": "3.12",
+  "memgraph": {
+    "image": "memgraph/memgraph-mage:3.13.0",
+    "digest": "sha256:cc33431b088c6b9580528d8d5aff92f3b958de1af5d40126f831ab8512eb855a",
+    "bolt_url": "bolt://127.0.0.1:7687",
+    "vector_index": "chunk_embedding",
+    "vector_dimension": 768,
+    "vector_metric": "cos"
+  },
+  "memgraph_lab": {
+    "image": "memgraph/lab:3.7.1",
+    "digest": "sha256:4561711e0d7ef10825065c0823385e287f18b4f8abd5ad2d68fd0dabf5e12be8"
+  },
+  "embedding": {
+    "model": "embeddinggemma",
+    "blob_digest": "sha256:0800cbac9c2064dde519420e75e512a83cb360de3ad5df176185dc69652fc515",
+    "dimensions": 768,
+    "tokenizer": "embeddinggemma-gguf-spm-v1"
+  },
+  "chat": {
+    "model": "qwen3:8b",
+    "blob_digest": "sha256:a3de86cd1c132c822487ededd47a324c50491393e6565cd14bafa40d0b8e686f"
+  },
+  "reranker": {
+    "model": "cross-encoder/ms-marco-MiniLM-L6-v2",
+    "revision": "233902d25c440f23af6f7d6e94d2946bac0bee0a",
+    "maximum_pair_tokens": 512
+  },
+  "ollama_url": "http://127.0.0.1:11434"
+}

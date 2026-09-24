@@ -24,10 +24,21 @@ Four generated AeroPolicy documents are still required and are not in the tree y
 | `openspec/changes/build-airport-policy-rag/` | Proposed change. Not implemented |
 | `.cursor/commands/` | OpenSpec commands: `/opsx-explore`, `/opsx-propose`, `/opsx-apply`, `/opsx-update`, `/opsx-sync`, `/opsx-archive` |
 | `backend/app/chunking/` | Section parent-child chunker |
+| `backend/app/doctor.py` | Live runtime checks |
+| `config/runtime.lock.json` | Pinned images, model digests, and reranker revision |
 | `infra/compose.yaml` | Memgraph 3.13.0 and Lab 3.7.1 |
-| `docs/decisions/` | Stack and chunking decisions |
+| `docs/decisions/` | Stack, chunking, and runtime-lock decisions |
 
 ## Run what exists
+
+Install the locked backend and check the local runtime:
+
+```bash
+uv sync --group dev
+uv run policy-rag doctor
+```
+
+`uv` provides CPython 3.12. Ollama must already be running, with `embeddinggemma` and `qwen3:8b` pulled. Memgraph must already be up.
 
 Memgraph and Lab:
 
@@ -53,4 +64,4 @@ Ollama must be running for embeddings. `embeddinggemma` is the embedding model. 
 
 ## Still open
 
-The two-text Memgraph retrieval proof, generated policies, ingestion, access control, retrieval, evaluation, CI, and the UI. Python 3.11+ is the backend target. This machine was last checked at Python 3.9.6.
+Milestone 0 is recorded. The two-text Memgraph retrieval proof is next. Generated policies, ingestion, access control, retrieval, evaluation, CI, and the UI are still open.
