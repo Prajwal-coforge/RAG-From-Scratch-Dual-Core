@@ -25,6 +25,8 @@ where = ["backend"]
 [tool.pytest.ini_options]
 testpaths = ["backend/tests"]
 pythonpath = ["backend"]
+addopts = "-m 'not live'"
+markers = ["live: needs real Ollama and Memgraph; run with -m live"]
 
 [dependency-groups]
 dev = ["pytest>=8"]

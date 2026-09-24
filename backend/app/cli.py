@@ -19,7 +19,17 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Restart Memgraph and confirm the named volume kept a probe node",
     )
+    smoke = subcommands.add_parser("smoke", help="Embed two known texts, store them in Memgraph, and retrieve")
+    smoke.add_argument("--evidence", type=Path, help="Write the JSON report to this path")
     args = parser.parse_args(argv)
+    if args.command == "smoke":
+        from app.smoke import run_smoke
+
+        report = run_smoke()
+        if args.evidence:
+            args.evidence.parent.mkdir(parents=True, exist_ok=True)
+            args.evidence.write_text(json.dumps(report, indent=2) + "\n")
+        return 0 if report["ok"] else 1
     if args.command == "doctor":
         checks, report = run_doctor(restart_memgraph=args.restart_memgraph)
         for check in checks:
