@@ -1,0 +1,41 @@
+{
+  "checked_at": "2026-09-24T20:32:08.922094+00:00",
+  "ok": true,
+  "checks": [
+    {
+      "name": "memgraph",
+      "ok": true,
+      "detail": "chunk_embedding dimension 768 metric cos size 0"
+    },
+    {
+      "name": "embeddings",
+      "ok": true,
+      "detail": "embeddinggemma returned one finite 768-dimensional vector"
+    },
+    {
+      "name": "tokenizer",
+      "ok": true,
+      "detail": "embeddinggemma-gguf-spm-v1 counts 'the' as 1 and 'Hello world' as 2"
+    },
+    {
+      "name": "chat",
+      "ok": true,
+      "detail": "qwen3:8b returned a non-empty reply"
+    },
+    {
+      "name": "reranker",
+      "ok": true,
+      "detail": "cross-encoder/ms-marco-MiniLM-L6-v2@233902d25c440f23af6f7d6e94d2946bac0bee0a score -8.1603"
+    },
+    {
+      "name": "tool_calling",
+      "ok": true,
+      "detail": "qwen3:8b called add"
+    },
+    {
+      "name": "memgraph_persistence",
+      "ok": true,
+      "detail": "probe and schema preview survived a Memgraph restart"
+    }
+  ]
+}

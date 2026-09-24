@@ -2,7 +2,7 @@
 # Data lives in Docker named volumes, not in the repository.
 services:
   memgraph:
-    image: memgraph/memgraph-mage:3.13.0
+    image: memgraph/memgraph-mage:3.13.0@sha256:cc33431b088c6b9580528d8d5aff92f3b958de1af5d40126f831ab8512eb855a
     container_name: airport-policy-memgraph
     ports:
       - "127.0.0.1:7687:7687"
@@ -13,7 +13,7 @@ services:
       - memgraph_etc:/etc/memgraph
 
   lab:
-    image: memgraph/lab:3.7.1
+    image: memgraph/lab:3.7.1@sha256:4561711e0d7ef10825065c0823385e287f18b4f8abd5ad2d68fd0dabf5e12be8
     container_name: airport-policy-memgraph-lab
     ports:
       - "127.0.0.1:3000:3000"

@@ -1,15 +1,15 @@
 # Implementation Tasks
 
-All items are pending. A checkbox requires its associated test or recorded evidence; creating code alone is insufficient. PROJECT_SPEC.md defines acceptance details.
+Milestone 0 is checked. Later milestones stay open. A checkbox requires its associated test or recorded evidence; creating code alone is insufficient. PROJECT_SPEC.md defines acceptance details.
 
 ## 0. Preflight and OpenSpec
 
-- [ ] 0.1 Read the full handoff and original assignment; record stack substitutions and corpus interpretation.
-- [ ] 0.2 Inspect existing workspace instructions and preserve unrelated files.
-- [ ] 0.3 Check OS, memory, accelerator, Python/Node, Docker, Ollama, and available CI options.
-- [ ] 0.4 Resolve and lock compatible dependencies, Memgraph image, models, and tokenizers.
-- [ ] 0.5 Initialize OpenSpec in the actual project and validate the proposed change without marking it implemented.
-- [ ] 0.6 Implement doctor checks for Memgraph, real embeddings, local chat, reranker, and tool calling.
+- [x] 0.1 Read the full handoff and original assignment; record stack substitutions and corpus interpretation.
+- [x] 0.2 Inspect existing workspace instructions and preserve unrelated files.
+- [x] 0.3 Check OS, memory, accelerator, Python/Node, Docker, Ollama, and available CI options.
+- [x] 0.4 Resolve and lock compatible dependencies, Memgraph image, models, and tokenizers.
+- [x] 0.5 Initialize OpenSpec in the actual project and validate the proposed change without marking it implemented.
+- [x] 0.6 Implement doctor checks for Memgraph, real embeddings, local chat, reranker, and tool calling.
 
 ## 1. Minimal proof before full ingestion
 

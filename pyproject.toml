@@ -7,11 +7,24 @@ name = "airport-policy-rag"
 version = "0.1.0"
 description = "Local airport and airline policy RAG lab"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+  "httpx",
+  "neo4j",
+  "sentence-transformers",
+]
+
+[project.scripts]
+policy-rag = "app.cli:main"
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0.0"]
+dev = ["pytest>=8"]
+
+[tool.setuptools.packages.find]
+where = ["backend"]
 
 [tool.pytest.ini_options]
 testpaths = ["backend/tests"]
 pythonpath = ["backend"]
+
+[dependency-groups]
+dev = ["pytest>=8"]

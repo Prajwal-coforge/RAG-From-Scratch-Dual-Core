@@ -2,7 +2,7 @@
 
 Airport Policy RAG overhaul. This report records what is in the working tree. It is not a claim that the lab is complete, and it is not instructor approval of the stack substitution.
 
-OpenSpec change `build-airport-policy-rag` is proposed only. All 57 tasks in `openspec/changes/build-airport-policy-rag/tasks.md` are still open. None of the 100 rubric points have submission evidence yet. The UI has not been started.
+OpenSpec change `build-airport-policy-rag` is proposed only. Milestone 0 tasks 0.1–0.6 are checked. The other 51 tasks are open. None of the 100 rubric points have submission evidence yet. The UI has not been started. The change is not archived.
 
 ## Decisions
 
@@ -15,13 +15,13 @@ The imported corpus is three aviation files from `DecisionsDev/policy-corpus` at
 | Area | State |
 | --- | --- |
 | Handoff | `airport-policy-rag-spec/` is the specification. Stack and corpus choices are recorded. |
-| Preflight | `docs/preflight/2026-09-24-environment.md`. Apple M5, 24 GB RAM, Metal available to Ollama. |
+| Preflight | `docs/preflight/2026-09-24-environment.md`. Apple M5, 24 GB RAM, Metal available to Ollama. Doctor passed at 2026-09-24T20:32:08Z, including a Memgraph restart. |
 | Ollama | 0.34.0 on `127.0.0.1:11434`. `embeddinggemma` returns 768-dimensional vectors. `qwen3:8b` is installed. |
 | Memgraph | `memgraph/memgraph-mage:3.13.0` via `infra/compose.yaml`, bound to `127.0.0.1:7687`. Lab 3.7.1 is at `http://127.0.0.1:3000`. |
 | Graph shape | Schema preview only, loaded by `infra/schema-preview.cypher`. Unique `id` constraints and an empty cosine index `chunk_embedding` (768 dimensions). Not ingested policy text. |
 | OpenSpec | CLI 1.13.2 initialized for Cursor. Commands are `.cursor/commands/opsx-*.md`. `openspec validate` passed for `build-airport-policy-rag`. The change is not archived. |
 | Chunking | `backend/app/chunking/`. Parent is one section. Child target is 300 EmbeddingGemma tokens, maximum 400, overlap at most 50 whole sentences. Version and access boundaries are not crossed. |
-| Tests | 13 tests in `backend/tests/test_chunking.py` passed on 2026-09-24. |
+| Tests | 16 tests passed on Python 3.12.14: chunking plus the doctor summary and lock-file checks. |
 | Imported sources | Three files fetched, SHA-256 checked, Apache-2.0 `LICENSE` kept under `data/sources/imported/`. |
 
 Chunking run for the imported files, using the local EmbeddingGemma vocabulary. Every section was under 400 tokens, so each section is one child.
@@ -36,11 +36,10 @@ SkyWings keeps headings such as `4 Checked Baggage Allowance`. AetherSky keeps `
 
 ## What is not done
 
-- Python on this machine is 3.9.6. The backend target is 3.11 or newer. Dependencies for the new backend are not locked.
-- Host `npm` is not installed. OpenSpec commands were generated from package 1.13.2 and committed; a global `openspec` binary is not on `PATH`.
-- Milestone 1 is open: two known texts have not been embedded, stored in Memgraph, and retrieved. The vector index is empty.
+- Host `npm` is not installed. OpenSpec commands were generated from package 1.13.2 and committed; a global `openspec` binary is not on `PATH`. The React package lock waits until UI work.
+- Milestone 1 is open: two known texts have not been embedded, stored in Memgraph, and retrieved. The vector index size is still 0.
 - The four generated AeroPolicy documents, including the obsolete duplicate, have not been created.
-- No ingestion pipeline, DGS, authentication, retrieval, reranker, evaluation harness, or CI.
+- No ingestion pipeline, DGS, authentication, retrieval, evaluation harness, or CI. The reranker model is pinned and scored by doctor. It is not part of retrieval yet.
 - No UI. Frontend work stays stopped until the screen list is specified.
 - No rubric screenshots and no submission PDF.
 
