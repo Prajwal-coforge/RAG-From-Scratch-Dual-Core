@@ -1,6 +1,6 @@
 # Implementation Tasks
 
-Milestone 0 is checked. Later milestones stay open. A checkbox requires its associated test or recorded evidence; creating code alone is insufficient. PROJECT_SPEC.md defines acceptance details.
+Milestones 0 and 1 are checked. Later milestones stay open. A checkbox requires its associated test or recorded evidence; creating code alone is insufficient. PROJECT_SPEC.md defines acceptance details.
 
 ## 0. Preflight and OpenSpec
 
@@ -13,11 +13,11 @@ Milestone 0 is checked. Later milestones stay open. A checkbox requires its asso
 
 ## 1. Minimal proof before full ingestion
 
-- [ ] 1.1 Create two short known texts in an isolated smoke-test namespace.
-- [ ] 1.2 Embed the first text using Ollama and persist it in Memgraph.
-- [ ] 1.3 Add the second distinct text and create/inspect the actual Memgraph vector index.
-- [ ] 1.4 Query both texts and verify the expected nearest result using real services.
-- [ ] 1.5 Save timestamped terminal output, code commit, runtime versions, and index details before proceeding.
+- [x] 1.1 Create two short known texts in an isolated smoke-test namespace.
+- [x] 1.2 Embed the first text using Ollama and persist it in Memgraph.
+- [x] 1.3 Add the second distinct text and create/inspect the actual Memgraph vector index.
+- [x] 1.4 Query both texts and verify the expected nearest result using real services.
+- [x] 1.5 Save timestamped terminal output, code commit, runtime versions, and index details before proceeding.
 
 ## 2. Sources, fixtures, and governance metadata
 

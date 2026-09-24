@@ -48,6 +48,15 @@ docker compose -f infra/compose.yaml up -d
 
 Lab is at http://127.0.0.1:3000. The database Bolt port is `127.0.0.1:7687`. The graph currently loaded by `infra/schema-preview.cypher` is a schema preview, not ingested policy text.
 
+Two-text retrieval proof (milestone 1). It embeds two known texts, stores them in Memgraph under their own `smoke_text_embedding` index, and checks that each question returns the right one:
+
+```bash
+uv run policy-rag smoke
+uv run pytest -m live
+```
+
+The recorded run is in [`docs/evidence/m1/`](docs/evidence/m1/README.md).
+
 Chunk the imported policies with the local EmbeddingGemma vocabulary:
 
 ```bash
@@ -64,4 +73,4 @@ Ollama must be running for embeddings. `embeddinggemma` is the embedding model. 
 
 ## Still open
 
-Milestone 0 is recorded. The two-text Memgraph retrieval proof is next. Generated policies, ingestion, access control, retrieval, evaluation, CI, and the UI are still open.
+Milestones 0 and 1 are recorded. Generated policies (milestone 2) are next. Ingestion, access control, retrieval, evaluation, CI, and the UI are still open.

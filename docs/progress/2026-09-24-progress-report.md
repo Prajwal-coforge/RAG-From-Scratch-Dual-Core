@@ -2,7 +2,7 @@
 
 Airport Policy RAG overhaul. This report records what is in the working tree. It is not a claim that the lab is complete, and it is not instructor approval of the stack substitution.
 
-OpenSpec change `build-airport-policy-rag` is proposed only. Milestone 0 tasks 0.1–0.6 are checked. The other 51 tasks are open. None of the 100 rubric points have submission evidence yet. The UI has not been started. The change is not archived.
+OpenSpec change `build-airport-policy-rag` is proposed only. Milestone 0 tasks 0.1–0.6 and milestone 1 tasks 1.1–1.5 are checked. The other 46 tasks are open. Only the minimal retrieval proof (7 rubric points) has recorded evidence; its screenshot is not in a submission PDF yet. The UI has not been started. The change is not archived.
 
 ## Decisions
 
@@ -21,7 +21,8 @@ The imported corpus is three aviation files from `DecisionsDev/policy-corpus` at
 | Graph shape | Schema preview only, loaded by `infra/schema-preview.cypher`. Unique `id` constraints and an empty cosine index `chunk_embedding` (768 dimensions). Not ingested policy text. |
 | OpenSpec | CLI 1.13.2 initialized for Cursor. Commands are `.cursor/commands/opsx-*.md`. `openspec validate` passed for `build-airport-policy-rag`. The change is not archived. |
 | Chunking | `backend/app/chunking/`. Parent is one section. Child target is 300 EmbeddingGemma tokens, maximum 400, overlap at most 50 whole sentences. Version and access boundaries are not crossed. |
-| Tests | 16 tests passed on Python 3.12.14: chunking plus the doctor summary and lock-file checks. |
+| Two-text proof | `policy-rag smoke` at commit `cbbbd9b`. Two texts embedded by `embeddinggemma`, stored in Memgraph under their own index `smoke_text_embedding`, and each question returned its expected text first (0.6242 vs 0.1266, 0.5523 vs 0.2038). Evidence in `docs/evidence/m1/`. `chunk_embedding` stayed at size 0. |
+| Tests | 26 unit tests pass on Python 3.12.14. `pytest -m live` runs the real two-text test against Ollama and Memgraph and passed. |
 | Imported sources | Three files fetched, SHA-256 checked, Apache-2.0 `LICENSE` kept under `data/sources/imported/`. |
 
 Chunking run for the imported files, using the local EmbeddingGemma vocabulary. Every section was under 400 tokens, so each section is one child.
@@ -37,7 +38,6 @@ SkyWings keeps headings such as `4 Checked Baggage Allowance`. AetherSky keeps `
 ## What is not done
 
 - Host `npm` is not installed. OpenSpec commands were generated from package 1.13.2 and committed; a global `openspec` binary is not on `PATH`. The React package lock waits until UI work.
-- Milestone 1 is open: two known texts have not been embedded, stored in Memgraph, and retrieved. The vector index size is still 0.
 - The four generated AeroPolicy documents, including the obsolete duplicate, have not been created.
 - No ingestion pipeline, DGS, authentication, retrieval, evaluation harness, or CI. The reranker model is pinned and scored by doctor. It is not part of retrieval yet.
 - No UI. Frontend work stays stopped until the screen list is specified.
@@ -45,4 +45,4 @@ SkyWings keeps headings such as `4 Checked Baggage Allowance`. AetherSky keeps `
 
 ## Next gate
 
-Embed two known texts with Ollama `embeddinggemma`, store them in Memgraph, and show that a query returns the nearer text. Do that before full ingestion. Then generate the four airport policies and chunk them with the same tokenizer.
+Milestone 2: generate the four airport policies through local Ollama with saved prompts and outputs, then chunk them with the same tokenizer. Memgraph keeps deleted nodes in a vector index created before garbage collection; ingestion and rollback must run `FREE MEMORY` after deletes, as `backend/app/smoke.py` does.
