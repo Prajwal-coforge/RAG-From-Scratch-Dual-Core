@@ -7,13 +7,50 @@ It does not add BOS or EOS. Ollama's embed request adds those separately.
 
 from __future__ import annotations
 
+import json
+import os
 import struct
 from pathlib import Path
 
-BLOB = Path(
-    "/Users/Prajwal.Kumar/.ollama/models/blobs/"
-    "sha256-0800cbac9c2064dde519420e75e512a83cb360de3ad5df176185dc69652fc515"
-)
+# Content digest of the embeddinggemma GGUF checked in preflight. The file
+# lives under the local Ollama models directory, which differs per machine.
+MODEL_DIGEST = "sha256:0800cbac9c2064dde519420e75e512a83cb360de3ad5df176185dc69652fc515"
+MODEL_MEDIA_TYPE = "application/vnd.ollama.image.model"
+
+
+def ollama_models_dir() -> Path:
+    override = os.environ.get("OLLAMA_MODELS")
+    if override:
+        return Path(override)
+    return Path.home() / ".ollama" / "models"
+
+
+def embeddinggemma_blob(models_dir: Path | None = None) -> Path:
+    """Return the local embeddinggemma GGUF blob for this machine.
+
+    Prefers the model layer recorded in the Ollama manifest so a teammate's
+    pull is used when it differs from the pinned digest.
+    """
+    root = models_dir or ollama_models_dir()
+    digest = MODEL_DIGEST
+    manifest = (
+        root
+        / "manifests"
+        / "registry.ollama.ai"
+        / "library"
+        / "embeddinggemma"
+        / "latest"
+    )
+    if manifest.is_file():
+        data = json.loads(manifest.read_text())
+        for layer in data.get("layers", []):
+            if layer.get("mediaType") == MODEL_MEDIA_TYPE and layer.get("digest"):
+                digest = layer["digest"]
+                break
+    return root / "blobs" / digest.replace(":", "-")
+
+
+BLOB = embeddinggemma_blob()
 SCALAR = {0: 1, 1: 1, 2: 2, 3: 2, 4: 4, 5: 4, 6: 4, 7: 1, 10: 8, 11: 8, 12: 8}
 
 
