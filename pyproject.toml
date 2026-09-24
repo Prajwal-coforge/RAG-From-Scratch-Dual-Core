@@ -3,25 +3,15 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "policy-rag"
+name = "airport-policy-rag"
 version = "0.1.0"
-description = "Policy RAG data and retrieval over Coforge PDFs"
-requires-python = ">=3.10"
-dependencies = [
-  "chromadb>=0.5.0",
-  "pymupdf>=1.24.0",
-]
+description = "Local airport and airline policy RAG lab"
+requires-python = ">=3.11"
+dependencies = []
 
 [project.optional-dependencies]
-rerank = ["sentence-transformers>=3.0.0"]
 dev = ["pytest>=8.0.0"]
 
-[tool.setuptools.packages.find]
-where = ["src"]
-
 [tool.pytest.ini_options]
-testpaths = ["tests"]
-pythonpath = ["src", "backend"]
-markers = [
-  "integration: needs Ollama running locally",
-]
+testpaths = ["backend/tests"]
+pythonpath = ["backend"]

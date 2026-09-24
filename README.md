@@ -1,101 +1,56 @@
-# Policy RAG
+# Airport Policy RAG
 
-The active build is the Airport Policy RAG overhaul. Start at [`airport-policy-rag-spec/START_HERE.md`](airport-policy-rag-spec/START_HERE.md). Stack and corpus decisions are in [`docs/decisions/0001-stack-substitution-and-corpus.md`](docs/decisions/0001-stack-substitution-and-corpus.md). The proposed OpenSpec change is `openspec/changes/build-airport-policy-rag/` and is not implemented.
+Local policy assistant for airport and airline staff. The build follows the handoff in [`airport-policy-rag-spec/START_HERE.md`](airport-policy-rag-spec/START_HERE.md). Status and open work are in [`docs/progress/2026-09-24-progress-report.md`](docs/progress/2026-09-24-progress-report.md).
 
-The notes below describe the previous company-policy retrieval pass. That corpus and Chroma stack are not the new index.
-
-# Previous pass — data and retrieval
-
-This pass covers **Data** and **Retrieval** only. Generation, evals, and CI are later.
-
-Architecture docs (full system map, including later stages):
-
-- [`docs/execution-graph.md`](docs/execution-graph.md)
-- [`docs/rag-visual-board.md`](docs/rag-visual-board.md)
-- [`docs/rag-presentation.md`](docs/rag-presentation.md)
-
-## Retrieval flow
-
-```text
-policies/*.pdf
-    → extract + strip headers / TOC
-    → section-aware recursive chunk (800–1500, overlap 150–200)
-    → metadata: name, section, version
-    → qwen3-embedding:0.6b → ChromaDB
-                                    ┌→ vector top-k ─┐
-question ──┬────────────────────────┤                ├→ RRF → CrossEncoder
-           └→ keyword substring ────┘                      ↓
-                                            ranked chunks + citations metadata
-```
+The stack is local Ollama, Memgraph, a Python backend, and a React frontend. There is no data lake and no hosted model. The UI is not started.
 
 ## Corpus
 
-PDFs live in `policies/`:
+Imported files are pinned from `DecisionsDev/policy-corpus` at commit `948dacad` and kept as separate issuers:
 
-| Document | Notes |
+| Corpus | Issuer | File |
+| --- | --- | --- |
+| `skywings-baggage` | SkyWings Airlines | `data/sources/imported/luggage/luggage_policy.txt` |
+| `aethersky-compensation` | AetherSky Airways | `data/sources/imported/human-resources/compensation/aethersky-airways-pilot-compensation-policy.txt` |
+| `synthetic-emissions` | GAEA (fictional) | `data/sources/imported/air_transport/airplane_pollution_compliance.txt` |
+
+Four generated AeroPolicy documents are still required and are not in the tree yet.
+
+## Layout
+
+| Path | Role |
 | --- | --- |
-| Whistleblower Policy | Numbered `1.0`–`14.0` |
-| Related Party Transactions (RPT) | Numbered legal policy |
-| Dividend Distribution Policy | Short `1.0` / `2.0` / `3.0` / `4.0` |
-| Policy on Materiality of Events | Disclosure / materiality events |
+| `airport-policy-rag-spec/` | Handoff specification |
+| `openspec/changes/build-airport-policy-rag/` | Proposed change. Not implemented |
+| `.cursor/commands/` | OpenSpec commands: `/opsx-explore`, `/opsx-propose`, `/opsx-apply`, `/opsx-update`, `/opsx-sync`, `/opsx-archive` |
+| `backend/app/chunking/` | Section parent-child chunker |
+| `infra/compose.yaml` | Memgraph 3.13.0 and Lab 3.7.1 |
+| `docs/decisions/` | Stack and chunking decisions |
 
-## Chunking
+## Run what exists
 
-1. Extract text; drop running headers, page numbers, and the table of contents.
-2. Split on headings such as `1.0 Context` and `8.0 Reporting a Concern`.
-3. If a section is still over ~1500 characters, recurse on `(a)` / `(b)`, then paragraphs, then sentences.
-4. Target **800–1500 characters**, overlap **150–200**.
-5. Attach `name`, `section`, `version` on every chunk.
-
-## Stack
-
-| Role | Choice |
-| --- | --- |
-| Embeddings | Ollama `qwen3-embedding:0.6b` (query prefix only; chunks stored raw) |
-| Vector store | ChromaDB |
-| Hybrid | Vector top-k + keyword substring, merged with RRF |
-| Rerank | `cross-encoder/ms-marco-MiniLM-L-6-v2` |
-
-Do not embed with a chat model. MiniLM is the reranker only.
-
-Query prefix:
-
-```text
-Instruct: Given a company policy question, retrieve the relevant policy passage
-Query: {question}
-```
-
-## Run
+Memgraph and Lab:
 
 ```bash
-python -m venv .venv && source .venv/bin/activate
-pip install -e ".[dev]"
-
-# 1–2. Prove embed → store → retrieve
-python scripts/01_minimal_loop.py
-
-# 3. Section-chunk policies/ into Chroma
-python scripts/02_ingest.py
-
-# 4. Print hybrid-retrieved chunks (no LLM answer)
-python scripts/03_retrieve.py "What does section 8.0 say about reporting?"
-
-# 5. Section-code probe: hybrid beats vector-only (no Ollama)
-python scripts/04_hybrid_vs_vector.py
+docker compose -f infra/compose.yaml up -d
 ```
 
-From Docker/Cursor on a Mac, Ollama is auto-detected at `http://host.docker.internal:11434`. Override with `OLLAMA_HOST` if needed.
+Lab is at http://127.0.0.1:3000. The database Bolt port is `127.0.0.1:7687`. The graph currently loaded by `infra/schema-preview.cypher` is a schema preview, not ingested policy text.
 
-Install CrossEncoder only when you want rerank:
+Chunk the imported policies with the local EmbeddingGemma vocabulary:
 
 ```bash
-pip install -e ".[dev,rerank]"
+PYTHONPATH=backend python scripts/chunk_imported_corpus.py
 ```
+
+Chunk tests:
 
 ```bash
-pytest -q
+PYTHONPATH=backend python -m pytest backend/tests/test_chunking.py
 ```
 
-## Experiment knobs
+Ollama must be running for embeddings. `embeddinggemma` is the embedding model. `qwen3:8b` is the planned local chat model.
 
-Change one at a time: section max size (800 vs 1500), overlap (150 vs 200), top-k, hybrid vs vector, rerank on/off.
+## Still open
+
+The two-text Memgraph retrieval proof, generated policies, ingestion, access control, retrieval, evaluation, CI, and the UI. Python 3.11+ is the backend target. This machine was last checked at Python 3.9.6.
