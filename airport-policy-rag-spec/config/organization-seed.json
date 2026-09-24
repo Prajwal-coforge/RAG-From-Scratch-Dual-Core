@@ -1,0 +1,109 @@
+{
+  "tenant_id": "aeropolicy-demo",
+  "credentials": "Provision locally; never commit passwords.",
+  "users": [
+    {
+      "user_id": "baggage-employee",
+      "active": true,
+      "roles": [
+        "employee"
+      ],
+      "department_id": "baggage",
+      "manager_id": "baggage-supervisor",
+      "allowed_corpus_ids": [
+        "airport-generated",
+        "skywings-baggage"
+      ]
+    },
+    {
+      "user_id": "baggage-supervisor",
+      "active": true,
+      "roles": [
+        "employee",
+        "supervisor"
+      ],
+      "department_id": "baggage",
+      "manager_id": null,
+      "allowed_corpus_ids": [
+        "airport-generated",
+        "skywings-baggage"
+      ]
+    },
+    {
+      "user_id": "flight-supervisor",
+      "active": true,
+      "roles": [
+        "employee",
+        "supervisor"
+      ],
+      "department_id": "flight-operations",
+      "manager_id": null,
+      "allowed_corpus_ids": [
+        "airport-generated",
+        "aethersky-compensation"
+      ]
+    },
+    {
+      "user_id": "hr-specialist",
+      "active": true,
+      "roles": [
+        "employee",
+        "hr_specialist"
+      ],
+      "department_id": "hr",
+      "manager_id": null,
+      "allowed_corpus_ids": [
+        "airport-generated",
+        "aethersky-compensation"
+      ]
+    },
+    {
+      "user_id": "security-officer",
+      "active": true,
+      "roles": [
+        "employee",
+        "security_officer"
+      ],
+      "department_id": "security",
+      "manager_id": null,
+      "allowed_corpus_ids": [
+        "airport-generated",
+        "skywings-baggage",
+        "synthetic-emissions"
+      ]
+    },
+    {
+      "user_id": "demo-auditor",
+      "active": true,
+      "roles": [
+        "policy_editor",
+        "auditor"
+      ],
+      "department_id": "assurance",
+      "manager_id": null,
+      "allowed_corpus_ids": [
+        "airport-generated",
+        "skywings-baggage",
+        "aethersky-compensation",
+        "synthetic-emissions"
+      ],
+      "explicit_grants": [
+        "read_history:airport-generated",
+        "inspect_audit:aeropolicy-demo",
+        "manage_policy:airport-generated"
+      ]
+    },
+    {
+      "user_id": "inactive-employee",
+      "active": false,
+      "roles": [
+        "employee"
+      ],
+      "department_id": "baggage",
+      "manager_id": "baggage-supervisor",
+      "allowed_corpus_ids": [
+        "airport-generated"
+      ]
+    }
+  ]
+}

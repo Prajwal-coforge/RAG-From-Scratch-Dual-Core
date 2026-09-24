@@ -1,4 +1,10 @@
-# Policy RAG — data and retrieval
+# Policy RAG
+
+The active build is the Airport Policy RAG overhaul. Start at [`airport-policy-rag-spec/START_HERE.md`](airport-policy-rag-spec/START_HERE.md). Stack and corpus decisions are in [`docs/decisions/0001-stack-substitution-and-corpus.md`](docs/decisions/0001-stack-substitution-and-corpus.md). The proposed OpenSpec change is `openspec/changes/build-airport-policy-rag/` and is not implemented.
+
+The notes below describe the previous company-policy retrieval pass. That corpus and Chroma stack are not the new index.
+
+# Previous pass — data and retrieval
 
 This pass covers **Data** and **Retrieval** only. Generation, evals, and CI are later.
 
@@ -73,6 +79,9 @@ python scripts/02_ingest.py
 
 # 4. Print hybrid-retrieved chunks (no LLM answer)
 python scripts/03_retrieve.py "What does section 8.0 say about reporting?"
+
+# 5. Section-code probe: hybrid beats vector-only (no Ollama)
+python scripts/04_hybrid_vs_vector.py
 ```
 
 From Docker/Cursor on a Mac, Ollama is auto-detected at `http://host.docker.internal:11434`. Override with `OLLAMA_HOST` if needed.

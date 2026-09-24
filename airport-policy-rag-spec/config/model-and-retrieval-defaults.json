@@ -1,0 +1,86 @@
+{
+  "status": "proposed_defaults_verify_in_target_environment",
+  "data_lake": false,
+  "backend": "FastAPI",
+  "frontend": "React + Vite (JavaScript)",
+  "vector_store": "Memgraph",
+  "metadata_store": "SQLite",
+  "embedding": {
+    "runtime": "Ollama",
+    "model": "embeddinggemma",
+    "resolved_digest": null,
+    "dimensions": 768,
+    "similarity": "cosine",
+    "truncate": false,
+    "document_format": "title: {title_and_section} | text: {chunk}",
+    "query_format": "task: search result | query: {question}"
+  },
+  "generation": {
+    "runtime": "Ollama",
+    "model": "qwen3:8b",
+    "resolved_digest": null,
+    "temperature": 0,
+    "context_tokens": 8192,
+    "evidence_budget_tokens": 3500,
+    "output_tokens": 1024
+  },
+  "reranker": {
+    "runtime": "sentence-transformers",
+    "model": "cross-encoder/ms-marco-MiniLM-L6-v2",
+    "resolved_revision": null,
+    "maximum_pair_tokens": 512,
+    "overflow_strategy": "source-linked sentence windows"
+  },
+  "chunking": {
+    "strategy": "section-aware parent-child",
+    "target_tokens": 300,
+    "max_tokens": 400,
+    "overlap_target_tokens": 50,
+    "tokenizer": "pinned embedding tokenizer",
+    "hard_boundaries": [
+      "document_version",
+      "access_policy"
+    ],
+    "reranker_pair_recheck": true
+  },
+  "retrieval": {
+    "vector_k": 10,
+    "keyword_k": 10,
+    "rrf_constant": 60,
+    "max_graph_hops": 1,
+    "max_graph_additions": 10,
+    "max_candidates": 30,
+    "final_k": 5,
+    "report_k": [
+      3,
+      5
+    ],
+    "permission_filtered_exact_search_allowed": true
+  },
+  "agents": {
+    "framework": "Deep Agents",
+    "max_tool_calls": 6,
+    "max_delegation_depth": 1,
+    "max_subagents": 2,
+    "timeout_seconds": 120,
+    "persistent_cross_user_memory": false
+  },
+  "governance": {
+    "default_deny": true,
+    "deny_precedence": true,
+    "authoritative_principal_source": "backend",
+    "answer_cache_enabled": false,
+    "reauthorize_before_response": true
+  },
+  "evaluation": {
+    "development_cases": 12,
+    "heldout_cases": 12,
+    "minimum_generated_heldout_cases": 8,
+    "target_candidate_recall": 0.9,
+    "target_final_recall_at_5": 0.85,
+    "target_fact_accuracy": 0.85,
+    "required_citation_validity": 1,
+    "required_mandatory_dgs_pass_rate": 1,
+    "max_unauthorized_disclosures": 0
+  }
+}

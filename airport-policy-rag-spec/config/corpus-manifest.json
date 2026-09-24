@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "repository": "https://github.com/DecisionsDev/policy-corpus",
+  "commit": "948dacadbe03ca4d978ea3d6ccc19131e6a92efb",
+  "license": "Apache-2.0",
+  "tenant_id": "aeropolicy-demo",
+  "allowlist_only": true,
+  "documents": [
+    {
+      "corpus_id": "skywings-baggage",
+      "policy_issuer": "SkyWings Airlines",
+      "path": "luggage/luggage_policy.txt",
+      "sha256": "319cbb92315b52cf683157fef3396efd3fdee8078c6e35deae156656910a8cd2",
+      "effective_from": null,
+      "source_url": "https://raw.githubusercontent.com/DecisionsDev/policy-corpus/948dacadbe03ca4d978ea3d6ccc19131e6a92efb/luggage/luggage_policy.txt",
+      "classification": "public",
+      "access_policy_id": "public-corpus-member",
+      "source_type": "imported"
+    },
+    {
+      "corpus_id": "aethersky-compensation",
+      "policy_issuer": "AetherSky Airways",
+      "path": "human-resources/compensation/aethersky-airways-pilot-compensation-policy.txt",
+      "sha256": "b418ecf530c7fd48fd2c1814adfc25eee84200bfab110ee4bec71c124e4d2f24",
+      "effective_from": null,
+      "source_url": "https://raw.githubusercontent.com/DecisionsDev/policy-corpus/948dacadbe03ca4d978ea3d6ccc19131e6a92efb/human-resources/compensation/aethersky-airways-pilot-compensation-policy.txt",
+      "classification": "public",
+      "access_policy_id": "public-corpus-member",
+      "source_type": "imported"
+    },
+    {
+      "corpus_id": "synthetic-emissions",
+      "policy_issuer": "GAEA (fictional)",
+      "path": "air_transport/airplane_pollution_compliance.txt",
+      "sha256": "186f4afe7c638dc64fadf9b1ec269a6e90d16a11854fa614d197b14afecabc6f",
+      "effective_from": "2025-01-01",
+      "source_url": "https://raw.githubusercontent.com/DecisionsDev/policy-corpus/948dacadbe03ca4d978ea3d6ccc19131e6a92efb/air_transport/airplane_pollution_compliance.txt",
+      "classification": "public",
+      "access_policy_id": "public-corpus-member",
+      "source_type": "imported"
+    }
+  ]
+}

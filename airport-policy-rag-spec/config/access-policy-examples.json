@@ -1,0 +1,66 @@
+{
+  "status": "reviewed design examples; bind to actual sections during generation",
+  "combination": "document_allow AND section_allow; explicit deny overrides",
+  "rules": [
+    {
+      "id": "public-corpus-member",
+      "classification": "public",
+      "requirements": [
+        "authenticated",
+        "active",
+        "tenant_matches",
+        "corpus_entitled"
+      ]
+    },
+    {
+      "id": "internal-staff",
+      "classification": "internal",
+      "requirements": [
+        "authenticated",
+        "active",
+        "tenant_matches",
+        "corpus_entitled",
+        "staff_membership"
+      ]
+    },
+    {
+      "id": "restricted-baggage-review",
+      "classification": "restricted",
+      "allowed_roles": [
+        "supervisor"
+      ],
+      "department_ids": [
+        "baggage"
+      ],
+      "allowed_users": [
+        "security-officer"
+      ],
+      "requirements": [
+        "authenticated",
+        "active",
+        "tenant_matches",
+        "corpus_entitled"
+      ],
+      "scope_semantics": "(supervisor AND department=baggage) OR explicit allowed user",
+      "denied_users": []
+    },
+    {
+      "id": "restricted-hr-procedure",
+      "classification": "restricted",
+      "allowed_roles": [
+        "hr_specialist"
+      ],
+      "department_ids": [
+        "hr"
+      ],
+      "requirements": [
+        "authenticated",
+        "active",
+        "tenant_matches",
+        "corpus_entitled"
+      ],
+      "scope_semantics": "hr_specialist AND department=hr",
+      "denied_users": []
+    }
+  ]
+}

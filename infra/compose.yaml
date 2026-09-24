@@ -1,0 +1,29 @@
+# Local Memgraph for the Airport Policy RAG lab.
+# Data lives in Docker named volumes, not in the repository.
+services:
+  memgraph:
+    image: memgraph/memgraph-mage:3.13.0
+    container_name: airport-policy-memgraph
+    ports:
+      - "127.0.0.1:7687:7687"
+      - "127.0.0.1:7444:7444"
+    volumes:
+      - memgraph_lib:/var/lib/memgraph
+      - memgraph_log:/var/log/memgraph
+      - memgraph_etc:/etc/memgraph
+
+  lab:
+    image: memgraph/lab:3.7.1
+    container_name: airport-policy-memgraph-lab
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      QUICK_CONNECT_MG_HOST: memgraph
+      QUICK_CONNECT_MG_PORT: "7687"
+    depends_on:
+      - memgraph
+
+volumes:
+  memgraph_lib:
+  memgraph_log:
+  memgraph_etc:

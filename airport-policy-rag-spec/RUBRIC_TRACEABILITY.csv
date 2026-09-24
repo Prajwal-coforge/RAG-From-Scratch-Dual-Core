@@ -1,0 +1,11 @@
+criterion,points,requirement_ids,planned_test_group,required_evidence,status
+"Generated documents","8","COR-02","generated_documents","source-generation records and four policies",pending
+"Minimal retrieval proof","7","EMB-02","two_text_smoke","timestamped real terminal run before full ingestion",pending
+"Full ingestion","10","ING-01;CHK-01;EMB-01","ingestion_pipeline","code and real stored embeddings",pending
+"Basic RAG","10","ANS-01","basic_rag","CLI end-to-end answer",pending
+"Hybrid retrieval","12","RET-02","hybrid_comparison","disclosed vector/hybrid improvement example",pending
+"Reranking","8","RET-04","cross_encoder","real candidate scores and ranking",pending
+"Evaluation","15","EVA-01","fixed_evaluation","pytest cases and recall/accuracy output",pending
+"Source defect diagnosis","15","EVA-03","stale_source","actual flawed answer and source-traced diagnosis",pending
+"Attribution","5","ANS-01;UI-01","citations","document/section citation output",pending
+"CI","10","EVA-04","submission_ci","passing live integration and evaluation pipeline",pending
