@@ -88,11 +88,13 @@ The release targets (candidate recall ≥ 0.90, recall@5 ≥ 0.85, fact accuracy
 separate on this suite: its questions carry topic words, and the eligible
 pool averages 16.4 chunks.
 
-- H-G03 fails in every mode. The labelled clause says the bag "must not be
-  handled further until it is approved or removed"; every answer says instead
-  that the bag "must be isolated and secured", which comes from a neighbouring
-  passage. The two policy references are correct. This is a real answer
-  error, and the fact check is right to fail it.
+- H-G03 fails in every mode. AP-BAG-001 section 5 states two requirements
+  for the bag: it "must not be handled further until it is approved or
+  removed", and it "must be isolated and secured". Every answer gives the
+  second and omits the first, which is the only one the label requires. The
+  two policy references are correct and both labelled clauses are retrieved.
+  The answer is incomplete against a label that is narrower than the
+  question; the label is part of the pending owner review.
 - H-G08, hybrid_rerank: the judge marked the correct "30 minutes" answer
   unsupported because the passage does not literally say "March 2025". This
   is a judge false negative.
