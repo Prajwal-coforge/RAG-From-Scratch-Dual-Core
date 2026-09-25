@@ -1,0 +1,45 @@
+name: live
+
+# Runs on the project owner's self-hosted runner, where Memgraph, Ollama
+# qwen3:8b, and the pinned Hugging Face models are already local. It is not
+# triggered by pull requests, so code from forks never runs on that machine.
+on:
+  push:
+    branches: ["**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: live-services
+  cancel-in-progress: false
+
+jobs:
+  live:
+    runs-on: [self-hosted, policy-rag-live]
+    timeout-minutes: 60
+    env:
+      HF_HUB_OFFLINE: "1"
+      HF_HUB_DISABLE_PROGRESS_BARS: "1"
+      TQDM_DISABLE: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - run: uv sync --group dev
+      - name: Services and pinned models
+        run: uv run policy-rag doctor
+      - name: Unit tests
+        run: uv run pytest -q
+      - name: Live tests, no skips allowed
+        run: |
+          uv run pytest -m live -q -rs --junitxml=live-results.xml
+          uv run python scripts/check_no_skips.py live-results.xml
+      - name: Dev evaluation
+        run: uv run policy-rag evaluate --suite dev --evidence live-dev-evaluation.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: live-results
+          path: |
+            live-results.xml
+            live-dev-evaluation.json
