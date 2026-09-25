@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "manifest_id": "dirty-stale",
+  "corpus_id": "airport-generated",
+  "purpose": "Simulated stale source delivery for the diagnosis. Evaluation profile only.",
+  "as_of": "2025-08-01",
+  "source_root": "data/sources/generated",
+  "documents": [
+    {
+      "document_version_id": "airport-generated:AP-BAG-001:v1",
+      "policy_id": "AP-BAG-001",
+      "version": 1,
+      "title": "Staff Baggage Handling and Escalation",
+      "path": "AP-BAG-001-v1.md",
+      "content_sha256": "sha256:5b83f8f2c5b47ab766459273c36442683d2c0b7e83e3fd9b809ffdf7499c4fdb",
+      "effective_from": "2025-01-01",
+      "effective_to": null,
+      "publication_status": "active",
+      "supersedes": null
+    },
+    {
+      "document_version_id": "airport-generated:AP-INC-002:v1",
+      "policy_id": "AP-INC-002",
+      "version": 1,
+      "title": "Operational Incident Response and Review",
+      "path": "AP-INC-002-v1.md",
+      "content_sha256": "sha256:c8fbab147faed8ed5a588ad5998f71f6c83deda4b1f61245f97e44eb4daf9e4b",
+      "effective_from": "2025-01-01",
+      "effective_to": null,
+      "publication_status": "active",
+      "supersedes": null
+    },
+    {
+      "document_version_id": "airport-generated:AP-SEC-003:v1",
+      "policy_id": "AP-SEC-003",
+      "version": 1,
+      "title": "Staff Access, Restricted Items, and Approvals",
+      "path": "AP-SEC-003-v1.md",
+      "content_sha256": "sha256:05100e6ed18e3d07af4f902df086a77051e5670afe87c45af6eac12f1f748cb6",
+      "effective_from": "2025-01-01",
+      "effective_to": null,
+      "publication_status": "active",
+      "supersedes": null
+    }
+  ],
+  "fixture": {
+    "kind": "stale-source-delivery",
+    "evaluation_profile_only": true,
+    "content_altered": false,
+    "defect": "The delivery supplies AP-BAG-001 v1 (30-minute escalation) marked active with no end date, and omits AP-BAG-001 v2 (10-minute escalation), which is the version in force on the as_of date.",
+    "missing_document_version_ids": [
+      "airport-generated:AP-BAG-001:v2"
+    ],
+    "corruptions": [
+      {
+        "document_version_id": "airport-generated:AP-BAG-001:v1",
+        "field": "publication_status",
+        "original": "superseded",
+        "supplied": "active"
+      },
+      {
+        "document_version_id": "airport-generated:AP-BAG-001:v1",
+        "field": "effective_to",
+        "original": "2025-06-30",
+        "supplied": null
+      }
+    ],
+    "original_metadata": {
+      "document_version_id": "airport-generated:AP-BAG-001:v1",
+      "policy_id": "AP-BAG-001",
+      "version": 1,
+      "title": "Staff Baggage Handling and Escalation",
+      "path": "AP-BAG-001-v1.md",
+      "content_sha256": "sha256:5b83f8f2c5b47ab766459273c36442683d2c0b7e83e3fd9b809ffdf7499c4fdb",
+      "effective_from": "2025-01-01",
+      "effective_to": "2025-06-30",
+      "publication_status": "superseded",
+      "supersedes": null
+    }
+  }
+}

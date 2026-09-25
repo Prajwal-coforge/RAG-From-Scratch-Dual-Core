@@ -1,0 +1,8 @@
+{
+  "ok": false,
+  "prose_words": 617,
+  "problems": [
+    "contains forbidden phrase 'immediately'",
+    "contains forbidden phrase 'promptly'"
+  ]
+}

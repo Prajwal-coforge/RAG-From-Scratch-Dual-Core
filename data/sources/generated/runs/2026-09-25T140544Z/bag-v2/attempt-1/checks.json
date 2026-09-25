@@ -1,0 +1,8 @@
+{
+  "ok": false,
+  "prose_words": 783,
+  "problems": [
+    "783 prose words, outside 550-750",
+    "section '4. Baggage Incident Escalation' uses 'immediately' alongside the deadline"
+  ]
+}

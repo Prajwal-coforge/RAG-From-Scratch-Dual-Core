@@ -88,7 +88,11 @@ def _headings(text: str) -> list[tuple[int, str, int]]:
         md = MD_HEADING.match(stripped)
         section = SECTION_HEADING.match(stripped)
         numbered = _numbered_heading(stripped)
-        if md and _looks_like_title(md.group(2)):
+        md_numbered = _numbered_heading(md.group(2)) if md else None
+        if md_numbered is not None:
+            number, title = md_numbered
+            found.append((offset, f"{number} {title}", len(md.group(1))))
+        elif md and _looks_like_title(md.group(2)):
             found.append((offset, md.group(2), len(md.group(1))))
         elif section and _looks_like_title(section.group(2)):
             found.append((offset, f"Section {section.group(1)} {section.group(2)}", 1))

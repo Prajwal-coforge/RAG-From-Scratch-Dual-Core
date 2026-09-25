@@ -1,0 +1,13 @@
+generation run 2026-09-25T143259Z  commit 622092fb9d3f53e834ea8d54a1d37951ebedbadb  qwen3:8b sha256:a3de86cd1c13
+bag-v2 seed 1: 617 words, rejected: contains forbidden phrase 'immediately'; contains forbidden phrase 'promptly'
+bag-v2 seed 2: 611 words, accepted
+inc-v1 seed 1: 511 words, rejected: 511 prose words, outside 550-750
+inc-v1 seed 2: 616 words, accepted
+sec-v1 seed 1: 472 words, rejected: 472 prose words, outside 550-750
+sec-v1 seed 2: 600 words, accepted
+bag-v1 seed 1: 600 words, rejected: contains forbidden phrase 'immediately'; contains forbidden phrase 'promptly'
+bag-v1 seed 2: 599 words, accepted
+wrote AP-BAG-001-v2.md  sha256:23b214e0367e
+wrote AP-INC-002-v1.md  sha256:9f570c1928b9
+wrote AP-SEC-003-v1.md  sha256:47e4c51e79c7
+wrote AP-BAG-001-v1.md  sha256:5b83f8f2c5b4

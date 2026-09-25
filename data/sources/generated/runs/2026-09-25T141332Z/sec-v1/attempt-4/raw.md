@@ -1,0 +1,19 @@
+# AP-SEC-003 Staff Access, Restricted Items, and Approvals
+
+## 1. Purpose and Scope  
+This policy establishes procedures for managing staff access to restricted areas and the handling of restricted items. It applies to all AeroPolicy Airport staff and contractors. The policy ensures compliance with security and safety standards by defining access zones, identifying restricted items, and outlining the approval process for carrying such items. It also provides guidelines for the management of restricted items found in baggage, referencing related policies for further action. This policy supports the airport’s commitment to maintaining a secure and controlled environment for all operations.
+
+## 2. Staff Access Zones  
+Staff access is restricted to designated zones based on operational roles. Landed staff may access landside areas, while airside access is limited to authorized personnel. The baggage make-up area is a controlled zone accessible only to baggage handlers and supervisors. Access to these zones is governed by role-specific permissions and is subject to regular review. All staff must adhere to access protocols to ensure the integrity of airport operations and security. Unauthorized entry into restricted zones is prohibited and may result in disciplinary action.
+
+## 3. Restricted Items  
+Restricted items include tools, blades, lithium batteries, and flammable liquids, among others. These items pose potential safety or security risks and are subject to strict control measures. Staff must be aware of the types of items that are restricted and understand the implications of carrying or using them. Items that require special handling or authorization must be declared and approved in accordance with the procedures outlined in this policy. The identification and management of restricted items are critical to maintaining a secure and compliant operational environment.
+
+## 4. Approval Procedure for Restricted Items  
+Approval to carry a restricted item airside must be granted in writing by the Security Duty Manager before the item passes the staff screening point. A Requesting Staff Member must submit a written request detailing the item and its intended use. The Line Manager must endorse the request to confirm its necessity and compliance with operational requirements. The Security Duty Manager reviews and approves the request based on risk assessment and policy compliance. All approvals are documented and retained for audit purposes. Unauthorized possession or transport of restricted items is strictly prohibited.
+
+## 5. Restricted Items Found in Baggage  
+A restricted item found in a checked bag is handled under AP-BAG-001. The item must be removed from the baggage and reported under AP-INC-002. Staff must follow the procedures outlined in these policies to ensure the item is properly secured and documented. Immediate notification to the appropriate authorities is required to initiate the necessary actions. The handling of restricted items in baggage is a critical component of the airport’s security and safety protocols, and all staff must be prepared to act in accordance with these procedures.
+
+## 6. Records and Review  
+All requests, approvals, and incident reports related to restricted items must be recorded and retained for review. Records are maintained in a secure and accessible format for audit and compliance purposes. The Security Duty Manager is responsible for reviewing records periodically to ensure adherence to policy and identify any areas for improvement. Staff are required to maintain accurate and up-to-date records of their activities involving restricted items. Regular reviews help ensure the effectiveness and integrity of the policy and its implementation.

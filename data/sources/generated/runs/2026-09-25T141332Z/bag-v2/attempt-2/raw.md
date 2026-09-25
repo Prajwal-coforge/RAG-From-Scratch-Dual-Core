@@ -1,0 +1,19 @@
+# AP-BAG-001 Staff Baggage Handling and Escalation
+
+## 1. Purpose and Scope  
+This policy establishes the procedures and responsibilities for the handling of checked baggage throughout the airport's baggage handling system. It outlines the roles and expectations for staff involved in the movement, sorting, and loading of baggage. The policy applies to all baggage handlers, baggage duty supervisors, and ramp leads. It ensures the safe, efficient, and compliant handling of baggage from check-in belts through the baggage make-up area to aircraft loading. This policy also defines the escalation process for baggage incidents and the handling of restricted items found in baggage.
+
+## 2. Roles and Responsibilities  
+The Baggage Handler is responsible for the physical handling and sorting of baggage in the baggage make-up area. The Baggage Duty Supervisor oversees the handling process, ensures compliance with procedures, and provides guidance to baggage handlers. The Ramp Lead is responsible for coordinating baggage loading onto aircraft and ensuring that all baggage is properly secured and accounted for. All staff must follow this policy and report any deviations or incidents in accordance with established procedures.
+
+## 3. Handling Standards  
+All baggage must be handled with care to prevent damage, loss, or misrouting. Baggage handlers must ensure that all bags are properly tagged and correctly routed to their destinations. Heavy bags must be handled using appropriate equipment to prevent injury. Fragile items must be identified and handled with extra care to avoid damage. All baggage must be loaded onto aircraft in accordance with safety and weight distribution guidelines. Any unusual or damaged baggage must be reported immediately for further assessment.
+
+## 4. Baggage Incident Escalation  
+When a baggage handler finds a damaged, leaking, or unattended checked bag in the baggage make-up area, the handler must escalate the incident to the Baggage Duty Supervisor within 10 minutes of discovery and must report it under AP-INC-002. All baggage incidents must be documented and reported in accordance with the incident reporting procedure. If a baggage handler identifies a potential safety hazard or a missing bag, they must escalate the issue to the Baggage Duty Supervisor immediately. The Baggage Duty Supervisor is responsible for ensuring that all incidents are investigated and resolved in a timely manner.
+
+## 5. Restricted Items Found in Baggage  
+If a restricted item is found in a bag during baggage handling, the bag must not be further processed until it is approved or removed under the restricted-items approval procedure in AP-SEC-003. The Baggage Duty Supervisor is responsible for ensuring that all restricted items are identified and handled in accordance with the relevant security procedures. Any bag containing a restricted item must be isolated and reported for further action. The Ramp Lead must ensure that bags containing restricted items are not loaded onto aircraft until the appropriate approvals have been obtained.
+
+## 6. Records and Review  
+All baggage incidents must be recorded in the incident log for review and analysis. The incident log must include details such as the date, time, location, and nature of the incident, as well as the actions taken. The Baggage Duty Supervisor is responsible for maintaining the incident log and ensuring its accuracy. This policy will be reviewed annually to ensure its continued relevance and effectiveness. Any changes to this policy must be approved by the appropriate management and communicated to all relevant staff.

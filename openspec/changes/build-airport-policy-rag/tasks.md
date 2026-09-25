@@ -1,6 +1,6 @@
 # Implementation Tasks
 
-Milestones 0 and 1 are checked. Later milestones stay open. A checkbox requires its associated test or recorded evidence; creating code alone is insufficient. PROJECT_SPEC.md defines acceptance details.
+Milestones 0, 1, and 2 are checked. Later milestones stay open. A checkbox requires its associated test or recorded evidence; creating code alone is insufficient. PROJECT_SPEC.md defines acceptance details.
 
 ## 0. Preflight and OpenSpec
 
@@ -21,11 +21,11 @@ Milestones 0 and 1 are checked. Later milestones stay open. A checkbox requires 
 
 ## 2. Sources, fixtures, and quality metadata
 
-- [ ] 2.1 Fetch only pinned allowlisted aviation sources; verify all three checksums and retain the upstream license.
-- [ ] 2.2 Generate four airport-policy documents through local Ollama and save prompts/raw outputs/model metadata.
-- [ ] 2.3 Validate each generated document's 500–800 prose-word count and explicit cross-policy links.
-- [ ] 2.4 Create current, duplicate, dirty-stale, and historical manifests with exact source hashes.
-- [ ] 2.5 Record the source corruption separately without altering original evidence.
+- [x] 2.1 Fetch only pinned allowlisted aviation sources; verify all three checksums and retain the upstream license.
+- [x] 2.2 Generate four airport-policy documents through local Ollama and save prompts/raw outputs/model metadata.
+- [x] 2.3 Validate each generated document's 500–800 prose-word count and explicit cross-policy links.
+- [x] 2.4 Create current, duplicate, dirty-stale, and historical manifests with exact source hashes.
+- [x] 2.5 Record the source corruption separately without altering original evidence.
 
 ## 3. Ingestion and basic RAG
 

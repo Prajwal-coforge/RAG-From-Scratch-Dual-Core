@@ -4,7 +4,7 @@ import json
 import pytest
 
 from app.corpus import imported
-from app.corpus.generate import build_prompt, build_request, catalog_entry, revision_prompt
+from app.corpus.generate import GENERATED, ROOT, build_prompt, build_request, catalog_entry, revision_prompt
 from app.corpus.manifests import (
     MANIFESTS,
     ManifestError,
@@ -14,7 +14,7 @@ from app.corpus.manifests import (
     write_manifests,
 )
 from app.corpus.policies import BY_KEY, ESCALATION_CLAUSE, POLICIES
-from app.corpus.review import ReviewError, apply_review
+from app.corpus.review import ReviewError, apply_review, review_text
 from app.corpus.validate import DraftReport, check_draft, count_prose_words
 
 FILLER = "Staff follow this policy during every shift and record what they did in plain words. "
@@ -275,7 +275,6 @@ def test_review_edits_cannot_break_the_checks(tmp_path):
         apply_review(catalog, edits, tmp_path)
 
 
-@pytest.mark.skipif(not (MANIFESTS / "clean.json").exists(), reason="manifests not generated yet")
 def test_committed_manifests_match_the_catalog_and_sources():
     rebuilt = build_manifests(load_catalog())
     sums = json.loads((MANIFESTS / "SHA256SUMS.json").read_text())
@@ -286,11 +285,16 @@ def test_committed_manifests_match_the_catalog_and_sources():
         assert sums[path.name] == "sha256:" + hashlib.sha256(text.encode()).hexdigest()
 
 
-@pytest.mark.skipif(not (MANIFESTS / "clean.json").exists(), reason="documents not generated yet")
-def test_committed_documents_pass_their_checks():
+def test_committed_documents_pass_their_checks_and_trace_to_raw_drafts():
     catalog = load_catalog()
-    from app.corpus.generate import GENERATED
-
+    assert sorted(catalog["documents"]) == sorted(BY_KEY)
     for key, entry in catalog["documents"].items():
-        report = check_draft((GENERATED / entry["path"]).read_text(), BY_KEY[key])
+        text = (GENERATED / entry["path"]).read_text()
+        report = check_draft(text, BY_KEY[key])
         assert report.ok, (key, report.problems)
+        assert 500 <= count_prose_words(text) <= 800
+        raw = (ROOT / entry["generation"]["attempt_dir"] / "raw.md").read_text()
+        assert "sha256:" + hashlib.sha256(raw.encode()).hexdigest() == entry["generation"]["raw_sha256"]
+        assert review_text(raw, entry["review"]["edits"]) == text
+        checks = json.loads((ROOT / entry["generation"]["attempt_dir"] / "checks.json").read_text())
+        assert checks["ok"] is True

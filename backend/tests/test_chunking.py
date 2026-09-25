@@ -39,6 +39,25 @@ Pilots must record 75 hours.
     assert "75 hours" in text[sections[3].body_start : sections[3].body_end]
 
 
+def test_markdown_headings_with_section_numbers_are_parents():
+    text = """# AP-BAG-001 Staff Baggage Handling and Escalation
+
+## 1. Purpose and Scope  
+This policy covers checked baggage.
+
+## 4. Baggage Incident Escalation  
+Escalate within 10 minutes of discovery.
+"""
+    sections = parse_sections(text, document_version_id="ap-bag-v2", document_title="AP-BAG-001")
+    assert [section.heading_path for section in sections] == [
+        "AP-BAG-001 Staff Baggage Handling and Escalation",
+        "1 Purpose and Scope",
+        "4 Baggage Incident Escalation",
+    ]
+    escalation = sections[2]
+    assert text[escalation.body_start : escalation.body_end] == "Escalate within 10 minutes of discovery.\n"
+
+
 def test_clause_sentences_and_quantities_stay_inside_the_parent():
     text = """Synthetic policy
 

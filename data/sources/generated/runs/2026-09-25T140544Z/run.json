@@ -1,0 +1,99 @@
+{
+  "run_id": "2026-09-25T140544Z",
+  "started_at": "2026-09-25T14:05:44.934340+00:00",
+  "commit": "b4dce261eff08ba1b11e560f51c1676c6b53a55a",
+  "ollama_version": "0.34.0",
+  "model": "qwen3:8b",
+  "model_blob_digest": "sha256:a3de86cd1c132c822487ededd47a324c50491393e6565cd14bafa40d0b8e686f",
+  "system_prompt": "You write internal operating policies for AeroPolicy Airport, a fictional airport. Write in plain, formal English prose. Output only the policy document in Markdown, with no preamble and no closing remarks.",
+  "options": {
+    "temperature": 0.4,
+    "num_ctx": 8192,
+    "num_predict": 2048
+  },
+  "documents": [
+    {
+      "key": "bag-v2",
+      "attempts": [
+        {
+          "seed": 1,
+          "raw_sha256": "sha256:5d74b4774c4fd5a97fb15cdd552d7a68b3e4d97bfc6facb962dc09cfb122ff0a",
+          "ok": false,
+          "prose_words": 783,
+          "problems": [
+            "783 prose words, outside 550-750",
+            "section '4. Baggage Incident Escalation' uses 'immediately' alongside the deadline"
+          ]
+        },
+        {
+          "seed": 2,
+          "raw_sha256": "sha256:d3ab9f3bb9b4cb82a006565111c08e8a58037416f24b5da12a795d0aaf582951",
+          "ok": true,
+          "prose_words": 682,
+          "problems": []
+        }
+      ]
+    },
+    {
+      "key": "inc-v1",
+      "attempts": [
+        {
+          "seed": 1,
+          "raw_sha256": "sha256:192efd09104041acd64f6c74bc8c231fb441b9faa1ce89dc81d7d3f74b39a3eb",
+          "ok": false,
+          "prose_words": 1420,
+          "problems": [
+            "1420 prose words, outside 550-750"
+          ]
+        },
+        {
+          "seed": 2,
+          "raw_sha256": "sha256:e0202bb2d0793af594b710260a01b1643bffec5e878d13cae0b540006eb547a0",
+          "ok": false,
+          "prose_words": 907,
+          "problems": [
+            "907 prose words, outside 550-750"
+          ]
+        },
+        {
+          "seed": 3,
+          "raw_sha256": "sha256:ef6513c4ba66f858bd39a02df0a19d1593f1b60f7e1649185da368456da04a24",
+          "ok": false,
+          "prose_words": 957,
+          "problems": [
+            "957 prose words, outside 550-750"
+          ]
+        },
+        {
+          "seed": 4,
+          "raw_sha256": "sha256:7f451f63193aaabf8efd6eac13cffa0f268e484e4801f0316e1ba9db19bb3f55",
+          "ok": false,
+          "prose_words": 1033,
+          "problems": [
+            "1033 prose words, outside 550-750",
+            "missing reference to AP-BAG-001",
+            "missing reference to AP-SEC-003"
+          ]
+        },
+        {
+          "seed": 5,
+          "raw_sha256": "sha256:d2645ac5ec72948ab19176a304cdd2c1431bb2a755c28da1cbead264e03385cc",
+          "ok": false,
+          "prose_words": 1090,
+          "problems": [
+            "1090 prose words, outside 550-750"
+          ]
+        },
+        {
+          "seed": 6,
+          "raw_sha256": "sha256:e7c6e294dd2951e4b02b49c6fa981e8bb7944e1b4ac5db43d69558befad3166e",
+          "ok": false,
+          "prose_words": 969,
+          "problems": [
+            "969 prose words, outside 550-750"
+          ]
+        }
+      ]
+    }
+  ]
+}

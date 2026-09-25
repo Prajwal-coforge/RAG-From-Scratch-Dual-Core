@@ -1,0 +1,13 @@
+generation run 2026-09-25T142621Z  commit 2f660306736321e6a0c4677a88a1257f7919b336  qwen3:8b sha256:a3de86cd1c13
+bag-v2 seed 1: 631 words, rejected: section '4. Baggage Incident Escalation' uses 'promptly' alongside the deadline
+bag-v2 seed 2: 671 words, accepted
+inc-v1 seed 1: 558 words, accepted
+sec-v1 seed 1: 548 words, rejected: 548 prose words, outside 550-750
+sec-v1 seed 2: 548 words, rejected: 548 prose words, outside 550-750
+sec-v1 seed 3: 693 words, accepted
+bag-v1 seed 1: 493 words, rejected: 493 prose words, outside 550-750
+bag-v1 seed 2: 637 words, accepted
+wrote AP-BAG-001-v2.md  sha256:62a15ff36462
+wrote AP-INC-002-v1.md  sha256:d2119859bf63
+wrote AP-SEC-003-v1.md  sha256:4e2b5ff79159
+wrote AP-BAG-001-v1.md  sha256:7ca7f6e39dae

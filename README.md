@@ -14,7 +14,16 @@ Imported files are pinned from `DecisionsDev/policy-corpus` at commit `948dacad`
 | `aethersky-compensation` | AetherSky Airways | `data/sources/imported/human-resources/compensation/aethersky-airways-pilot-compensation-policy.txt` |
 | `synthetic-emissions` | GAEA (fictional) | `data/sources/imported/air_transport/airplane_pollution_compliance.txt` |
 
-Four generated AeroPolicy documents are still required and are not in the tree yet.
+The four generated AeroPolicy Airport documents are in `data/sources/generated/`: AP-BAG-001 v2 (current), AP-INC-002 v1, AP-SEC-003 v1, and the obsolete AP-BAG-001 v1. Their versions and dates are in `catalog.json`. The clean, duplicate, dirty-stale, and historical manifests are in `data/manifests/`.
+
+```bash
+uv run policy-rag corpus import      # fetch and verify the three pinned files
+uv run policy-rag corpus generate    # refuses to overwrite without --force
+uv run policy-rag corpus review      # apply recorded review edits
+uv run policy-rag corpus manifests   # write-once manifests
+```
+
+The recorded generation runs are in [`docs/evidence/m2/`](docs/evidence/m2/README.md).
 
 ## Layout
 
@@ -73,4 +82,4 @@ Ollama must be running for embeddings. `embeddinggemma` is the embedding model. 
 
 ## Still open
 
-Milestones 0 and 1 are recorded. Generated policies (milestone 2) are next. Ingestion, access control, retrieval, evaluation, CI, and the UI are still open.
+Milestones 0, 1, and 2 are recorded. Ingestion and basic RAG (milestone 3) are next. Retrieval, evaluation, CI, and the UI are still open.

@@ -1,0 +1,21 @@
+{
+  "model": "qwen3:8b",
+  "stream": false,
+  "think": false,
+  "options": {
+    "temperature": 0.4,
+    "num_ctx": 8192,
+    "num_predict": 2048,
+    "seed": 1
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You write internal operating policies for AeroPolicy Airport, a fictional airport. Write in plain, formal English prose. Output only the policy document in Markdown, with no preamble and no closing remarks."
+    },
+    {
+      "role": "user",
+      "content": "Write policy AP-BAG-001, titled \"Staff Baggage Handling and Escalation\", issued by AeroPolicy Airport.\n\nContent: Staff rules for handling checked baggage between the check-in belts, the baggage make-up area, and aircraft loading. Name the roles Baggage Handler, Baggage Duty Supervisor, and Ramp Lead. Section 3 covers bag tags, heavy bags, and fragile items. Section 4 covers escalation of baggage incidents. Section 5 says that a restricted item found in a bag is not handled further until it is approved or removed under the restricted-items approval procedure in AP-SEC-003. Section 6 covers the incident log and an annual policy review.\n\nStart with this exact first line:\n# AP-BAG-001 Staff Baggage Handling and Escalation\n\nThen use exactly these section headings, in this order, and no other headings:\n## 1. Purpose and Scope\n## 2. Roles and Responsibilities\n## 3. Handling Standards\n## 4. Baggage Incident Escalation\n## 5. Restricted Items Found in Baggage\n## 6. Records and Review\n\nInclude each of these sentences word for word, in the most relevant section:\n- When a baggage handler finds a damaged, leaking, or unattended checked bag in the baggage make-up area, the handler must escalate the incident to the Baggage Duty Supervisor within 10 minutes of discovery and must report it under AP-INC-002.\n\nRefer to the related policies by their IDs (AP-INC-002, AP-SEC-003) where the text depends on them, and do not mention any other policy IDs.\n\nRules:\n- Between 600 and 700 words of prose in total, not counting headings.\n- Paragraphs only. No bullet points, numbered lists, or tables.\n- Do not state any dates, years, or version numbers.\n- Do not state any time limit in minutes other than those in the required sentences.\n"
+    }
+  ]
+}

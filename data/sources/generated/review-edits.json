@@ -1,0 +1,22 @@
+{
+  "inc-v1": {
+    "raw_sha256": "sha256:7e7a0a75af0ca3580341cd0949b50e209755226bc5d7cff293c349747dec2fe0",
+    "edits": [
+      {
+        "find": "must be reported immediately by the affected staff member",
+        "replace": "must be reported by the affected staff member",
+        "reason": "A general 'immediately' competes with the AP-BAG-001 section 4 deadline that this same paragraph defers to. Six regeneration attempts in run 2026-09-25T143810Z kept a vague timing word, so the one word is removed here instead."
+      }
+    ]
+  },
+  "sec-v1": {
+    "raw_sha256": "sha256:c074c25d366ffedae92dd674384fe63b0137ea665ff56ffd95c75c9323db12cd",
+    "edits": [
+      {
+        "find": "while air,side areas require",
+        "replace": "while airside areas require",
+        "reason": "Typo in the generated text."
+      }
+    ]
+  }
+}

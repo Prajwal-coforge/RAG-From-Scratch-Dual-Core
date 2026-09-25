@@ -1,0 +1,9 @@
+{
+  "ok": false,
+  "prose_words": 1033,
+  "problems": [
+    "1033 prose words, outside 550-750",
+    "missing reference to AP-BAG-001",
+    "missing reference to AP-SEC-003"
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "run_id": "2026-09-25T141332Z",
+  "started_at": "2026-09-25T14:13:32.343904+00:00",
+  "commit": "ce442d116cef14c6ab5f2362e50c8b8f769cdda0",
+  "ollama_version": "0.34.0",
+  "model": "qwen3:8b",
+  "model_blob_digest": "sha256:a3de86cd1c132c822487ededd47a324c50491393e6565cd14bafa40d0b8e686f",
+  "system_prompt": "You write internal operating policies for AeroPolicy Airport, a fictional airport. Write in plain, formal English prose. Output only the policy document in Markdown, with no preamble and no closing remarks.",
+  "options": {
+    "temperature": 0.4,
+    "num_ctx": 8192,
+    "num_predict": 2048
+  },
+  "documents": [
+    {
+      "key": "bag-v2",
+      "attempts": [
+        {
+          "seed": 1,
+          "raw_sha256": "sha256:e87267b1784a14e4653c1f29837a6e9cd40304127a142414ae419046a906ae3d",
+          "ok": false,
+          "prose_words": 631,
+          "problems": [
+            "section '4. Baggage Incident Escalation' uses 'promptly' alongside the deadline"
+          ]
+        },
+        {
+          "seed": 2,
+          "raw_sha256": "sha256:4dea4ccc0ad818ff1239bde9c51cb60127d5afcfb6061deaf3a3026a84ae3e11",
+          "ok": false,
+          "prose_words": 515,
+          "problems": [
+            "515 prose words, outside 550-750",
+            "section '4. Baggage Incident Escalation' uses 'immediately' alongside the deadline"
+          ]
+        },
+        {
+          "seed": 3,
+          "raw_sha256": "sha256:939ccd416b16357bfa8e2b1cbfaf60dadd769b6fcf056b3c01321de15b5e3e6c",
+          "ok": false,
+          "prose_words": 674,
+          "problems": [
+            "section '4. Baggage Incident Escalation' uses 'immediately' alongside the deadline",
+            "section '4. Baggage Incident Escalation' uses 'promptly' alongside the deadline"
+          ]
+        },
+        {
+          "seed": 4,
+          "raw_sha256": "sha256:4b642a59a25bc1197c6a13906fd25696600403d3747b702e73fc4bf076512bcb",
+          "ok": true,
+          "prose_words": 637,
+          "problems": []
+        }
+      ]
+    },
+    {
+      "key": "inc-v1",
+      "attempts": [
+        {
+          "seed": 1,
+          "raw_sha256": "sha256:3247d556817f2681e98d75f5250724685fe4ede72ce34800a6cf9f9708ad86f6",
+          "ok": true,
+          "prose_words": 558,
+          "problems": []
+        }
+      ]
+    },
+    {
+      "key": "sec-v1",
+      "attempts": [
+        {
+          "seed": 1,
+          "raw_sha256": "sha256:7b6400afa364990e288ae0370baad37465a200388e9e8228942bf1a84b0c5cc8",
+          "ok": false,
+          "prose_words": 485,
+          "problems": [
+            "485 prose words, outside 550-750"
+          ]
+        },
+        {
+          "seed": 2,
+          "raw_sha256": "sha256:37925b2e258fe156bdcafcad61f5059213f2949d119044b0220f722030d1ce2e",
+          "ok": false,
+          "prose_words": 549,
+          "problems": [
+            "549 prose words, outside 550-750"
+          ]
+        },
+        {
+          "seed": 3,
+          "raw_sha256": "sha256:4dfd46bed398c50887fcef8a0e0770d240fff3144407afc29885ec73f840beb6",
+          "ok": false,
+          "prose_words": 535,
+          "problems": [
+            "535 prose words, outside 550-750"
+          ]
+        },
+        {
+          "seed": 4,
+          "raw_sha256": "sha256:39f69d7a72c4fe4d097e03ae0d650398221a396112fc8e5c67d164e1862c01e3",
+          "ok": false,
+          "prose_words": 515,
+          "problems": [
+            "515 prose words, outside 550-750"
+          ]
+        },
+        {
+          "seed": 5,
+          "raw_sha256": "sha256:1cf7f1531d30b35c4b48689ca6fa60173b1dda3004fb77b842c820a1ad045fa7",
+          "ok": false,
+          "prose_words": 441,
+          "problems": [
+            "441 prose words, outside 550-750"
+          ]
+        },
+        {
+          "seed": 6,
+          "raw_sha256": "sha256:83e435d39afdde96e9e26826d07fa989cf401daf6373c823f45ebf1345d74ec6",
+          "ok": false,
+          "prose_words": 428,
+          "problems": [
+            "428 prose words, outside 550-750"
+          ]
+        }
+      ]
+    }
+  ]
+}

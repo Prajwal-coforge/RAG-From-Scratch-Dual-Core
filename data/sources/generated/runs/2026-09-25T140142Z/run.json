@@ -1,0 +1,74 @@
+{
+  "run_id": "2026-09-25T140142Z",
+  "started_at": "2026-09-25T14:01:42.172812+00:00",
+  "commit": "50638d86462e1cab69553f8c6e35e09b74253503",
+  "ollama_version": "0.34.0",
+  "model": "qwen3:8b",
+  "model_blob_digest": "sha256:a3de86cd1c132c822487ededd47a324c50491393e6565cd14bafa40d0b8e686f",
+  "system_prompt": "You write internal operating policies for AeroPolicy Airport, a fictional airport. Write in plain, formal English prose. Output only the policy document in Markdown, with no preamble and no closing remarks.",
+  "options": {
+    "temperature": 0.4,
+    "num_ctx": 8192,
+    "num_predict": 2048
+  },
+  "documents": [
+    {
+      "key": "bag-v2",
+      "attempts": [
+        {
+          "seed": 1,
+          "raw_sha256": "sha256:ad020e3f2a3c32d7274c86fe2aa62f08f45d3bc63ca6aeaeb869c1e87b182027",
+          "ok": true,
+          "prose_words": 531,
+          "problems": []
+        }
+      ]
+    },
+    {
+      "key": "inc-v1",
+      "attempts": [
+        {
+          "seed": 1,
+          "raw_sha256": "sha256:c4d5a10fca2a568ea376fbe3fb04c6a3e20c139fd1ba100a57b5eebe06f02b50",
+          "ok": true,
+          "prose_words": 589,
+          "problems": []
+        }
+      ]
+    },
+    {
+      "key": "sec-v1",
+      "attempts": [
+        {
+          "seed": 1,
+          "raw_sha256": "sha256:913b37751bf01fd506b1e3f1cbead58838a1b2a909a927ed9d8a7951a39712bb",
+          "ok": true,
+          "prose_words": 510,
+          "problems": []
+        }
+      ]
+    },
+    {
+      "key": "bag-v1",
+      "attempts": [
+        {
+          "seed": 1,
+          "raw_sha256": "sha256:07f1e140191d2da078308b25e01dc5091af40d08e5db81d86806260adbe28e24",
+          "ok": false,
+          "prose_words": 482,
+          "problems": [
+            "482 prose words, outside 500-800"
+          ]
+        },
+        {
+          "seed": 2,
+          "raw_sha256": "sha256:fe1c8882c835d525f611078e044f7060b97dfb33f0f9d704091a3b543c9a8fa4",
+          "ok": true,
+          "prose_words": 500,
+          "problems": []
+        }
+      ]
+    }
+  ],
+  "finished_at": "2026-09-25T14:04:21.447116+00:00"
+}

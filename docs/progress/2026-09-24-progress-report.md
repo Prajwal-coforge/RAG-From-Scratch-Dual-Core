@@ -2,7 +2,7 @@
 
 Airport Policy RAG overhaul. This report records what is in the working tree. It is not a claim that the lab is complete, and it is not instructor approval of the stack substitution.
 
-OpenSpec change `build-airport-policy-rag` is proposed only. Milestone 0 tasks 0.1–0.6 and milestone 1 tasks 1.1–1.5 are checked. The other 42 tasks are open. Only the minimal retrieval proof (7 rubric points) has recorded evidence; its screenshot is not in a submission PDF yet. The UI has not been started. The change is not archived.
+OpenSpec change `build-airport-policy-rag` is proposed only. Milestone 0 tasks 0.1–0.6, milestone 1 tasks 1.1–1.5, and milestone 2 tasks 2.1–2.5 are checked. The other 37 tasks are open. The minimal retrieval proof (7 rubric points) and the generated documents (8 points) have recorded evidence; neither is in a submission PDF yet. The UI has not been started. The change is not archived.
 
 ## Decisions
 
@@ -10,7 +10,7 @@ The assignment suggests sentence-transformers and Chroma. This project uses loca
 
 On 2026-09-25 the data governance layer and local authentication were removed from the handoff and the OpenSpec change. The app serves one local user with no access control. Source lineage, versions, and the stale-source fixtures stay. Details are in `docs/decisions/0004-no-data-governance-layer.md`.
 
-The imported corpus is three aviation files from `DecisionsDev/policy-corpus` at commit `948dacadbe03ca4d978ea3d6ccc19131e6a92efb`. Issuers stay separate. Four generated AeroPolicy documents are still required and do not exist yet. The old company-policy PDFs were removed from `policies/`.
+The imported corpus is three aviation files from `DecisionsDev/policy-corpus` at commit `948dacadbe03ca4d978ea3d6ccc19131e6a92efb`. Issuers stay separate. The four generated AeroPolicy documents are in `data/sources/generated/`. The old company-policy PDFs were removed from `policies/`.
 
 ## What is done
 
@@ -24,7 +24,9 @@ The imported corpus is three aviation files from `DecisionsDev/policy-corpus` at
 | OpenSpec | CLI 1.13.2 initialized for Cursor. Commands are `.cursor/commands/opsx-*.md`. `openspec validate` passed for `build-airport-policy-rag`. The change is not archived. |
 | Chunking | `backend/app/chunking/`. Parent is one section. Child target is 300 EmbeddingGemma tokens, maximum 400, overlap at most 50 whole sentences. Version and section boundaries are not crossed. |
 | Two-text proof | `policy-rag smoke` at commit `cbbbd9b`. Two texts embedded by `embeddinggemma`, stored in Memgraph under their own index `smoke_text_embedding`, and each question returned its expected text first (0.6242 vs 0.1266, 0.5523 vs 0.2038). Evidence in `docs/evidence/m1/`. `chunk_embedding` stayed at size 0. |
-| Tests | 26 unit tests pass on Python 3.12.14. `pytest -m live` runs the real two-text test against Ollama and Memgraph and passed. |
+| Generated policies | `policy-rag corpus generate` at commit `622092f`, run `2026-09-25T143259Z`. AP-BAG-001 v2 (10-minute escalation), AP-INC-002 v1, AP-SEC-003 v1, and the obsolete AP-BAG-001 v1 (30-minute escalation), 599–615 prose words each. Every attempt, including rejected drafts and six earlier runs, is saved with its request and raw response. Two recorded review edits. Evidence in `docs/evidence/m2/`. |
+| Manifests | `data/manifests/` clean, duplicate, dirty-stale, and historical, write-once with `SHA256SUMS.json`. The dirty-stale fixture supplies v1 as active and omits v2; the field changes and original metadata are recorded in its `fixture` block. |
+| Tests | 59 unit tests pass on Python 3.12.14. `pytest -m live` runs the real two-text test against Ollama and Memgraph and passed. |
 | Imported sources | Three files fetched, SHA-256 checked, Apache-2.0 `LICENSE` kept under `data/sources/imported/`. |
 
 Chunking run for the imported files, using the local EmbeddingGemma vocabulary. Every section was under 400 tokens, so each section is one child.
@@ -40,11 +42,10 @@ SkyWings keeps headings such as `4 Checked Baggage Allowance`. AetherSky keeps `
 ## What is not done
 
 - Host `npm` is not installed. OpenSpec commands were generated from package 1.13.2 and committed; a global `openspec` binary is not on `PATH`. The React package lock waits until UI work.
-- The four generated AeroPolicy documents, including the obsolete duplicate, have not been created.
 - No ingestion pipeline, retrieval, evaluation harness, or CI. The reranker model is pinned and scored by doctor. It is not part of retrieval yet.
 - No UI. Frontend work stays stopped until the screen list is specified.
 - No rubric screenshots and no submission PDF.
 
 ## Next gate
 
-Milestone 2: generate the four airport policies through local Ollama with saved prompts and outputs, then chunk them with the same tokenizer. Memgraph keeps deleted nodes in a vector index created before garbage collection; ingestion and rollback must run `FREE MEMORY` after deletes, as `backend/app/smoke.py` does.
+Milestone 3: parse, chunk, and embed a selected manifest, load a Memgraph index generation, and answer with citations. The generated documents already parse into six sections each. Memgraph keeps deleted nodes in a vector index created before garbage collection; ingestion and rollback must run `FREE MEMORY` after deletes, as `backend/app/smoke.py` does.
