@@ -103,6 +103,28 @@ Live tests after the held-out run: 30 passed, 1 failed. The failure is
 `test_generated_case_passes[H-G03]`, the same answer error. It has not been
 skipped, marked as expected to fail, or fixed by tuning against the held-out case.
 
+## First live CI run
+
+[live run 36163970554](https://github.com/Prajwal-coforge/RAG-From-Scratch-Dual-Core/actions/runs/36163970554),
+on a one-time ephemeral self-hosted runner on the project owner's laptop.
+Doctor and the 113 unit tests passed; the live tests failed on H-G03 (30
+passed, 1 failed), with no skips. The runner removed itself after the job.
+
+## Held-out re-run after the H-G03 label review
+
+After the first held-out run, the project owner reviewed H-G03 and accepted
+either requirement from AP-BAG-001 section 5 (fact `stop-handling-or-isolate`).
+The suite was refrozen with that reason recorded in `FREEZE.json` history;
+the other eleven held-out labels are still not owner-reviewed. This is a
+label change made after seeing results, so the re-run below is not a clean
+held-out measurement for H-G03.
+
+`2026-09-25T171032Z-heldout-terminal.txt` and
+`2026-09-25T171032Z-heldout-evaluation.json`, recorded from commit `d730fbd`:
+case pass rate 1.00 and fact accuracy 1.00 in every mode, citation validity
+1.00, judge support 0.93 / 1.00 / 1.00 / 0.92 (vector / keyword / hybrid /
+hybrid_rerank). Live tests: 31 passed.
+
 ## Needle check
 
 `Form QX-7731 ...` planted in an isolated copy of the clean generation
