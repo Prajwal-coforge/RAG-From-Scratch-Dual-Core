@@ -49,7 +49,7 @@ Milestones 0, 1, and 2 are checked. Later milestones stay open. A checkbox requi
 - [x] 4.6 Freeze held-out labels and hashes before tuning; keep all evaluation artifacts out of ingestion.
 - [x] 4.7 Implement pytest recall, deterministic answer facts, status, and citation metrics; report a non-gating LLM-judge support score and the needle retrieval ranks per mode.
 - [x] 4.8 Run and capture a development query demonstrating hybrid improvement over vector-only.
-- [ ] 4.9 Run a real-service integration CI job; do not use skipped/mocked checks as submission evidence.
+- [x] 4.9 Run a real-service integration CI job; do not use skipped/mocked checks as submission evidence.
 
 ## 5. Graph, triage, and agents
 

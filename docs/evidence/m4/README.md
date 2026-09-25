@@ -125,6 +125,16 @@ case pass rate 1.00 and fact accuracy 1.00 in every mode, citation validity
 1.00, judge support 0.93 / 1.00 / 1.00 / 0.92 (vector / keyword / hybrid /
 hybrid_rerank). Live tests: 31 passed.
 
+## Passing live CI run
+
+[live run 36166025731](https://github.com/Prajwal-coforge/RAG-From-Scratch-Dual-Core/actions/runs/36166025731)
+on commit `202cf88`, again on a one-time ephemeral runner that removed itself
+afterwards. Every step passed: doctor, 113 unit tests, 31 live tests with
+0 skipped (checked by `scripts/check_no_skips.py`), and the dev evaluation
+with all measured targets met in every mode and needle isolation ok. The
+JUnit file and dev evaluation report are attached to the run as the
+`live-results` artifact.
+
 ## Needle check
 
 `Form QX-7731 ...` planted in an isolated copy of the clean generation
