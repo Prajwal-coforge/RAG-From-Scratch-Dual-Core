@@ -28,6 +28,18 @@ Validated on 2026-09-24.
 - Synchronized the master specification and OpenSpec design snapshot.
 - Rebuilt and checked the ZIP archive; application checks remain pending.
 
+## Data governance layer removal — 2026-09-25
+
+The project dropped the data governance layer and local authentication. The counts above describe the original package.
+
+- Removed the `governance` capability (DGS-01 to DGS-06) and RET-03 "Authorized candidate recall". 32 requirement IDs remain across 9 capability specifications.
+- Removed tasks for organization records, access policies, login and sessions, access decisions, and governance verification. 53 implementation tasks remain.
+- Removed PROJECT_SPEC.md sections 8 "DGS access model" and 9 "Authentication" and renumbered the rest. `design.md` was regenerated from PROJECT_SPEC.md.
+- Deleted `config/access-policy-examples.json` and `config/organization-seed.json`.
+- Kept source lineage, version and SUPERSEDES metadata, stale-source fixtures, and issuer separation, which the rubric's data-quality diagnosis depends on.
+- `config/model-and-retrieval-defaults.json` still parses. RUBRIC_TRACEABILITY.csv references no removed requirement.
+- `openspec validate` was not re-run: the OpenSpec CLI is not installed on the work laptop.
+
 ## Not yet performed
 
-Application implementation, source-document generation, live retrieval and model integration, authorization testing, performance evaluation, CI execution, and submission PDF creation belong to the receiving agent's implementation work. No application test results or grades are claimed by this handoff.
+Application implementation, source-document generation, live retrieval and model integration, performance evaluation, CI execution, and submission PDF creation belong to the receiving agent's implementation work. No application test results or grades are claimed by this handoff.

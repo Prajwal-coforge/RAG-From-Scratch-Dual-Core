@@ -3,7 +3,7 @@
 ## ADDED Requirements
 
 ### Requirement: ANS-01 Grounded attributed answers
-The system SHALL produce answers using authorized supplied evidence and resolvable document/section citations.
+The system SHALL produce answers using supplied evidence and resolvable document/section citations.
 
 #### Scenario: Supported answer
 - **GIVEN** evidence containing the required rule
@@ -19,20 +19,20 @@ The system SHALL report missing evidence or request clarification instead of inv
 - **THEN** the response identifies insufficient evidence and does not fabricate a rate.
 
 ### Requirement: ANS-03 Conflict visibility
-The system SHALL surface unresolved conflicting authorized sources instead of silently choosing by semantic score.
+The system SHALL surface unresolved conflicting sources instead of silently choosing by semantic score.
 
 #### Scenario: Conflicting active versions
 - **GIVEN** two applicable sources with incompatible rules and no authoritative precedence
 - **WHEN** an affected question is asked
-- **THEN** the response identifies the conflict with authorized citations.
+- **THEN** the response identifies the conflict with citations to both sources.
 
 ### Requirement: ANS-04 Source instruction isolation
-The system SHALL treat retrieved text as evidence rather than authority over tools, identity, or system behavior.
+The system SHALL treat retrieved text as evidence rather than authority over tools or system behavior.
 
 #### Scenario: Malicious policy text
-- **GIVEN** an indexed passage that requests privilege escalation
+- **GIVEN** an indexed passage that instructs the assistant to call a tool or ignore its rules
 - **WHEN** it is retrieved
-- **THEN** the request does not change permissions or invoke unapproved tools.
+- **THEN** it is treated as evidence only and no unapproved tool is invoked.
 
 ### Requirement: ANS-05 Context completeness
 The system SHALL preserve required conditions and exception context within a checked generation budget.

@@ -39,7 +39,7 @@
     "tokenizer": "pinned embedding tokenizer",
     "hard_boundaries": [
       "document_version",
-      "access_policy"
+      "parent_section"
     ],
     "reranker_pair_recheck": true
   },
@@ -54,8 +54,7 @@
     "report_k": [
       3,
       5
-    ],
-    "permission_filtered_exact_search_allowed": true
+    ]
   },
   "agents": {
     "framework": "Deep Agents",
@@ -63,15 +62,9 @@
     "max_delegation_depth": 1,
     "max_subagents": 2,
     "timeout_seconds": 120,
-    "persistent_cross_user_memory": false
+    "persistent_memory_across_runs": false
   },
-  "governance": {
-    "default_deny": true,
-    "deny_precedence": true,
-    "authoritative_principal_source": "backend",
-    "answer_cache_enabled": false,
-    "reauthorize_before_response": true
-  },
+  "data_governance_layer": false,
   "evaluation": {
     "development_cases": 12,
     "heldout_cases": 12,
@@ -79,8 +72,6 @@
     "target_candidate_recall": 0.9,
     "target_final_recall_at_5": 0.85,
     "target_fact_accuracy": 0.85,
-    "required_citation_validity": 1,
-    "required_mandatory_dgs_pass_rate": 1,
-    "max_unauthorized_disclosures": 0
+    "required_citation_validity": 1
   }
 }

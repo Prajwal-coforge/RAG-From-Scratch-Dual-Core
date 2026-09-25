@@ -14,7 +14,7 @@ The assignment in `airport-policy-rag-spec/ORIGINAL_ASSIGNMENT.txt` suggests a l
 | Answer model | an LLM API, hosted APIs allowed | Local Ollama `qwen3:8b` only. No hosted fallback |
 | Reranker | `sentence-transformers` cross-encoder | Unchanged: `cross-encoder/ms-marco-MiniLM-L6-v2` |
 | Storage architecture | not specified as a lake | No data lake, object store, warehouse, Spark, or medallion zones |
-| App shape | scripts and pytest | Python FastAPI backend, React + Vite JavaScript frontend, SQLite for identity and audit |
+| App shape | scripts and pytest | Python FastAPI backend, React + Vite JavaScript frontend, SQLite for manifests and run records. No authentication or access control (`0004-no-data-governance-layer.md`) |
 
 Chroma stays out. Cloud inference stays out. The previous repository pass (`policies/*.pdf`, `qwen3-embedding:0.6b`, ChromaDB) is the prior retrieval exercise. It is not the corpus or the index for this overhaul.
 
@@ -32,7 +32,7 @@ Imported files, kept as separate issuers:
 | `aethersky-compensation` | AetherSky Airways | `human-resources/compensation/aethersky-airways-pilot-compensation-policy.txt` |
 | `synthetic-emissions` | GAEA (fictional) | `air_transport/airplane_pollution_compliance.txt` |
 
-Hashes and raw URLs are in `airport-policy-rag-spec/config/corpus-manifest.json`. SkyWings rules do not apply to AetherSky employees. Entitlement to more than one corpus is not permission to blend them.
+Hashes and raw URLs are in `airport-policy-rag-spec/config/corpus-manifest.json`. SkyWings rules do not apply to AetherSky employees. Selecting more than one corpus is not permission to blend them.
 
 The four generated documents are still required and do not exist yet:
 

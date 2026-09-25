@@ -2,11 +2,13 @@
 
 Airport Policy RAG overhaul. This report records what is in the working tree. It is not a claim that the lab is complete, and it is not instructor approval of the stack substitution.
 
-OpenSpec change `build-airport-policy-rag` is proposed only. Milestone 0 tasks 0.1–0.6 and milestone 1 tasks 1.1–1.5 are checked. The other 46 tasks are open. Only the minimal retrieval proof (7 rubric points) has recorded evidence; its screenshot is not in a submission PDF yet. The UI has not been started. The change is not archived.
+OpenSpec change `build-airport-policy-rag` is proposed only. Milestone 0 tasks 0.1–0.6 and milestone 1 tasks 1.1–1.5 are checked. The other 42 tasks are open. Only the minimal retrieval proof (7 rubric points) has recorded evidence; its screenshot is not in a submission PDF yet. The UI has not been started. The change is not archived.
 
 ## Decisions
 
 The assignment suggests sentence-transformers and Chroma. This project uses local Ollama and Memgraph instead. There is no data lake and no hosted model. Details are in `docs/decisions/0001-stack-substitution-and-corpus.md`.
+
+On 2026-09-25 the data governance layer and local authentication were removed from the handoff and the OpenSpec change. The app serves one local user with no access control. Source lineage, versions, and the stale-source fixtures stay. Details are in `docs/decisions/0004-no-data-governance-layer.md`.
 
 The imported corpus is three aviation files from `DecisionsDev/policy-corpus` at commit `948dacadbe03ca4d978ea3d6ccc19131e6a92efb`. Issuers stay separate. Four generated AeroPolicy documents are still required and do not exist yet. The old company-policy PDFs were removed from `policies/`.
 
@@ -39,7 +41,7 @@ SkyWings keeps headings such as `4 Checked Baggage Allowance`. AetherSky keeps `
 
 - Host `npm` is not installed. OpenSpec commands were generated from package 1.13.2 and committed; a global `openspec` binary is not on `PATH`. The React package lock waits until UI work.
 - The four generated AeroPolicy documents, including the obsolete duplicate, have not been created.
-- No ingestion pipeline, DGS, authentication, retrieval, evaluation harness, or CI. The reranker model is pinned and scored by doctor. It is not part of retrieval yet.
+- No ingestion pipeline, retrieval, evaluation harness, or CI. The reranker model is pinned and scored by doctor. It is not part of retrieval yet.
 - No UI. Frontend work stays stopped until the screen list is specified.
 - No rubric screenshots and no submission PDF.
 
