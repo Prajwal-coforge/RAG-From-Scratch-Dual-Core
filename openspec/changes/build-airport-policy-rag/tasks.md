@@ -41,14 +41,14 @@ Milestones 0, 1, and 2 are checked. Later milestones stay open. A checkbox requi
 
 ## 4. Hybrid, reranking, and first evaluation
 
-- [ ] 4.1 Implement local BM25 keyword search with an exact-identifier boost, preserving identifiers, phrases, units, and negation.
-- [ ] 4.2 Implement documented rank fusion and stable chunk deduplication.
-- [ ] 4.3 Implement actual cross-encoder pair scoring and checked 512-token paired inputs.
-- [ ] 4.4 Implement parent/exception context packing and evidence-budget handling.
+- [x] 4.1 Implement local BM25 keyword search with an exact-identifier boost, preserving identifiers, phrases, units, and negation.
+- [x] 4.2 Implement documented rank fusion and stable chunk deduplication.
+- [x] 4.3 Implement actual cross-encoder pair scoring and checked 512-token paired inputs.
+- [x] 4.4 Implement parent/exception context packing and evidence-budget handling.
 - [ ] 4.5 Draft and source-review 12 development and 12 held-out questions; include at least 8 generated-corpus cases in held-out.
-- [ ] 4.6 Freeze held-out labels and hashes before tuning; keep all evaluation artifacts out of ingestion.
+- [x] 4.6 Freeze held-out labels and hashes before tuning; keep all evaluation artifacts out of ingestion.
 - [ ] 4.7 Implement pytest recall, deterministic answer facts, status, and citation metrics; report a non-gating LLM-judge support score and the needle retrieval ranks per mode.
-- [ ] 4.8 Run and capture a development query demonstrating hybrid improvement over vector-only.
+- [x] 4.8 Run and capture a development query demonstrating hybrid improvement over vector-only.
 - [ ] 4.9 Run a real-service integration CI job; do not use skipped/mocked checks as submission evidence.
 
 ## 5. Graph, triage, and agents
