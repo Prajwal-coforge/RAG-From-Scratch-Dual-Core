@@ -1,0 +1,11 @@
+{
+  "frozen_at": "2026-09-25T15:43:38.764727+00:00",
+  "reviewed_by": "Drafted by the coding agent from the source text; anchors and facts machine-checked against the sources. Project-owner review pending.",
+  "case_count": 12,
+  "generated_cases": 9,
+  "hashes": {
+    "heldout_cases": "sha256:9069c3ca1dc0e2a73146a496fce6b79700095bdcd28f788ecb1d6ce096969cd3",
+    "clauses": "sha256:23c04f497d3a6236e38f316ecd5605e9a05f3477a473235ecfdcf62f1befdf46"
+  },
+  "history": []
+}
