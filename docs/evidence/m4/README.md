@@ -1,18 +1,23 @@
 # Milestone 4 evidence: hybrid retrieval, reranking, and evaluation
 
-Recorded with `scripts/record-m4-evidence.sh dev` from commit `0a7a7bb`. The
-script refuses to run from a dirty tree.
+Recorded with `scripts/record-m4-evidence.sh dev` from commit `0a7a7bb` and
+`scripts/record-m4-evidence.sh heldout` from commit `90a4b12`. The script
+refuses to run from a dirty tree.
 
 ## Files
 
 | File | What it is |
 | --- | --- |
-| `2026-09-25T160436Z-dev-terminal.txt` | Full terminal log of the run |
+| `2026-09-25T160436Z-dev-terminal.txt` | Terminal log of the dev run |
 | `2026-09-25T160436Z-demo-<mode>.json` | `ask` report for the hybrid demonstration in each mode |
 | `2026-09-25T160436Z-dev-evaluation.json` | Dev suite report: configuration, per-mode summary, per-case outcomes, judge output, needle check |
+| `2026-09-25T161343Z-heldout-terminal.txt` | Terminal log of the held-out run and the live tests |
+| `2026-09-25T161343Z-heldout-evaluation.json` | Held-out suite report |
 
-The held-out suite has not been run yet. It waits for the project owner's
-review of the held-out labels (see `data/evaluation/heldout/FREEZE.json`).
+The held-out labels were drafted by the coding agent and machine-checked
+against the sources; they were not reviewed by the project owner before this
+run. The owner chose to run first and disclose it (`FREEZE.json`,
+`review_status`). The freeze hashes matched at run time.
 
 ## Hybrid demonstration (selected on dev data)
 
@@ -66,6 +71,35 @@ One prompt change after the first dev run: abstain with the
 `INSUFFICIENT_EVIDENCE:` line when the evidence says a value is not stated or
 points to a document that was not supplied. Before it, D-I05 (exact base pay)
 failed in every mode because the model abstained in prose without the marker.
+
+## Held-out suite results (12 cases: 9 generated, 3 imported)
+
+Run once, after dev tuning ended, with no changes afterwards.
+
+| Mode | recall@3 | recall@5 | fact accuracy | case pass rate | citation validity | judge support | p50 / p95 ms |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| vector | 1.00 | 1.00 | 0.97 | 0.92 | 1.00 | 0.93 | 3135 / 4833 |
+| keyword | 1.00 | 1.00 | 0.97 | 0.92 | 1.00 | 1.00 | 2612 / 4760 |
+| hybrid | 1.00 | 1.00 | 0.97 | 0.92 | 1.00 | 1.00 | 2638 / 6084 |
+| hybrid_rerank | 1.00 | 1.00 | 0.97 | 0.92 | 1.00 | 0.92 | 2290 / 4381 |
+
+The release targets (candidate recall ≥ 0.90, recall@5 ≥ 0.85, fact accuracy
+≥ 0.85, citation validity 100%) are met in every mode. The modes do not
+separate on this suite: its questions carry topic words, and the eligible
+pool averages 16.4 chunks.
+
+- H-G03 fails in every mode. The labelled clause says the bag "must not be
+  handled further until it is approved or removed"; every answer says instead
+  that the bag "must be isolated and secured", which comes from a neighbouring
+  passage. The two policy references are correct. This is a real answer
+  error, and the fact check is right to fail it.
+- H-G08, hybrid_rerank: the judge marked the correct "30 minutes" answer
+  unsupported because the passage does not literally say "March 2025". This
+  is a judge false negative.
+
+Live tests after the held-out run: 30 passed, 1 failed. The failure is
+`test_generated_case_passes[H-G03]`, the same answer error. It has not been
+skipped, marked as expected to fail, or fixed by tuning against the held-out case.
 
 ## Needle check
 
