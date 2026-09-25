@@ -41,9 +41,7 @@ class SentenceTransformerEmbedder:
 
     def __init__(self, model_id: str, revision: str, dimensions: int, *, model=None):
         if model is None:
-            from sentence_transformers import SentenceTransformer
-
-            model = SentenceTransformer(model_id, revision=revision)
+            model = _load_pinned(model_id, revision)
         self.model_id = model_id
         self.revision = revision
         self.dimensions = dimensions
@@ -106,6 +104,15 @@ class OllamaEmbedder:
         from app.embeddings import embed
 
         return embed(self.ollama, self.model_id, inputs, self.dimensions)
+
+
+def _load_pinned(model_id: str, revision: str):
+    from sentence_transformers import SentenceTransformer
+
+    try:
+        return SentenceTransformer(model_id, revision=revision, local_files_only=True)
+    except OSError:
+        return SentenceTransformer(model_id, revision=revision)
 
 
 @lru_cache(maxsize=2)

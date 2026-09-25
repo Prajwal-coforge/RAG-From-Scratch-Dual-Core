@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import math
 from collections.abc import Sequence
 
@@ -11,6 +12,7 @@ import httpx
 # adds a prompt, so the retrieval prefixes are applied here and nowhere else.
 DOCUMENT_FORMAT = "title: {title} | text: {text}"
 QUERY_FORMAT = "task: search result | query: {question}"
+FORMAT_VERSION = hashlib.sha256(f"{DOCUMENT_FORMAT}\n{QUERY_FORMAT}".encode()).hexdigest()[:12]
 NORM_TOLERANCE = 1e-3
 
 
