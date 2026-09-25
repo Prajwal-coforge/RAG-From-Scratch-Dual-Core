@@ -123,7 +123,7 @@ def run_agent(
         "index_generation_id": generation["id"],
     }
     try:
-        agent, found = build(model or local_model(lock, timeout_s=time_limit_s), list(tools.values()),
+        agent, found = build(model or local_model(lock, timeout_s=time_limit_s + 30), list(tools.values()),
                              system_prompt=SYSTEM_PROMPT.format(max_calls=MAX_TOOL_CALLS), subagents=subagents, budget=budget)
     except UnsafeAgent as exc:
         agent_report.update(outcome="refused_unsafe_tools", error=str(exc))
