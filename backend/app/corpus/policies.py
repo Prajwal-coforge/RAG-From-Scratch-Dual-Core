@@ -70,7 +70,8 @@ BAGGAGE_BRIEF = (
 )
 
 ESCALATION_SECTION = "4. Baggage Incident Escalation"
-# Vague timing words would compete with the only deadline in the baggage policy.
+# Vague timing words would compete with the baggage escalation deadline, including in
+# AP-INC-002, which sends baggage incidents to AP-BAG-001 section 4.
 VAGUE_TIMING = ("immediately", "promptly", "as soon as", "without delay")
 
 POLICIES = (
@@ -116,7 +117,7 @@ POLICIES = (
             "before the end of the shift in which it was reported.",
         ),
         references=("AP-BAG-001", "AP-SEC-003"),
-        forbidden=("10 minutes", "30 minutes"),
+        forbidden=("10 minutes", "30 minutes", *VAGUE_TIMING),
         effective_from="2025-01-01",
         effective_to=None,
         publication_status="active",
