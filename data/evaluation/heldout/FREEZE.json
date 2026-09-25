@@ -1,6 +1,8 @@
 {
   "frozen_at": "2026-09-25T15:43:38.764727+00:00",
   "reviewed_by": "Drafted by the coding agent from the source text; anchors and facts machine-checked against the sources. Project-owner review pending.",
+  "review_status": "not owner-reviewed",
+  "review_note": "2026-09-25: the project owner chose to run the held-out suite before reviewing the labels. Results from that run are reported as scored against agent-drafted, machine-checked labels.",
   "case_count": 12,
   "generated_cases": 9,
   "hashes": {

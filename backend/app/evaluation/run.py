@@ -232,6 +232,9 @@ def print_summary(report: dict) -> None:
         print(f"judge disagrees: {row}")
     if report["needle"]:
         print(f"needle isolation ok: {report['needle']['isolation']['ok']}")
+    if report["freeze"]:
+        freeze = report["freeze"]
+        print(f"held-out freeze {freeze['frozen_at']}: hashes match; labels {freeze.get('review_status', 'review status not recorded')}")
 
 
 def timestamp() -> str:
