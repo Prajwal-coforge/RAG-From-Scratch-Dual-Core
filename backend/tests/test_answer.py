@@ -102,8 +102,8 @@ def test_span_that_does_not_match_the_stored_text_does_not_resolve():
 
 def test_evidence_is_labelled_and_cut_to_whole_passages_within_budget():
     hits = [hit(rank=i, text="word " * 40) for i in (1, 2, 3)]
-    used, omitted, total = build_evidence(hits, Tokens(), budget=120)
-    assert [u["evidence_id"] for u in used] == [1, 2] and len(omitted) == 1 and total <= 120
+    used, omitted, total, shortfall = build_evidence(hits, Tokens(), budget=120)
+    assert [u["evidence_id"] for u in used] == [1, 2] and len(omitted) == 1 and total <= 120 and shortfall is None
     assert used[0]["block"].startswith("[1] AP-BAG-001 v2 Staff Baggage Handling and Escalation | section: 4 Escalation")
 
 

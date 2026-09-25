@@ -46,9 +46,10 @@ def main(argv: list[str] | None = None) -> int:
     index = subcommands.add_parser("index", help="Show publication pointers and generations")
     index.add_argument("action", choices=["status", "reset"])
     index.add_argument("--yes", action="store_true", help="Confirm reset: delete every generation and pointer")
-    ask = subcommands.add_parser("ask", help="Basic RAG: vector retrieval and a cited local answer")
+    ask = subcommands.add_parser("ask", help="Retrieve evidence and answer with validated citations")
     ask.add_argument("question")
     ask.add_argument("--snapshot", default="clean")
+    ask.add_argument("--mode", choices=["vector", "keyword", "hybrid", "hybrid_rerank"], default="hybrid_rerank")
     ask.add_argument("--k", type=int, default=5)
     ask.add_argument("--as-of", help="ISO date; defaults to the snapshot's as_of")
     ask.add_argument(
@@ -90,9 +91,12 @@ def run_ask(args: argparse.Namespace) -> int:
     from app.doctor import load_lock
     from app.embedder import embedder_from_lock
     from app.ingest import connect
+    from app.rerank import reranker_from_lock
     from app.retrieve import RetrievalRefused, retrieve
 
-    embedder = embedder_from_lock(load_lock())
+    lock = load_lock()
+    embedder = embedder_from_lock(lock)
+    reranker = reranker_from_lock(lock) if args.mode == "hybrid_rerank" else None
     driver, index = connect()
     try:
         with driver.session() as session:
@@ -105,6 +109,8 @@ def run_ask(args: argparse.Namespace) -> int:
                 k=args.k,
                 as_of=args.as_of,
                 include_history=args.include_history,
+                mode=args.mode,
+                reranker=reranker,
             )
     except RetrievalRefused as exc:
         print(f"refused: {exc}")
@@ -123,6 +129,20 @@ def run_ask(args: argparse.Namespace) -> int:
     return 0 if result["status"] in ("answered", "insufficient_evidence") else 1
 
 
+def format_signals(signals: dict) -> str:
+    parts = []
+    if "similarity" in signals:
+        parts.append(f"vec #{signals['vector_rank']} {signals['similarity']:.4f}")
+    if "keyword_rank" in signals:
+        terms = f" {','.join(signals['exact_terms'])}" if signals["exact_terms"] else ""
+        parts.append(f"bm25 #{signals['keyword_rank']} {signals['bm25']:.2f}+{signals['boost']:.1f}{terms}")
+    if "rrf" in signals:
+        parts.append(f"rrf {signals['rrf']:.4f}")
+    if "rerank_score" in signals:
+        parts.append(f"rerank {signals['rerank_score']:.3f} (was #{signals['rank_before_rerank']})")
+    return " | ".join(parts)
+
+
 def print_ask(retrieval: dict, result: dict) -> None:
     search = retrieval["search"]
     check = retrieval["exact_check"]
@@ -131,19 +151,23 @@ def print_ask(retrieval: dict, result: dict) -> None:
         f"snapshot {retrieval['snapshot_id']}  generation {retrieval['index_generation_id']}  as_of {retrieval['as_of']}  "
         f"mode {retrieval['mode']}  k {retrieval['k']}"
     )
-    print(f"embedder {retrieval['embedder']['model']}@{retrieval['embedder']['revision'][:12]}  query input: {retrieval['query_input']}")
+    if retrieval["query_input"]:
+        print(f"embedder {retrieval['embedder']['model']}@{retrieval['embedder']['revision'][:12]}  query input: {retrieval['query_input']}")
     print(f"search: {search['method']}; {search['eligible']} eligible of {search['generation_chunks']}, {len(search['excluded'])} excluded")
+    for stage, detail in search["stages"].items():
+        print(f"  {stage}: {detail}")
     grouped: dict[tuple[str, str], int] = {}
     for item in search["excluded"]:
         key = (item["document_version_id"], item["reason"])
         grouped[key] = grouped.get(key, 0) + 1
     for (version_id, reason), count in grouped.items():
         print(f"  excluded {count} chunk(s) of {version_id}: {reason}")
-    print(f"exact cosine check: top-k agrees {check['top_k_agrees']}, max score gap {check['max_score_gap']:.2e}")
+    if check:
+        print(f"exact cosine check: top-k agrees {check['top_k_agrees']}, max score gap {check['max_score_gap']:.2e}")
     print("retrieved:")
     for hit in retrieval["hits"]:
         print(
-            f"  [{hit['rank']}] {hit['similarity']:.4f} (exact {hit['exact_cosine']:.4f})  "
+            f"  [{hit['rank']}] {format_signals(hit['signals'])}  "
             f"{hit['document_title']} / {hit['heading_path']}  chars {hit['source_spans'][0][0]}-{hit['source_spans'][-1][1]}"
         )
     generation = result.get("generation") or {}

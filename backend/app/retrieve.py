@@ -1,8 +1,17 @@
-"""Vector retrieval over the published generation of one snapshot.
+"""Retrieval over the published generation of one snapshot, in four modes.
 
-Search goes through the Memgraph vector index. Because the index is shared by
-every generation, k is the whole index size and results are then filtered to
-the published generation, so no eligible chunk is cut off by other
+vector         Memgraph vector search, top 20 candidates
+keyword        BM25 with an exact-identifier boost, top 20 candidates
+hybrid         reciprocal rank fusion of vector top 10 and keyword top 10
+hybrid_rerank  the hybrid candidates reordered by a cross-encoder
+
+Each mode returns its candidate pool (the chunks the final stage chooses
+from, used for candidate recall) and the final top k, with every signal
+that produced the order.
+
+Vector search goes through the Memgraph vector index. Because the index is
+shared by every generation, k is the whole index size and results are then
+filtered to the generation, so no eligible chunk is cut off by other
 generations' neighbours. The stored vectors are also scored with exact
 cosine in Python as a check; both scores are reported.
 """
@@ -11,12 +20,21 @@ from __future__ import annotations
 
 import json
 import time
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from datetime import date
 
 from app.embeddings import cosine, format_query
+from app.keyword import BM25Index
 
 SCORE_AGREEMENT = 1e-4
+MODES = ("vector", "keyword", "hybrid", "hybrid_rerank")
+CANDIDATE_K = 20
+VECTOR_K = 10
+KEYWORD_K = 10
+RRF_K = 60
+FINAL_K = 5
+MAX_RERANK_CANDIDATES = 30
+LABEL = "Chunk"
 
 
 class RetrievalRefused(RuntimeError):
@@ -39,8 +57,10 @@ class Hit:
     heading_path: str
     text: str
     source_spans: list[list[int]]
-    similarity: float
-    exact_cosine: float
+    similarity: float | None
+    exact_cosine: float | None
+    signals: dict = field(default_factory=dict)
+    context: dict = field(default_factory=dict)
 
     def as_dict(self) -> dict:
         return asdict(self)
@@ -91,6 +111,273 @@ def check_compatible(generation: dict, embedder) -> None:
         )
 
 
+@dataclass
+class Pool:
+    """Every chunk of one generation, split into eligible and excluded."""
+
+    generation: dict
+    chunks: dict[str, dict]
+    eligible: list[str]
+    excluded: list[dict]
+    label: str = LABEL
+
+    @property
+    def eligible_chunks(self) -> list[dict]:
+        return [self.chunks[cid] for cid in self.eligible]
+
+
+def load_pool(session, generation: dict, as_of: str, include_history: bool, label: str = LABEL) -> Pool:
+    if not label.isidentifier():
+        raise ValueError(f"bad label {label!r}")
+    rows = session.run(f"MATCH (c:{label} {{generation_id: $g}}) RETURN properties(c) AS props", g=generation["id"]).data()
+    chunks, eligible, excluded = {}, [], []
+    for row in sorted(rows, key=lambda r: r["props"]["chunk_id"]):
+        props = dict(row["props"])
+        props["source_spans"] = json.loads(props["source_spans"])
+        chunks[props["chunk_id"]] = props
+        reason = eligibility(props, as_of, include_history)
+        if reason:
+            excluded.append({"chunk_id": props["chunk_id"], "document_version_id": props["document_version_id"], "reason": reason})
+        else:
+            eligible.append(props["chunk_id"])
+    if len(chunks) != generation["chunk_count"]:
+        raise RetrievalRefused(f"generation {generation['id']} has {len(chunks)} of {generation['chunk_count']} chunks")
+    return Pool(generation, chunks, eligible, excluded, label)
+
+
+def vector_ranking(session, index: str, pool: Pool, query_vector: list[float]) -> tuple[list[dict], dict]:
+    """Rank every eligible chunk by index similarity, with exact cosine alongside."""
+    info = session.run("CALL vector_search.show_index_info() YIELD * RETURN *").data()
+    size = next(int(row["size"]) for row in info if row["index_name"] == index)
+    rows = session.run(
+        "CALL vector_search.search($index, $k, $v) YIELD node, similarity "
+        "WHERE node.generation_id = $g "
+        "RETURN node.chunk_id AS chunk_id, similarity ORDER BY similarity DESC",
+        index=index,
+        k=size,
+        v=query_vector,
+        g=pool.generation["id"],
+    ).data()
+    if len(rows) != pool.generation["chunk_count"]:
+        raise RetrievalRefused(
+            f"vector index returned {len(rows)} of {pool.generation['chunk_count']} chunks for {pool.generation['id']}"
+        )
+    eligible = set(pool.eligible)
+    ranking = [
+        {
+            "chunk_id": row["chunk_id"],
+            "similarity": float(row["similarity"]),
+            "exact_cosine": cosine(query_vector, pool.chunks[row["chunk_id"]]["embedding"]),
+        }
+        for row in rows
+        if row["chunk_id"] in eligible
+    ]
+    for rank, item in enumerate(ranking, start=1):
+        item["rank"] = rank
+    search = {"method": f"Memgraph vector_search.search on {index}, k = index size {size}, filtered to the generation"}
+    return ranking, search
+
+
+def exact_check(ranking: list[dict], k: int) -> dict:
+    by_index = [r["chunk_id"] for r in ranking]
+    by_exact = [r["chunk_id"] for r in sorted(ranking, key=lambda r: r["exact_cosine"], reverse=True)]
+    gap = max((abs(r["similarity"] - r["exact_cosine"]) for r in ranking), default=0.0)
+    return {"top_k_agrees": by_index[:k] == by_exact[:k], "max_score_gap": gap, "scores_agree": gap <= SCORE_AGREEMENT}
+
+
+def rrf_fuse(vector: list[dict], keyword: list[dict], k: int = RRF_K) -> list[dict]:
+    """Reciprocal rank fusion: score = sum of 1 / (k + rank) over the lists a chunk appears in."""
+    fused: dict[str, dict] = {}
+    for signal, results in (("vector", vector), ("keyword", keyword)):
+        for result in results:
+            entry = fused.setdefault(result["chunk_id"], {"chunk_id": result["chunk_id"], "rrf": 0.0, "rrf_parts": {}})
+            part = 1.0 / (k + result["rank"])
+            entry["rrf_parts"][signal] = part
+            entry["rrf"] += part
+    ordered = sorted(fused.values(), key=lambda e: (-e["rrf"], e["chunk_id"]))
+    for rank, entry in enumerate(ordered, start=1):
+        entry["rank"] = rank
+    return ordered
+
+
+def rank_candidates(
+    pool: Pool,
+    question: str,
+    mode: str,
+    *,
+    vector: list[dict] | None,
+    reranker=None,
+) -> tuple[list[dict], dict]:
+    """Return the candidate pool in final order, each with its signals, and stage details."""
+    if mode not in MODES:
+        raise ValueError(f"unknown mode {mode!r}; choose from {MODES}")
+    vector_by_id = {r["chunk_id"]: r for r in vector or []}
+    keyword: list[dict] = []
+    if mode != "vector":
+        keyword = BM25Index(pool.eligible_chunks).search(question, CANDIDATE_K)
+    keyword_by_id = {r["chunk_id"]: r for r in keyword}
+
+    stages: dict = {}
+    if mode == "vector":
+        order = [r["chunk_id"] for r in (vector or [])[:CANDIDATE_K]]
+    elif mode == "keyword":
+        order = [r["chunk_id"] for r in keyword]
+    else:
+        fused = rrf_fuse((vector or [])[:VECTOR_K], keyword[:KEYWORD_K])
+        fused_by_id = {e["chunk_id"]: e for e in fused}
+        order = [e["chunk_id"] for e in fused][:MAX_RERANK_CANDIDATES]
+        stages["rrf"] = {"k": RRF_K, "vector_k": VECTOR_K, "keyword_k": KEYWORD_K, "fused": len(fused)}
+
+    rerank_by_id: dict[str, dict] = {}
+    if mode == "hybrid_rerank":
+        if reranker is None:
+            raise RetrievalRefused("hybrid_rerank needs the pinned reranker")
+        started = time.perf_counter()
+        records = reranker.score(question, [pool.chunks[cid] for cid in order])
+        rerank_by_id = {r["chunk_id"]: r for r in records}
+        order = [r["chunk_id"] for r in records]
+        stages["rerank"] = {
+            **reranker.identity,
+            "candidates": len(records),
+            "windowed": sum(1 for r in records if r["windows"] > 1),
+            "timing_ms": round((time.perf_counter() - started) * 1000, 1),
+            "score_meaning": "raw cross-encoder relevance logit; orders passages, not a probability",
+        }
+
+    candidates = []
+    for rank, cid in enumerate(order, start=1):
+        signals: dict = {"final_rank": rank}
+        if cid in vector_by_id:
+            v = vector_by_id[cid]
+            signals.update(vector_rank=v["rank"], similarity=v["similarity"], exact_cosine=v["exact_cosine"])
+        if cid in keyword_by_id:
+            kw = keyword_by_id[cid]
+            signals.update(
+                keyword_rank=kw["rank"], bm25=kw["bm25"], boost=kw["boost"], exact_terms=kw["exact_terms"], keyword_score=kw["score"]
+            )
+        if mode in ("hybrid", "hybrid_rerank"):
+            entry = fused_by_id[cid]
+            signals.update(rrf=entry["rrf"], rrf_parts=entry["rrf_parts"], rrf_rank=entry["rank"])
+        if cid in rerank_by_id:
+            r = rerank_by_id[cid]
+            signals.update(
+                rerank_score=r["rerank_score"], rank_before_rerank=r["rank_before"], rerank_windows=r["windows"], pair_tokens=r["pair_tokens"]
+            )
+        candidates.append({"chunk_id": cid, "signals": signals})
+    return candidates, stages
+
+
+def linked_context(pool: Pool, chunk_id: str) -> dict:
+    """Chunks that must travel with a hit, and the rest of its parent section.
+
+    Mandatory: the other parts of a split passage, and the exception passage a
+    rule refers to. The chunker records an exception reference before the
+    exception's own chunk is complete, so a reference that names no chunk is
+    resolved to the next part of the same section, where that exception starts.
+    """
+    chunk = pool.chunks[chunk_id]
+    siblings = sorted(
+        (c for c in pool.chunks.values() if c["section_id"] == chunk["section_id"] and c["chunk_id"] != chunk_id),
+        key=lambda c: (c["source_start"], c["chunk_id"]),
+    )
+    mandatory: list[str] = []
+    root = chunk.get("continuation_of") or chunk_id
+    for sibling in siblings:
+        if sibling["chunk_id"] == root or sibling.get("continuation_of") == root:
+            mandatory.append(sibling["chunk_id"])
+    for ref in chunk.get("exception_refs") or []:
+        if ref in pool.chunks:
+            target = ref
+        else:
+            later = [s for s in siblings if s["source_start"] > chunk["source_start"]]
+            target = later[0]["chunk_id"] if later else None
+        if target and target not in mandatory:
+            mandatory.append(target)
+    parent = [s["chunk_id"] for s in siblings if s["chunk_id"] not in mandatory]
+    return {"mandatory": mandatory, "parent": parent}
+
+
+def to_hit(pool: Pool, rank: int, candidate: dict) -> Hit:
+    props = pool.chunks[candidate["chunk_id"]]
+    signals = candidate["signals"]
+    return Hit(
+        rank=rank,
+        chunk_id=props["chunk_id"],
+        document_version_id=props["document_version_id"],
+        document_title=props["document_title"],
+        corpus_id=props["corpus_id"],
+        policy_id=props["policy_id"],
+        version=props["version"],
+        publication_status=props.get("publication_status"),
+        effective_from=props.get("effective_from"),
+        effective_to=props.get("effective_to"),
+        section_id=props["section_id"],
+        heading_path=props["heading_path"],
+        text=props["text"],
+        source_spans=props["source_spans"],
+        similarity=signals.get("similarity"),
+        exact_cosine=signals.get("exact_cosine"),
+        signals=signals,
+        context=linked_context(pool, props["chunk_id"]),
+    )
+
+
+def context_chunks(pool: Pool, hits: list[Hit]) -> dict[str, dict]:
+    """The linked chunks the answer stage may need, keyed by chunk id, without embeddings."""
+    wanted = {cid for hit in hits for cid in hit.context["mandatory"] + hit.context["parent"]}
+    fields = ("chunk_id", "document_version_id", "document_title", "corpus_id", "policy_id", "version",
+              "publication_status", "effective_from", "effective_to", "section_id", "heading_path", "text", "source_spans")
+    return {cid: {f: pool.chunks[cid].get(f) for f in fields} for cid in sorted(wanted)}
+
+
+def search_pool(
+    session,
+    index: str,
+    pool: Pool,
+    embedder,
+    question: str,
+    *,
+    mode: str = "vector",
+    k: int = FINAL_K,
+    reranker=None,
+) -> dict:
+    """Run one mode over a loaded pool. Shared by ask, evaluation, and the needle check."""
+    if mode not in MODES:
+        raise ValueError(f"unknown mode {mode!r}; choose from {MODES}")
+    timing: dict[str, float] = {}
+    vector, search, check, query_input = None, None, None, None
+    if mode != "keyword":
+        started = time.perf_counter()
+        query_input = format_query(question)
+        query_vector = embedder.embed([query_input])[0]
+        timing["embed_ms"] = round((time.perf_counter() - started) * 1000, 1)
+        started = time.perf_counter()
+        vector, search = vector_ranking(session, index, pool, query_vector)
+        timing["vector_ms"] = round((time.perf_counter() - started) * 1000, 1)
+        check = exact_check(vector, k)
+    started = time.perf_counter()
+    candidates, stages = rank_candidates(pool, question, mode, vector=vector, reranker=reranker)
+    timing["rank_ms"] = round((time.perf_counter() - started) * 1000, 1)
+    hits = [to_hit(pool, rank, c) for rank, c in enumerate(candidates[:k], start=1)]
+    return {
+        "mode": mode,
+        "query_input": query_input,
+        "k": k,
+        "search": {
+            **(search or {"method": "BM25 over the eligible chunks of the generation"}),
+            "generation_chunks": len(pool.chunks),
+            "eligible": len(pool.eligible),
+            "excluded": pool.excluded,
+            "stages": stages,
+        },
+        "exact_check": check,
+        "candidates": candidates,
+        "hits": [hit.as_dict() for hit in hits],
+        "context_chunks": context_chunks(pool, hits),
+        "stage_timing_ms": timing,
+    }
+
+
 def retrieve(
     session,
     index: str,
@@ -98,90 +385,27 @@ def retrieve(
     question: str,
     snapshot_id: str,
     *,
-    k: int = 5,
+    k: int = FINAL_K,
     as_of: str | None = None,
     include_history: bool = False,
+    mode: str = "vector",
+    reranker=None,
 ) -> dict:
     started = time.perf_counter()
     generation = published_generation(session, snapshot_id)
     check_compatible(generation, embedder)
     as_of = as_of or generation["as_of"]
     date.fromisoformat(as_of)
-    query_input = format_query(question)
-    query_vector = embedder.embed([query_input])[0]
-
-    info = session.run("CALL vector_search.show_index_info() YIELD * RETURN *").data()
-    size = next(int(row["size"]) for row in info if row["index_name"] == index)
-    rows = session.run(
-        "CALL vector_search.search($index, $k, $v) YIELD node, similarity "
-        "WHERE node.generation_id = $g "
-        "RETURN properties(node) AS props, similarity ORDER BY similarity DESC",
-        index=index,
-        k=size,
-        v=query_vector,
-        g=generation["id"],
-    ).data()
-    if len(rows) != generation["chunk_count"]:
-        raise RetrievalRefused(
-            f"vector index returned {len(rows)} of {generation['chunk_count']} chunks for {generation['id']}"
-        )
-
-    eligible, excluded = [], []
-    for row in rows:
-        props = row["props"]
-        reason = eligibility(props, as_of, include_history)
-        exact = cosine(query_vector, props["embedding"])
-        if reason:
-            excluded.append({"chunk_id": props["chunk_id"], "document_version_id": props["document_version_id"], "reason": reason})
-            continue
-        eligible.append((props, float(row["similarity"]), exact))
-
-    by_index = [p["chunk_id"] for p, _s, _e in eligible]
-    by_exact = [p["chunk_id"] for p, _s, _e in sorted(eligible, key=lambda item: item[2], reverse=True)]
-    max_score_gap = max((abs(s - e) for _p, s, e in eligible), default=0.0)
-    hits = [
-        Hit(
-            rank=rank,
-            chunk_id=props["chunk_id"],
-            document_version_id=props["document_version_id"],
-            document_title=props["document_title"],
-            corpus_id=props["corpus_id"],
-            policy_id=props["policy_id"],
-            version=props["version"],
-            publication_status=props.get("publication_status"),
-            effective_from=props.get("effective_from"),
-            effective_to=props.get("effective_to"),
-            section_id=props["section_id"],
-            heading_path=props["heading_path"],
-            text=props["text"],
-            source_spans=json.loads(props["source_spans"]),
-            similarity=similarity,
-            exact_cosine=exact,
-        )
-        for rank, (props, similarity, exact) in enumerate(eligible[:k], start=1)
-    ]
+    pool = load_pool(session, generation, as_of, include_history)
+    result = search_pool(session, index, pool, embedder, question, mode=mode, k=k, reranker=reranker)
     return {
-        "mode": "vector",
+        **result,
         "snapshot_id": snapshot_id,
         "corpus_id": generation["corpus_id"],
         "index_generation_id": generation["id"],
         "as_of": as_of,
         "include_history": include_history,
         "question": question,
-        "query_input": query_input,
         "embedder": embedder.identity,
-        "k": k,
-        "search": {
-            "method": f"Memgraph vector_search.search on {index}, k = index size {size}, filtered to the generation",
-            "generation_chunks": len(rows),
-            "eligible": len(eligible),
-            "excluded": excluded,
-        },
-        "exact_check": {
-            "top_k_agrees": by_index[:k] == by_exact[:k],
-            "max_score_gap": max_score_gap,
-            "scores_agree": max_score_gap <= SCORE_AGREEMENT,
-        },
-        "hits": [hit.as_dict() for hit in hits],
         "timing_ms": round((time.perf_counter() - started) * 1000, 1),
     }

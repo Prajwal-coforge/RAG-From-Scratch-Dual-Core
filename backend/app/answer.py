@@ -1,4 +1,4 @@
-"""Basic RAG: vector evidence, local generation, and validated citations.
+"""Grounded answers: packed evidence, local generation, and validated citations.
 
 The model sees numbered passages and must cite them as [n]. Every cited
 number is checked against the passages actually supplied, and every
@@ -49,18 +49,71 @@ def evidence_header(n: int, hit: dict) -> str:
     )
 
 
-def build_evidence(hits: list[dict], tokenizer, budget: int = EVIDENCE_BUDGET_TOKENS) -> tuple[list[dict], list[dict], int]:
-    """Keep whole passages in rank order while they fit the budget."""
-    used, omitted, total = [], [], 0
-    for hit in hits:
-        block = f"{evidence_header(len(used) + 1, hit)}\n{hit['text'].strip()}"
-        tokens = tokenizer.count(block)
-        if total + tokens > budget:
-            omitted.append({"chunk_id": hit["chunk_id"], "tokens": tokens})
+def build_evidence(
+    hits: list[dict],
+    tokenizer,
+    budget: int = EVIDENCE_BUDGET_TOKENS,
+    context: dict[str, dict] | None = None,
+) -> tuple[list[dict], list[dict], int, str | None]:
+    """Pack whole passages in rank order, each with its mandatory linked context.
+
+    A hit and its mandatory context (other parts of a split passage, the
+    exception it refers to) go in together or not at all. Remaining parent
+    section passages are added afterwards while the budget allows. If the top
+    hit cannot fit with its mandatory context, the fourth value says why and
+    no answer should be generated from partial evidence.
+    """
+    context = context or {}
+    used: list[dict] = []
+    omitted: list[dict] = []
+    placed: set[str] = set()
+    total = 0
+    shortfall = None
+
+    def blocks_for(items: list[dict]) -> list[tuple[dict, str, int]]:
+        out = []
+        for offset, item in enumerate(items):
+            block = f"{evidence_header(len(used) + 1 + offset, item)}\n{item['text'].strip()}"
+            out.append((item, block, tokenizer.count(block)))
+        return out
+
+    for position, hit in enumerate(hits):
+        if hit["chunk_id"] in placed:
             continue
-        used.append({**hit, "evidence_id": len(used) + 1, "block": block, "tokens": tokens})
+        links = hit.get("context") or {}
+        mandatory_ids = [cid for cid in links.get("mandatory", []) if cid not in placed]
+        missing = [cid for cid in mandatory_ids if cid not in context]
+        group = [hit] + [context[cid] for cid in mandatory_ids if cid in context]
+        blocks = blocks_for(group)
+        tokens = sum(t for _i, _b, t in blocks)
+        if missing or total + tokens > budget:
+            reason = f"linked context {missing} is not available" if missing else "passage and its mandatory context exceed the budget"
+            omitted.append({"chunk_id": hit["chunk_id"], "tokens": tokens, "reason": reason})
+            if position == 0:
+                shortfall = f"the top passage {hit['chunk_id']} cannot be used whole: {reason}"
+            continue
+        for index, (item, block, item_tokens) in enumerate(blocks):
+            role = "retrieved" if index == 0 else "mandatory_context"
+            used.append(
+                {**item, "evidence_id": len(used) + 1, "block": block, "tokens": item_tokens, "role": role,
+                 "linked_to": None if index == 0 else hit["chunk_id"]}
+            )
+            placed.add(item["chunk_id"])
         total += tokens
-    return used, omitted, total
+
+    for hit in [item for item in used if item["role"] == "retrieved"]:
+        for cid in (hit.get("context") or {}).get("parent", []):
+            if cid in placed or cid not in context:
+                continue
+            [(item, block, tokens)] = blocks_for([context[cid]])
+            if total + tokens > budget:
+                omitted.append({"chunk_id": cid, "tokens": tokens, "reason": f"parent context of {hit['chunk_id']} over budget"})
+                continue
+            used.append({**item, "evidence_id": len(used) + 1, "block": block, "tokens": tokens, "role": "parent_context",
+                         "linked_to": hit["chunk_id"]})
+            placed.add(cid)
+            total += tokens
+    return used, omitted, total, shortfall
 
 
 def user_message(question: str, evidence: list[dict]) -> str:
@@ -121,7 +174,9 @@ def answer_question(
     started = time.perf_counter()
     lock = load_lock()
     question = retrieval["question"]
-    evidence, omitted, evidence_tokens = build_evidence(retrieval["hits"], tokenizer)
+    evidence, omitted, evidence_tokens, shortfall = build_evidence(
+        retrieval["hits"], tokenizer, context=retrieval.get("context_chunks")
+    )
     request_id = f"req-{uuid.uuid4().hex[:12]}"
     base = {
         "request_id": request_id,
@@ -140,11 +195,15 @@ def answer_question(
             "omitted": omitted,
         },
     }
-    if not evidence:
+    if not evidence or shortfall:
         return {
             **base,
             "status": "insufficient_evidence",
-            "answer": "No eligible evidence was retrieved for this question.",
+            "answer": (
+                f"The evidence cannot be used completely ({shortfall}); ask a narrower question."
+                if shortfall
+                else "No eligible evidence was retrieved for this question."
+            ),
             "claims": [],
             "citations": [],
             "generation": None,
@@ -213,7 +272,10 @@ def answer_question(
         "claims": claims,
         "citations": citations,
         "evidence": [
-            {k: item[k] for k in ("evidence_id", "chunk_id", "document_title", "heading_path", "similarity", "tokens")}
+            {
+                **{k: item.get(k) for k in ("evidence_id", "chunk_id", "document_title", "heading_path", "role", "linked_to", "tokens")},
+                "signals": item.get("signals", {}),
+            }
             for item in evidence
         ],
         "generation": generation,
