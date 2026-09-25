@@ -64,6 +64,13 @@ def main(argv: list[str] | None = None) -> int:
     )
     ask.add_argument("--json", action="store_true", help="Print the full JSON report")
     ask.add_argument("--evidence", type=Path, help="Write the JSON report to this path")
+    agent = subcommands.add_parser("agent", help="Answer with the bounded local Deep Agents mode")
+    agent.add_argument("question")
+    agent.add_argument("--snapshot", help="Policy context; default: chosen by triage")
+    agent.add_argument("--as-of", help="ISO date; defaults to the snapshot's as_of")
+    agent.add_argument("--include-history", action="store_true")
+    agent.add_argument("--json", action="store_true", help="Print the full JSON report")
+    agent.add_argument("--evidence", type=Path, help="Write the JSON report to this path")
     evaluate = subcommands.add_parser("evaluate", help="Run an evaluation suite across retrieval modes")
     evaluate.add_argument("--suite", choices=["dev", "heldout"], required=True)
     evaluate.add_argument("--modes", default="vector,keyword,hybrid,hybrid_rerank,graph_rerank", help="Comma-separated retrieval modes")
@@ -77,6 +84,8 @@ def main(argv: list[str] | None = None) -> int:
         return run_evaluate(args)
     if args.command == "ask":
         return run_ask(args)
+    if args.command == "agent":
+        return run_agent_command(args)
     if args.command == "corpus":
         return run_corpus(args)
     if args.command in ("ingest", "rollback", "index"):
@@ -179,6 +188,55 @@ def run_ask(args: argparse.Namespace) -> int:
             for follow_up in result["follow_up_questions"]:
                 print(f"  follow-up: {follow_up}")
     return 0 if result["status"] in ("answered", "insufficient_evidence", "needs_clarification") else 1
+
+
+def run_agent_command(args: argparse.Namespace) -> int:
+    from app.agent.run import run_agent
+    from app.doctor import load_lock
+    from app.embedder import embedder_from_lock
+    from app.ingest import connect
+    from app.rerank import reranker_from_lock
+    from app.retrieve import RetrievalRefused
+
+    lock = load_lock()
+    embedder = embedder_from_lock(lock)
+    driver, index = connect()
+    try:
+        with driver.session() as session:
+            report = run_agent(session, index, embedder, reranker_from_lock(lock), args.question, snapshot_id=args.snapshot,
+                               as_of=args.as_of, include_history=args.include_history)
+    except RetrievalRefused as exc:
+        print(f"refused: {exc}")
+        return 4
+    finally:
+        driver.close()
+    if args.evidence:
+        args.evidence.parent.mkdir(parents=True, exist_ok=True)
+        args.evidence.write_text(json.dumps(report, indent=2, default=str) + "\n")
+    if args.json:
+        print(json.dumps(report, indent=2, default=str))
+        return 0
+    print_triage(report["triage"])
+    agent = report["agent"]
+    if agent:
+        print(f"agent: {agent['framework']} with {agent['model']['provider']}:{agent['model']['name']}; budgets {agent['budgets']}")
+        print(f"  tool inventory: {agent.get('tool_inventory')}")
+        print(f"  outcome {agent['outcome']} in {agent.get('elapsed_s')} s{'; ' + agent['error'] if agent.get('error') else ''}")
+        for call in agent.get("tool_calls", []):
+            print(f"  call [{call['scope']}] {call['tool']}({json.dumps(call['args'])}) {call.get('outcome')} {call.get('duration_ms')} ms")
+        for refused in agent.get("refused_calls", []):
+            print(f"  refused [{refused['scope']}] {refused['tool']}: {refused['reason']}")
+        for path in agent.get("graph_paths", []):
+            target = path.get("target_policy_id") or path.get("target_name")
+            print(f"  path {path['from_section_id']} -{path['edge']}-> {target} ({path['validation_status']})")
+        print(f"  evidence chunks: {len(agent.get('evidence_chunk_ids', []))}")
+    answer = report["answer"]
+    print(f"status: {answer['status']}\nanswer:\n  {answer['answer']}")
+    for follow_up in answer.get("follow_up_questions", []):
+        print(f"  follow-up: {follow_up}")
+    for cite in answer.get("citations", []):
+        print(f"  [{cite['citation_id']}] {cite['document_title']} / {cite['section_path']}  resolved {cite['resolved']}")
+    return 0 if answer["status"] != "unavailable" else 1
 
 
 def print_triage(decision: dict) -> None:

@@ -8,7 +8,9 @@ version = "0.1.0"
 description = "Local airport and airline policy RAG lab"
 requires-python = ">=3.11"
 dependencies = [
+  "deepagents>=0.7.19",
   "httpx",
+  "langchain-ollama>=1.1.0",
   "neo4j",
   "sentence-transformers",
 ]
