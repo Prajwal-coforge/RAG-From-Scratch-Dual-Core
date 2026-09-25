@@ -1,0 +1,209 @@
+milestone 4 evidence (dev)  2026-09-25T160436Z
+commit 0a7a7bb18e3990a8a0d7cac048e3e7d21abe51aa
+
+$ uv run policy-rag index status
+vector index chunk_embedding size 137
+publications:
+  clean                            current gen-3f19662fa38e2eef  previous gen-beb2806e139e8843
+  dirty-stale                      current gen-0d851c0e480a7263  previous None
+  duplicate                        current gen-f47ae6fde192fb67  previous None
+  historical                       current gen-969426f1fd3a1262  previous None
+  imported:aethersky-compensation  current gen-f9683437166aedf9  previous None
+  imported:skywings-baggage        current gen-ab2b8d1d461c530f  previous None
+  imported:synthetic-emissions     current gen-6b929fe8c80e702a  previous None
+generations:
+  gen-f47ae6fde192fb67  duplicate                        published profile ordinary   chunks 24/24
+  gen-969426f1fd3a1262  historical                       published profile ordinary   chunks 24/24
+  gen-ab2b8d1d461c530f  imported:skywings-baggage        published profile ordinary   chunks 16/16
+  gen-f9683437166aedf9  imported:aethersky-compensation  published profile ordinary   chunks 10/10
+  gen-6b929fe8c80e702a  imported:synthetic-emissions     published profile ordinary   chunks 9/9
+  gen-0d851c0e480a7263  dirty-stale                      published profile evaluation chunks 18/18
+  gen-dd2b3cd2187de29e  clean                            retired   profile ordinary   chunks 0/18
+  gen-beb2806e139e8843  clean                            previous  profile ordinary   chunks 18/18
+  gen-3f19662fa38e2eef  clean                            published profile ordinary   chunks 18/18
+[exit 0]
+
+$ uv run policy-rag ask What does AP-SEC-003 section 2 say? --snapshot clean --mode vector --evidence docs/evidence/m4/2026-09-25T160436Z-demo-vector.json
+question: What does AP-SEC-003 section 2 say?
+snapshot clean  generation gen-3f19662fa38e2eef  as_of 2025-08-01  mode vector  k 5
+embedder google/embeddinggemma-300m@57c266a740f5  query input: task: search result | query: What does AP-SEC-003 section 2 say?
+search: Memgraph vector_search.search on chunk_embedding, k = index size 137, filtered to the generation; 18 eligible of 18, 0 excluded
+exact cosine check: top-k agrees True, max score gap 1.29e-07
+retrieved:
+  [1] vec #1 0.5452  AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals / 1 Purpose and Scope  chars 86-805
+  [2] vec #2 0.5161  AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals / 6 Records and Review  chars 3624-4315
+  [3] vec #3 0.5138  AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals / 5 Restricted Items Found in Baggage  chars 2917-3597
+  [4] vec #4 0.4900  AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals / 4 Approval Procedure for Restricted Items  chars 2204-2875
+  [5] vec #5 0.4893  AP-BAG-001 v2 Staff Baggage Handling and Escalation / 5 Restricted Items Found in Baggage  chars 2917-3643
+generation: qwen3:8b sha256:a3de86cd1c13 options {'temperature': 0, 'seed': 7, 'num_ctx': 8192, 'num_predict': 1024} think false
+status: insufficient_evidence
+answer:
+  The evidence does not contain information about AP-SEC-003 section 2. INSUFFICIENT_EVIDENCE: section 2 content is not provided in the given passages.
+citations:
+timing: retrieval 1088.0 ms, answer 1690.4 ms
+[exit 0]
+
+$ uv run policy-rag ask What does AP-SEC-003 section 2 say? --snapshot clean --mode keyword --evidence docs/evidence/m4/2026-09-25T160436Z-demo-keyword.json
+question: What does AP-SEC-003 section 2 say?
+snapshot clean  generation gen-3f19662fa38e2eef  as_of 2025-08-01  mode keyword  k 5
+search: BM25 over the eligible chunks of the generation; 18 eligible of 18, 0 excluded
+retrieved:
+  [1] bm25 #1 2.53+4.0 ap-sec-003,§2  AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals / 2 Staff Access Zones  chars 832-1507
+  [2] bm25 #2 1.72+2.0 §2  AP-INC-002 v1 Operational Incident Response and Review / 2 Incident Categories  chars 819-1518
+  [3] bm25 #3 1.69+2.0 §2  AP-BAG-001 v2 Staff Baggage Handling and Escalation / 2 Roles and Responsibilities  chars 741-1435
+  [4] bm25 #4 0.84+2.0 ap-sec-003  AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals / 3 Restricted Items  chars 1532-2156
+  [5] bm25 #5 0.82+2.0 ap-sec-003  AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals / 6 Records and Review  chars 3624-4315
+generation: qwen3:8b sha256:a3de86cd1c13 options {'temperature': 0, 'seed': 7, 'num_ctx': 8192, 'num_predict': 1024} think false
+status: answered
+answer:
+  AP-SEC-003 section 2 states that staff access to airport areas is restricted to designated zones based on job responsibilities and security clearance. Landside areas are accessible to all staff with valid credentials, while airside areas require additional authorization and security clearance. The baggage make-up area is restricted to authorized personnel only. Access to these zones is monitored and controlled to ensure the safety and security of the airport environment [1].
+citations:
+  [1] AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals / 2 Staff Access Zones  data/sources/generated/AP-SEC-003-v1.md chars 832-1507  resolved True
+      "Staff access to airport areas is restricted to designated zones based on job responsibilities and security clearance. Landside areas are accessible to all staff with valid credentials, while airside areas require additional authorization an…"
+timing: retrieval 44.1 ms, answer 3709.6 ms
+[exit 0]
+
+$ uv run policy-rag ask What does AP-SEC-003 section 2 say? --snapshot clean --mode hybrid --evidence docs/evidence/m4/2026-09-25T160436Z-demo-hybrid.json
+question: What does AP-SEC-003 section 2 say?
+snapshot clean  generation gen-3f19662fa38e2eef  as_of 2025-08-01  mode hybrid  k 5
+embedder google/embeddinggemma-300m@57c266a740f5  query input: task: search result | query: What does AP-SEC-003 section 2 say?
+search: Memgraph vector_search.search on chunk_embedding, k = index size 137, filtered to the generation; 18 eligible of 18, 0 excluded
+  rrf: {'k': 60, 'vector_k': 10, 'keyword_k': 10, 'fused': 12}
+exact cosine check: top-k agrees True, max score gap 1.29e-07
+retrieved:
+  [1] vec #2 0.5161 | bm25 #5 0.82+2.0 ap-sec-003 | rrf 0.0315  AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals / 6 Records and Review  chars 3624-4315
+  [2] vec #7 0.4734 | bm25 #1 2.53+4.0 ap-sec-003,§2 | rrf 0.0313  AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals / 2 Staff Access Zones  chars 832-1507
+  [3] vec #1 0.5452 | bm25 #8 0.79+2.0 ap-sec-003 | rrf 0.0311  AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals / 1 Purpose and Scope  chars 86-805
+  [4] vec #3 0.5138 | bm25 #7 0.79+2.0 ap-sec-003 | rrf 0.0308  AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals / 5 Restricted Items Found in Baggage  chars 2917-3597
+  [5] vec #6 0.4802 | bm25 #4 0.84+2.0 ap-sec-003 | rrf 0.0308  AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals / 3 Restricted Items  chars 1532-2156
+generation: qwen3:8b sha256:a3de86cd1c13 options {'temperature': 0, 'seed': 7, 'num_ctx': 8192, 'num_predict': 1024} think false
+status: answered
+answer:
+  AP-SEC-003 section 2 outlines that staff access to airport areas is restricted to designated zones based on job responsibilities and security clearance. Landside areas are accessible to all staff with valid credentials, while airside areas require additional authorization and security clearance. The baggage make-up area is restricted to authorized personnel only. Access to these zones is monitored and controlled to ensure the safety and security of the airport environment [2].
+citations:
+  [2] AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals / 2 Staff Access Zones  data/sources/generated/AP-SEC-003-v1.md chars 832-1507  resolved True
+      "Staff access to airport areas is restricted to designated zones based on job responsibilities and security clearance. Landside areas are accessible to all staff with valid credentials, while airside areas require additional authorization an…"
+timing: retrieval 215.3 ms, answer 3704.9 ms
+[exit 0]
+
+$ uv run policy-rag ask What does AP-SEC-003 section 2 say? --snapshot clean --mode hybrid_rerank --evidence docs/evidence/m4/2026-09-25T160436Z-demo-hybrid_rerank.json
+question: What does AP-SEC-003 section 2 say?
+snapshot clean  generation gen-3f19662fa38e2eef  as_of 2025-08-01  mode hybrid_rerank  k 5
+embedder google/embeddinggemma-300m@57c266a740f5  query input: task: search result | query: What does AP-SEC-003 section 2 say?
+search: Memgraph vector_search.search on chunk_embedding, k = index size 137, filtered to the generation; 18 eligible of 18, 0 excluded
+  rrf: {'k': 60, 'vector_k': 10, 'keyword_k': 10, 'fused': 12}
+  rerank: {'model': 'cross-encoder/ms-marco-MiniLM-L6-v2', 'revision': '233902d25c440f23af6f7d6e94d2946bac0bee0a', 'max_pair_tokens': 512, 'candidates': 12, 'windowed': 0, 'timing_ms': 545.0, 'score_meaning': 'raw cross-encoder relevance logit; orders passages, not a probability'}
+exact cosine check: top-k agrees True, max score gap 1.29e-07
+retrieved:
+  [1] vec #8 0.4631 | bm25 #6 0.80+2.0 ap-sec-003 | rrf 0.0299 | rerank 3.167 (was #7)  AP-INC-002 v1 Operational Incident Response and Review / 3 Reporting and First Response  chars 1555-2262
+  [2] vec #1 0.5452 | bm25 #8 0.79+2.0 ap-sec-003 | rrf 0.0311 | rerank 2.810 (was #3)  AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals / 1 Purpose and Scope  chars 86-805
+  [3] vec #3 0.5138 | bm25 #7 0.79+2.0 ap-sec-003 | rrf 0.0308 | rerank 2.411 (was #4)  AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals / 5 Restricted Items Found in Baggage  chars 2917-3597
+  [4] vec #7 0.4734 | bm25 #1 2.53+4.0 ap-sec-003,§2 | rrf 0.0313 | rerank 2.289 (was #2)  AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals / 2 Staff Access Zones  chars 832-1507
+  [5] vec #2 0.5161 | bm25 #5 0.82+2.0 ap-sec-003 | rrf 0.0315 | rerank 1.969 (was #1)  AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals / 6 Records and Review  chars 3624-4315
+generation: qwen3:8b sha256:a3de86cd1c13 options {'temperature': 0, 'seed': 7, 'num_ctx': 8192, 'num_predict': 1024} think false
+status: answered
+answer:
+  AP-SEC-003 section 2 states that staff access to airport areas is restricted to designated zones based on job responsibilities and security clearance. Landside areas are accessible to all staff with valid credentials, while airside areas require additional authorization and security clearance. The baggage make-up area is restricted to authorized personnel only. Access to these zones is monitored and controlled to ensure the safety and security of the airport environment [4].
+citations:
+  [4] AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals / 2 Staff Access Zones  data/sources/generated/AP-SEC-003-v1.md chars 832-1507  resolved True
+      "Staff access to airport areas is restricted to designated zones based on job responsibilities and security clearance. Landside areas are accessible to all staff with valid credentials, while airside areas require additional authorization an…"
+timing: retrieval 709.9 ms, answer 3721.2 ms
+[exit 0]
+
+$ uv run policy-rag evaluate --suite dev --evidence docs/evidence/m4/2026-09-25T160436Z-dev-evaluation.json
+D-G01  vector        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2568 ms
+D-G01  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2292 ms
+D-G01  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  1865 ms
+D-G01  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  1912 ms
+D-G02  vector        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  1549 ms
+D-G02  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  3007 ms
+D-G02  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  1525 ms
+D-G02  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  1867 ms
+D-G03  vector        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  3387 ms
+D-G03  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  3349 ms
+D-G03  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  3086 ms
+D-G03  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  3568 ms
+D-G04  vector        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2252 ms
+D-G04  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2278 ms
+D-G04  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2388 ms
+D-G04  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2455 ms
+D-G07  vector        cand@20 1.00 r@3 0.00 r@5 0.00  insufficient_evidence facts 0.00 FAIL  1798 ms
+D-G07  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  5298 ms
+D-G07  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  3859 ms
+D-G07  hybrid_rerank cand@20 1.00 r@3 0.00 r@5 1.00  answered              facts 1.00 PASS  judge True  5414 ms
+D-G05  vector        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2504 ms
+D-G05  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2418 ms
+D-G05  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2503 ms
+D-G05  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2654 ms
+D-G06  vector        cand@20 n/a  r@3 n/a  r@5 n/a   insufficient_evidence facts n/a  PASS  1246 ms
+D-G06  keyword       cand@20 n/a  r@3 n/a  r@5 n/a   insufficient_evidence facts n/a  PASS  1974 ms
+D-G06  hybrid        cand@20 n/a  r@3 n/a  r@5 n/a   insufficient_evidence facts n/a  PASS  1944 ms
+D-G06  hybrid_rerank cand@20 n/a  r@3 n/a  r@5 n/a   insufficient_evidence facts n/a  PASS  1294 ms
+D-I01  vector        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge False  4772 ms
+D-I01  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge False  4852 ms
+D-I01  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge False  3744 ms
+D-I01  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge False  3224 ms
+D-I02  vector        cand@20 1.00 r@3 1.00 r@5 1.00  insufficient_evidence facts n/a  PASS  4417 ms
+D-I02  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  insufficient_evidence facts n/a  PASS  2812 ms
+D-I02  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts n/a  FAIL  judge True  2279 ms
+D-I02  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  insufficient_evidence facts n/a  PASS  5715 ms
+D-I03  vector        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  3298 ms
+D-I03  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2854 ms
+D-I03  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2948 ms
+D-I03  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2783 ms
+D-I04  vector        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2988 ms
+D-I04  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  1965 ms
+D-I04  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2060 ms
+D-I04  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  3216 ms
+D-I05  vector        cand@20 1.00 r@3 1.00 r@5 1.00  insufficient_evidence facts n/a  PASS  2803 ms
+D-I05  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  insufficient_evidence facts n/a  PASS  2645 ms
+D-I05  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  insufficient_evidence facts n/a  PASS  2461 ms
+D-I05  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  insufficient_evidence facts n/a  PASS  3134 ms
+D-I06  vector        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  1918 ms
+D-I06  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2794 ms
+D-I06  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2854 ms
+D-I06  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  1955 ms
+needle check in an isolated index
+  needle by_code    vector        rank 1
+  needle by_code    keyword       rank 1
+  needle by_code    hybrid        rank 1
+  needle by_code    hybrid_rerank rank 1
+  needle paraphrase vector        rank 1
+  needle paraphrase keyword       rank 1
+  needle paraphrase hybrid        rank 1
+  needle paraphrase hybrid_rerank rank 1
+  isolation ok True
+vector:
+  all       cases 13  candidate_recall_at_20 1.00  recall_at_3 0.92  recall_at_5 0.92  fact_accuracy 0.90  case_pass_rate 0.92  citation_validity 1.00  judge_support_score 0.79  p50 2568.3 p95 4772.2 ms
+  generated cases  7  candidate_recall_at_20 1.00  recall_at_3 0.83  recall_at_5 0.83  fact_accuracy 0.83  case_pass_rate 0.86  citation_validity 1.00  judge_support_score 1.00  p50 2251.7 p95 3387.1 ms
+  imported  cases  6  candidate_recall_at_20 1.00  recall_at_3 1.00  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 1.00  citation_validity 1.00  judge_support_score 0.62  p50 2987.6 p95 4772.2 ms
+  targets: all measured targets met  (mean eligible pool 15.6 chunks)
+keyword:
+  all       cases 13  candidate_recall_at_20 1.00  recall_at_3 1.00  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 1.00  citation_validity 1.00  judge_support_score 0.81  p50 2793.7 p95 5298.0 ms
+  generated cases  7  candidate_recall_at_20 1.00  recall_at_3 1.00  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 1.00  citation_validity 1.00  judge_support_score 1.00  p50 2418.4 p95 5298.0 ms
+  imported  cases  6  candidate_recall_at_20 1.00  recall_at_3 1.00  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 1.00  citation_validity 1.00  judge_support_score 0.62  p50 2793.7 p95 4852.5 ms
+  targets: all measured targets met  (mean eligible pool 15.6 chunks)
+hybrid:
+  all       cases 13  candidate_recall_at_20 1.00  recall_at_3 1.00  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 0.92  citation_validity 1.00  judge_support_score 0.93  p50 2460.6 p95 3858.7 ms
+  generated cases  7  candidate_recall_at_20 1.00  recall_at_3 1.00  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 1.00  citation_validity 1.00  judge_support_score 1.00  p50 2388.5 p95 3858.7 ms
+  imported  cases  6  candidate_recall_at_20 1.00  recall_at_3 1.00  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 0.83  citation_validity 1.00  judge_support_score 0.86  p50 2460.6 p95 3744.0 ms
+  targets: all measured targets met  (mean eligible pool 15.6 chunks)
+hybrid_rerank:
+  all       cases 13  candidate_recall_at_20 1.00  recall_at_3 0.92  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 1.00  citation_validity 1.00  judge_support_score 0.92  p50 2783.0 p95 5714.6 ms
+  generated cases  7  candidate_recall_at_20 1.00  recall_at_3 0.83  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 1.00  citation_validity 1.00  judge_support_score 1.00  p50 2455.1 p95 5413.9 ms
+  imported  cases  6  candidate_recall_at_20 1.00  recall_at_3 1.00  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 1.00  citation_validity 1.00  judge_support_score 0.83  p50 3134.3 p95 5714.6 ms
+  targets: all measured targets met  (mean eligible pool 15.6 chunks)
+judge disagrees: {'case_id': 'D-I01', 'mode': 'vector', 'deterministic_pass': True, 'judge_all_supported': False}
+judge disagrees: {'case_id': 'D-I01', 'mode': 'keyword', 'deterministic_pass': True, 'judge_all_supported': False}
+judge disagrees: {'case_id': 'D-I01', 'mode': 'hybrid', 'deterministic_pass': True, 'judge_all_supported': False}
+judge disagrees: {'case_id': 'D-I01', 'mode': 'hybrid_rerank', 'deterministic_pass': True, 'judge_all_supported': False}
+judge disagrees: {'case_id': 'D-I02', 'mode': 'hybrid', 'deterministic_pass': False, 'judge_all_supported': True}
+needle isolation ok: True
+report: docs/evidence/m4/2026-09-25T160436Z-dev-evaluation.json
+[exit 0]
+
+$ uv run pytest -q
+........................................................................ [ 63%]
+.........................................                                [100%]
+113 passed, 31 deselected in 0.31s
+[exit 0]
