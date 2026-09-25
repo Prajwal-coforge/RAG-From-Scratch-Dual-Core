@@ -16,14 +16,14 @@ from pathlib import Path
 import httpx
 
 from app.corpus.policies import CORPUS_ID, ISSUER, OWNER, POLICIES, PolicySpec
-from app.corpus.validate import MAX_WORDS, MIN_WORDS, check_draft
+from app.corpus.validate import check_draft
 from app.doctor import LOCK_PATH, _model_blob_digest, load_lock
 from app.smoke import git_commit
 
 ROOT = Path(__file__).resolve().parents[3]
 GENERATED = ROOT / "data" / "sources" / "generated"
 CATALOG = GENERATED / "catalog.json"
-MAX_ATTEMPTS = 4
+MAX_ATTEMPTS = 6
 OPTIONS = {"temperature": 0.4, "num_ctx": 8192, "num_predict": 2048}
 
 SYSTEM_PROMPT = (
@@ -46,15 +46,23 @@ def build_prompt(spec: PolicySpec) -> str:
         f"Content: {spec.brief}\n\n"
         f"Start with this exact first line:\n{spec.heading}\n\n"
         f"Then use exactly these section headings, in this order, and no other headings:\n{sections}\n\n"
-        "Include each of these sentences word for word, in the most relevant section:\n"
+        f"Include each of these sentences word for word in section \"{spec.clause_section}\":\n"
         f"{clauses}\n\n"
         f"Refer to the related policies by their IDs ({others}) where the text depends on them, "
         "and do not mention any other policy IDs.\n\n"
         "Rules:\n"
-        f"- Between {MIN_WORDS + 100} and {MAX_WORDS - 100} words of prose in total, not counting headings.\n"
+        "- Between 650 and 750 words of prose in total, not counting headings. "
+        "Each section has two or three full paragraphs.\n"
         "- Paragraphs only. No bullet points, numbered lists, or tables.\n"
         "- Do not state any dates, years, or version numbers.\n"
         "- Do not state any time limit in minutes other than those in the required sentences.\n"
+        + (
+            f"- In section \"{spec.clause_section}\", do not use the words "
+            + ", ".join(f'"{word}"' for word in spec.section_forbidden)
+            + "; the required sentence is the only timing rule there.\n"
+            if spec.section_forbidden
+            else ""
+        )
     )
 
 

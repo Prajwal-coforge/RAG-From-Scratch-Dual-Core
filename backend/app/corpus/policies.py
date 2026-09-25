@@ -44,6 +44,8 @@ class PolicySpec:
     effective_from: str
     effective_to: str | None
     publication_status: str
+    clause_section: str
+    section_forbidden: tuple[str, ...] = ()
     supersedes: str | None = None
 
     @property
@@ -63,10 +65,13 @@ BAGGAGE_BRIEF = (
     "Staff rules for handling checked baggage between the check-in belts, the baggage make-up area, "
     "and aircraft loading. Name the roles Baggage Handler, Baggage Duty Supervisor, and Ramp Lead. "
     "Section 3 covers bag tags, heavy bags, and fragile items. Section 4 covers escalation of "
-    "baggage incidents. Section 5 says that a restricted item found in a bag is not handled further "
+    "baggage incidents and is the only place that states the escalation deadline. Section 5 says that a restricted item found in a bag is not handled further "
     "until it is approved or removed under the restricted-items approval procedure in AP-SEC-003. "
     "Section 6 covers the incident log and an annual policy review."
 )
+
+ESCALATION_SECTION = "4. Baggage Incident Escalation"
+VAGUE_TIMING = ("immediately", "promptly", "as soon as", "without delay")
 
 POLICIES = (
     PolicySpec(
@@ -82,6 +87,8 @@ POLICIES = (
         effective_from="2025-07-01",
         effective_to=None,
         publication_status="active",
+        clause_section=ESCALATION_SECTION,
+        section_forbidden=VAGUE_TIMING,
         supersedes=f"{CORPUS_ID}:AP-BAG-001:v1",
     ),
     PolicySpec(
@@ -114,6 +121,7 @@ POLICIES = (
         effective_from="2025-01-01",
         effective_to=None,
         publication_status="active",
+        clause_section="4. Incident Coordinator Duties",
     ),
     PolicySpec(
         key="sec-v1",
@@ -146,6 +154,7 @@ POLICIES = (
         effective_from="2025-01-01",
         effective_to=None,
         publication_status="active",
+        clause_section="4. Approval Procedure for Restricted Items",
     ),
     PolicySpec(
         key="bag-v1",
@@ -160,6 +169,8 @@ POLICIES = (
         effective_from="2025-01-01",
         effective_to="2025-06-30",
         publication_status="superseded",
+        clause_section=ESCALATION_SECTION,
+        section_forbidden=VAGUE_TIMING,
     ),
 )
 

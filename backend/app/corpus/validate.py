@@ -9,6 +9,9 @@ from app.corpus.policies import PolicySpec
 
 MIN_WORDS = 500
 MAX_WORDS = 800
+# Accepted drafts keep a margin inside the rubric range, so another word counter still agrees.
+ACCEPT_MIN_WORDS = 550
+ACCEPT_MAX_WORDS = 750
 WORD = re.compile(r"[A-Za-z0-9][A-Za-z0-9'’./-]*")
 HEADING = re.compile(r"^#{1,6}\s+(.*?)\s*$")
 LIST_OR_TABLE = re.compile(r"^\s*(?:[-*+•]\s|\d+[.)]\s|\|)")
@@ -39,6 +42,19 @@ def count_prose_words(text: str) -> int:
     return sum(len(WORD.findall(line)) for line in prose_lines(text))
 
 
+def section_bodies(text: str) -> dict[str, str]:
+    bodies: dict[str, list[str]] = {}
+    current: str | None = None
+    for line in text.splitlines():
+        match = HEADING.match(line)
+        if match:
+            current = match.group(1)
+            bodies.setdefault(current, [])
+        elif current is not None:
+            bodies[current].append(line)
+    return {name: normalize_space("\n".join(lines)) for name, lines in bodies.items()}
+
+
 def check_draft(text: str, spec: PolicySpec) -> DraftReport:
     lines = [line.rstrip() for line in text.strip().splitlines()]
     headings = [HEADING.match(line).group(1) for line in lines if HEADING.match(line)]
@@ -49,13 +65,19 @@ def check_draft(text: str, spec: PolicySpec) -> DraftReport:
         problems.append(f"first line must be {spec.heading!r}")
     if headings[1:] != list(spec.sections):
         problems.append(f"section headings {headings[1:]} do not match {list(spec.sections)}")
-    if not MIN_WORDS <= report.prose_words <= MAX_WORDS:
-        problems.append(f"{report.prose_words} prose words, outside {MIN_WORDS}-{MAX_WORDS}")
+    if not ACCEPT_MIN_WORDS <= report.prose_words <= ACCEPT_MAX_WORDS:
+        problems.append(f"{report.prose_words} prose words, outside {ACCEPT_MIN_WORDS}-{ACCEPT_MAX_WORDS}")
 
     flat = normalize_space(text)
+    home = section_bodies(text).get(spec.clause_section, "")
     for clause in spec.verbatim:
         if normalize_space(clause) not in flat:
             problems.append(f"missing required clause: {clause[:60]}...")
+        elif normalize_space(clause) not in home:
+            problems.append(f"required clause is not in section {spec.clause_section!r}")
+    for phrase in spec.section_forbidden:
+        if phrase in home.lower():
+            problems.append(f"section {spec.clause_section!r} uses {phrase!r} alongside the deadline")
     for reference in spec.references:
         if reference not in flat:
             problems.append(f"missing reference to {reference}")

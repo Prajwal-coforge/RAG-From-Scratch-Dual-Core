@@ -25,7 +25,9 @@ def draft(spec, sentences_per_section=12, body_extra=""):
         parts.append(f"## {section}")
         text = FILLER * sentences_per_section
         if index == 0:
-            text += " ".join(spec.verbatim) + " " + " ".join(spec.references) + body_extra
+            text += " ".join(spec.references) + body_extra
+        if section == spec.clause_section:
+            text += " ".join(spec.verbatim)
         parts.extend([text, ""])
     return "\n".join(parts)
 
@@ -59,6 +61,21 @@ def test_draft_problems_are_reported(change, problem):
     report = check_draft(change(draft(spec, 7)), spec)
     assert not report.ok
     assert any(problem in item for item in report.problems), report.problems
+
+
+def test_the_deadline_must_sit_in_the_escalation_section():
+    spec = BY_KEY["bag-v2"]
+    text = draft(spec, 7)
+    clause = spec.verbatim[0]
+    moved = text.replace(clause, "").replace("## 3. Handling Standards\n", "## 3. Handling Standards\n" + clause + " ")
+    assert any("not in section" in p for p in check_draft(moved, spec).problems)
+
+
+def test_vague_timing_next_to_the_deadline_is_rejected():
+    spec = BY_KEY["bag-v1"]
+    text = draft(spec, 7).replace(spec.verbatim[0], "Report it immediately. " + spec.verbatim[0])
+    assert any("'immediately'" in p for p in check_draft(text, spec).problems)
+    assert check_draft(text.replace("Report it immediately. ", ""), spec).ok
 
 
 def test_word_limits_are_enforced():
