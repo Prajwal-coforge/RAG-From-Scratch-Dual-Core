@@ -1,6 +1,6 @@
 # 0002 — Chunking strategy
 
-Status: implemented for unit tests. The EmbeddingGemma tokenizer is not wired in yet.
+Status: implemented and used by ingestion since milestone 3, counting with the pinned Hugging Face EmbeddingGemma tokenizer.
 Date: 2026-09-24
 
 Parents are logical sections from Markdown headings or numbered headings such as `1. Purpose` and `2.1 Monthly minimum`. Children are passages inside one parent.
@@ -16,4 +16,6 @@ A child never crosses a document version or a parent section. Overlap stays insi
 
 The previous character-window splitter in `src/policy_rag/chunking.py` is not this strategy.
 
-Corpus runs use `GemmaTokenizer` in `backend/app/chunking/gguf_tokenizer.py`. It reads the sentencepiece vocabulary inside the local Ollama `embeddinggemma` GGUF and merges pieces the same way that model does. Checked against Ollama `/api/embed` `prompt_eval_count`: the embed request is the text tokens plus BOS and EOS. Chunk limits count the text tokens only. Unit tests still pass `WordTokenizer` so they do not depend on the model file.
+Ingestion counts with `HFTokenizer` in `backend/app/embedder.py`, which wraps the tokenizer of the pinned sentence-transformers model, so chunk limits and the embedder's own length check use the same count. Chunk limits count the text tokens only; the pre-encode length check adds BOS and EOS. Unit tests pass word-counting tokenizers so they do not depend on the model files.
+
+Before milestone 3 the chunker used `GemmaTokenizer` in `backend/app/chunking/gguf_tokenizer.py`, which reads the vocabulary inside the local Ollama `embeddinggemma` GGUF. On the generated corpus the two tokenizers agree on every line except 24 of 235, all headings ending in two spaces, where they differ by one token. The module stays for the milestone 1 record and its tests.

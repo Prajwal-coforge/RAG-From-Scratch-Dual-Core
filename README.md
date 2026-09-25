@@ -2,7 +2,7 @@
 
 Local policy assistant for airport and airline staff. The build follows the handoff in [`airport-policy-rag-spec/START_HERE.md`](airport-policy-rag-spec/START_HERE.md). Status and open work are in [`docs/progress/2026-09-24-progress-report.md`](docs/progress/2026-09-24-progress-report.md).
 
-The stack is local Ollama, Memgraph, a Python backend, and a React frontend. There is no data lake and no hosted model. The UI is not started.
+The stack is local: sentence-transformers EmbeddingGemma for embeddings, Memgraph for vectors and the policy graph, Ollama `qwen3:8b` for answers, a Python backend, and a React frontend. There is no data lake and no hosted model. The UI is not started.
 
 ## Corpus
 
@@ -33,6 +33,11 @@ The recorded generation runs are in [`docs/evidence/m2/`](docs/evidence/m2/READM
 | `openspec/changes/build-airport-policy-rag/` | Proposed change. Not implemented |
 | `.cursor/commands/` | OpenSpec commands: `/opsx-explore`, `/opsx-propose`, `/opsx-apply`, `/opsx-update`, `/opsx-sync`, `/opsx-archive` |
 | `backend/app/chunking/` | Section parent-child chunker |
+| `backend/app/embedder.py` | Pinned sentence-transformers embedder with the over-limit refusal |
+| `backend/app/sources.py` | Snapshot loading and pre-publication quality checks |
+| `backend/app/ingest.py` | Generation-based Memgraph ingestion, publication, rollback, and retirement |
+| `backend/app/retrieve.py` | Vector retrieval with eligibility filtering and the exact-cosine check |
+| `backend/app/answer.py` | Local generation with validated, resolvable citations |
 | `backend/app/doctor.py` | Live runtime checks |
 | `config/runtime.lock.json` | Pinned images, model digests, and reranker revision |
 | `infra/compose.yaml` | Memgraph 3.13.0 and Lab 3.7.1 |
@@ -47,7 +52,9 @@ uv sync --group dev
 uv run policy-rag doctor
 ```
 
-`uv` provides CPython 3.12. Ollama must already be running, with `embeddinggemma` and `qwen3:8b` pulled. Memgraph must already be up.
+`uv` provides CPython 3.12. Ollama must already be running with `qwen3:8b` pulled. Memgraph must already be up.
+
+The embedding model `google/embeddinggemma-300m` is gated on Hugging Face. Accept the Gemma license on the model page once, then run `uv run hf auth login` and paste your token at its prompt. The token stays in `~/.cache/huggingface/`; never put it in a command line or the repository. After the first download the model loads from the local cache.
 
 Memgraph and Lab:
 
@@ -55,31 +62,38 @@ Memgraph and Lab:
 docker compose -f infra/compose.yaml up -d
 ```
 
-Lab is at http://127.0.0.1:3000. The database Bolt port is `127.0.0.1:7687`. The graph currently loaded by `infra/schema-preview.cypher` is a schema preview, not ingested policy text.
+Lab is at http://127.0.0.1:3000. The database Bolt port is `127.0.0.1:7687`. `infra/schema-preview.cypher` creates the constraints, the `chunk_embedding` index, and a few schema-preview nodes that the doctor's persistence check uses. Ingested policy text arrives through `policy-rag ingest`.
 
-Two-text retrieval proof (milestone 1). It embeds two known texts, stores them in Memgraph under their own `smoke_text_embedding` index, and checks that each question returns the right one:
+Two-text retrieval proof. It embeds two known texts, stores them in Memgraph under their own `smoke_text_embedding` index, and checks that each question returns the right one. `--embedder ollama` reproduces the milestone 1 run:
 
 ```bash
 uv run policy-rag smoke
-uv run pytest -m live
 ```
 
-The recorded run is in [`docs/evidence/m1/`](docs/evidence/m1/README.md).
+The recorded runs are in [`docs/evidence/m1/`](docs/evidence/m1/README.md) (Ollama) and [`docs/evidence/m3/`](docs/evidence/m3/README.md) (sentence-transformers).
 
-Chunk the imported policies with the local EmbeddingGemma vocabulary:
+## Ingest and ask
 
 ```bash
-PYTHONPATH=backend python scripts/chunk_imported_corpus.py
+uv run policy-rag ingest --snapshot clean
+uv run policy-rag ask "A baggage handler finds a leaking checked bag. Who must they escalate it to, and how quickly?"
+uv run policy-rag index status
+uv run policy-rag rollback --snapshot clean
 ```
 
-Chunk tests:
+Snapshots are `clean`, `duplicate`, `historical`, `dirty-stale`, and `imported:<corpus_id>`. `dirty-stale` is a damaged fixture and publishes only with `--profile evaluation --reason "..."`. `ask` uses the snapshot's `as_of` date by default. `--as-of` and `--include-history` answer from the version in force on another date. `--json` prints the full retrieval trace and answer report.
+
+Each ingest builds a new index generation and moves the snapshot's publication pointer only after verification. Re-ingesting unchanged input does nothing. Runtime state (embedding cache and run records) is in `.local/state.sqlite`, which is not committed.
+
+The recorded milestone 3 run is in [`docs/evidence/m3/`](docs/evidence/m3/README.md), produced by `scripts/record-m3-evidence.sh`.
+
+## Tests
 
 ```bash
-PYTHONPATH=backend python -m pytest backend/tests/test_chunking.py
+uv run pytest            # unit tests; no model or database needed
+uv run pytest -m live    # real embedder, Memgraph, and Ollama
 ```
-
-Ollama must be running for embeddings. `embeddinggemma` is the embedding model. `qwen3:8b` is the planned local chat model.
 
 ## Still open
 
-Milestones 0, 1, and 2 are recorded. Ingestion and basic RAG (milestone 3) are next. Retrieval, evaluation, CI, and the UI are still open.
+Milestones 0 to 3 are recorded. Retrieval is vector-only. BM25 fusion, reranking, the evaluation harness, CI, graph relationships, agents, and the UI are open.

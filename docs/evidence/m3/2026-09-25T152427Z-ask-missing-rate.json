@@ -1,0 +1,260 @@
+{
+  "retrieval": {
+    "mode": "vector",
+    "snapshot_id": "imported:aethersky-compensation",
+    "corpus_id": "aethersky-compensation",
+    "index_generation_id": "gen-f9683437166aedf9",
+    "as_of": "2026-09-25",
+    "include_history": false,
+    "question": "What is the exact hourly base pay rate for a first officer?",
+    "query_input": "task: search result | query: What is the exact hourly base pay rate for a first officer?",
+    "embedder": {
+      "runtime": "sentence-transformers",
+      "model": "google/embeddinggemma-300m",
+      "revision": "57c266a740f537b4dc058e1b0cda161fd15afa75",
+      "dimensions": 768,
+      "max_seq_length": 2048,
+      "tokenizer": "embeddinggemma-hf-57c266a740f5"
+    },
+    "k": 5,
+    "search": {
+      "method": "Memgraph vector_search.search on chunk_embedding, k = index size 119, filtered to the generation",
+      "generation_chunks": 10,
+      "eligible": 10,
+      "excluded": []
+    },
+    "exact_check": {
+      "top_k_agrees": true,
+      "max_score_gap": 7.807691382311077e-08,
+      "scores_agree": true
+    },
+    "hits": [
+      {
+        "rank": 1,
+        "chunk_id": "d66934e025a70aba7b56c54aba64f147cd85f4470aa3ca27aeed4ebe8c5609b9",
+        "document_version_id": "aethersky-compensation:aethersky-airways-pilot-compensation-policy:b418ecf530c7",
+        "document_title": "AetherSky Airways: AetherSky Airways Pilot Compensation Policy",
+        "corpus_id": "aethersky-compensation",
+        "policy_id": "aethersky-airways-pilot-compensation-policy",
+        "version": "upstream@948dacad",
+        "publication_status": "active",
+        "effective_from": null,
+        "effective_to": null,
+        "section_id": "aethersky-compensation:aethersky-airways-pilot-compensation-policy:b418ecf530c7:2.1 Base Pay",
+        "heading_path": "2.1 Base Pay",
+        "text": "Pilot compensation is calculated primarily on a per-flight-hour basis. Pilots are paid based on their rank (First Officer or Captain) and the type of aircraft operated (narrow-body or wide-body). \nThe base hourly rate reflects qualifications, operational responsibility, and market benchmarks. A minimum of 75 flight hours per month is guaranteed for all active pilots. \nCompensation is capped at 100 flight hours per month and 1,000 hours annually.\nIn addition to flight hours, compensation is provided for ground duty and mandatory training. Ground standby is compensated at a flat daily rate, and training sessions (including simulator time, recurrent checks, and safety briefings) are compensated at a separate daily rate.\n\n",
+        "source_spans": [
+          [
+            415,
+            1143
+          ]
+        ],
+        "similarity": 0.5102428197860718,
+        "exact_cosine": 0.5102427680214344
+      },
+      {
+        "rank": 2,
+        "chunk_id": "dd355681b1653b2812db5a93cf791589975bd6cdfdfea1bca8fbd1da60f61c2e",
+        "document_version_id": "aethersky-compensation:aethersky-airways-pilot-compensation-policy:b418ecf530c7",
+        "document_title": "AetherSky Airways: AetherSky Airways Pilot Compensation Policy",
+        "corpus_id": "aethersky-compensation",
+        "policy_id": "aethersky-airways-pilot-compensation-policy",
+        "version": "upstream@948dacad",
+        "publication_status": "active",
+        "effective_from": null,
+        "effective_to": null,
+        "section_id": "aethersky-compensation:aethersky-airways-pilot-compensation-policy:b418ecf530c7:3 Per Diem and Travel Allowances",
+        "heading_path": "3 Per Diem and Travel Allowances",
+        "text": "Pilots are entitled to per diem payments to cover meals and incidental expenses while on duty away from their home base. The domestic per diem rate is set at $3.25 per hour and international assignments are compensated at $5.00 per hour. \nThese rates are applied continuously from sign-in to release at base. Overnight accommodation and ground transportation are provided and arranged by the airline.\n\n",
+        "source_spans": [
+          [
+            1715,
+            2117
+          ]
+        ],
+        "similarity": 0.43559420108795166,
+        "exact_cosine": 0.43559417137822015
+      },
+      {
+        "rank": 3,
+        "chunk_id": "abcd9e5f1c4b599bfbeb1aa24e2a93fde8c9317c3412a28087a400353b185bf3",
+        "document_version_id": "aethersky-compensation:aethersky-airways-pilot-compensation-policy:b418ecf530c7",
+        "document_title": "AetherSky Airways: AetherSky Airways Pilot Compensation Policy",
+        "corpus_id": "aethersky-compensation",
+        "policy_id": "aethersky-airways-pilot-compensation-policy",
+        "version": "upstream@948dacad",
+        "publication_status": "active",
+        "effective_from": null,
+        "effective_to": null,
+        "section_id": "aethersky-compensation:aethersky-airways-pilot-compensation-policy:b418ecf530c7:7 Career Progression and Pay Increases",
+        "heading_path": "7 Career Progression and Pay Increases",
+        "text": "Pilot compensation increases annually based on seniority, performance, and role. Annual raises range from 2% to 5%. First Officers are eligible for promotion to Captain after completing a minimum of three years of service and 2,000 logged flight hours, subject to performance evaluations and operational needs. \nUpon promotion, pilots are automatically transitioned to the appropriate compensation tier.\n\n",
+        "source_spans": [
+          [
+            3665,
+            4070
+          ]
+        ],
+        "similarity": 0.4303804636001587,
+        "exact_cosine": 0.43038053828358674
+      },
+      {
+        "rank": 4,
+        "chunk_id": "70649fd47ba0a43056862ee62950494c703bda5f20559324dc15a7f8093dfb93",
+        "document_version_id": "aethersky-compensation:aethersky-airways-pilot-compensation-policy:b418ecf530c7",
+        "document_title": "AetherSky Airways: AetherSky Airways Pilot Compensation Policy",
+        "corpus_id": "aethersky-compensation",
+        "policy_id": "aethersky-airways-pilot-compensation-policy",
+        "version": "upstream@948dacad",
+        "publication_status": "active",
+        "effective_from": null,
+        "effective_to": null,
+        "section_id": "aethersky-compensation:aethersky-airways-pilot-compensation-policy:b418ecf530c7:2.2 Bonuses and Incentives",
+        "heading_path": "2.2 Bonuses and Incentives",
+        "text": "Newly hired pilots are eligible for a one-time signing bonus. First Officers receive $10,000, while Direct-Entry Captains receive $20,000, payable upon completion of probationary training.\nAnnual performance bonuses of up to 10% of total annual earnings are awarded based on key performance indicators such as safety record, punctuality, professional conduct, and feedback from flight operations. \nAdditionally, a service-based retention bonus of $5,000 is issued for every three consecutive years of service.\n\n",
+        "source_spans": [
+          [
+            1170,
+            1681
+          ]
+        ],
+        "similarity": 0.40573036670684814,
+        "exact_cosine": 0.40573030678364247
+      },
+      {
+        "rank": 5,
+        "chunk_id": "941b477cab1f4663879840cbd01de67e5c437703b07fb8c25d952fe4725cd8c4",
+        "document_version_id": "aethersky-compensation:aethersky-airways-pilot-compensation-policy:b418ecf530c7",
+        "document_title": "AetherSky Airways: AetherSky Airways Pilot Compensation Policy",
+        "corpus_id": "aethersky-compensation",
+        "policy_id": "aethersky-airways-pilot-compensation-policy",
+        "version": "upstream@948dacad",
+        "publication_status": "active",
+        "effective_from": null,
+        "effective_to": null,
+        "section_id": "aethersky-compensation:aethersky-airways-pilot-compensation-policy:b418ecf530c7:4 Schedule Premiums and Protections",
+        "heading_path": "4 Schedule Premiums and Protections",
+        "text": "Flight assignments on designated holidays are compensated at 1.5 times the regular hourly rate. Short-notice assignments issued within 48 hours of departure qualify for a premium payment of $250 per flight leg, in addition to the standard hourly compensation. \nReserve callouts are compensated with a flat fee of $75, regardless of flight assignment, and are followed by regular hourly pay if flight duty is performed.\n\n",
+        "source_spans": [
+          [
+            2154,
+            2574
+          ]
+        ],
+        "similarity": 0.3586665391921997,
+        "exact_cosine": 0.35866651621907086
+      }
+    ],
+    "timing_ms": 165.4
+  },
+  "answer": {
+    "request_id": "req-d992799babbb",
+    "trace_id": "trace-18dfa67ebe45",
+    "mode_used": "vector",
+    "corpus_id": "aethersky-compensation",
+    "snapshot_id": "imported:aethersky-compensation",
+    "index_generation_id": "gen-f9683437166aedf9",
+    "as_of": "2026-09-25",
+    "question": "What is the exact hourly base pay rate for a first officer?",
+    "follow_up_questions": [],
+    "evidence_budget": {
+      "limit_tokens": 3500,
+      "used_tokens": 680,
+      "counted_with": "embeddinggemma-hf-57c266a740f5",
+      "omitted": []
+    },
+    "status": "insufficient_evidence",
+    "answer": "The exact hourly base pay rate for a first officer is not specified in the provided evidence. INSUFFICIENT_EVIDENCE: The base hourly rate is mentioned but not quantified [1].",
+    "validation_problems": [],
+    "claims": [
+      {
+        "text": "The exact hourly base pay rate for a first officer is not specified in the provided evidence.",
+        "citation_ids": []
+      },
+      {
+        "text": "INSUFFICIENT_EVIDENCE: The base hourly rate is mentioned but not quantified [1].",
+        "citation_ids": [
+          1
+        ]
+      }
+    ],
+    "citations": [
+      {
+        "citation_id": 1,
+        "chunk_id": "d66934e025a70aba7b56c54aba64f147cd85f4470aa3ca27aeed4ebe8c5609b9",
+        "document_version_id": "aethersky-compensation:aethersky-airways-pilot-compensation-policy:b418ecf530c7",
+        "document_title": "AetherSky Airways: AetherSky Airways Pilot Compensation Policy",
+        "version": "upstream@948dacad",
+        "section_path": "2.1 Base Pay",
+        "source_spans": [
+          [
+            415,
+            1143
+          ]
+        ],
+        "source_url": "/api/sources/d66934e025a70aba7b56c54aba64f147cd85f4470aa3ca27aeed4ebe8c5609b9",
+        "path": "data/sources/imported/human-resources/compensation/aethersky-airways-pilot-compensation-policy.txt",
+        "resolved": true,
+        "excerpt": "Pilot compensation is calculated primarily on a per-flight-hour basis. Pilots are paid based on their rank (First Officer or Captain) and the type of aircraft operated (narrow-body or wide-body). \nThe base hourly rate reflects qualifications, operational responsibility, and market benchmarks. A minimum of 75 flight hours per month is guaranteed for all active pilots. \nCompensation is capped at 100 flight hours per month and 1,000 hours annually.\nIn addition to flight hours, compensation is provided for ground duty and mandatory training. Ground standby is compensated at a flat daily rate, and training sessions (including simulator time, recurrent checks, and safety briefings) are compensated at a separate daily rate.\n\n",
+        "reason": null
+      }
+    ],
+    "evidence": [
+      {
+        "evidence_id": 1,
+        "chunk_id": "d66934e025a70aba7b56c54aba64f147cd85f4470aa3ca27aeed4ebe8c5609b9",
+        "document_title": "AetherSky Airways: AetherSky Airways Pilot Compensation Policy",
+        "heading_path": "2.1 Base Pay",
+        "similarity": 0.5102428197860718,
+        "tokens": 183
+      },
+      {
+        "evidence_id": 2,
+        "chunk_id": "dd355681b1653b2812db5a93cf791589975bd6cdfdfea1bca8fbd1da60f61c2e",
+        "document_title": "AetherSky Airways: AetherSky Airways Pilot Compensation Policy",
+        "heading_path": "3 Per Diem and Travel Allowances",
+        "similarity": 0.43559420108795166,
+        "tokens": 117
+      },
+      {
+        "evidence_id": 3,
+        "chunk_id": "abcd9e5f1c4b599bfbeb1aa24e2a93fde8c9317c3412a28087a400353b185bf3",
+        "document_title": "AetherSky Airways: AetherSky Airways Pilot Compensation Policy",
+        "heading_path": "7 Career Progression and Pay Increases",
+        "similarity": 0.4303804636001587,
+        "tokens": 110
+      },
+      {
+        "evidence_id": 4,
+        "chunk_id": "70649fd47ba0a43056862ee62950494c703bda5f20559324dc15a7f8093dfb93",
+        "document_title": "AetherSky Airways: AetherSky Airways Pilot Compensation Policy",
+        "heading_path": "2.2 Bonuses and Incentives",
+        "similarity": 0.40573036670684814,
+        "tokens": 148
+      },
+      {
+        "evidence_id": 5,
+        "chunk_id": "941b477cab1f4663879840cbd01de67e5c437703b07fb8c25d952fe4725cd8c4",
+        "document_title": "AetherSky Airways: AetherSky Airways Pilot Compensation Policy",
+        "heading_path": "4 Schedule Premiums and Protections",
+        "similarity": 0.3586665391921997,
+        "tokens": 122
+      }
+    ],
+    "generation": {
+      "model": "qwen3:8b",
+      "model_blob_digest": "sha256:a3de86cd1c132c822487ededd47a324c50491393e6565cd14bafa40d0b8e686f",
+      "options": {
+        "temperature": 0,
+        "seed": 7,
+        "num_ctx": 8192,
+        "num_predict": 1024
+      },
+      "think": false,
+      "prompt_eval_count": 904,
+      "eval_count": 39,
+      "raw_answer": "The exact hourly base pay rate for a first officer is not specified in the provided evidence. INSUFFICIENT_EVIDENCE: The base hourly rate is mentioned but not quantified [1]."
+    },
+    "timing_ms": 1712.8
+  }
+}

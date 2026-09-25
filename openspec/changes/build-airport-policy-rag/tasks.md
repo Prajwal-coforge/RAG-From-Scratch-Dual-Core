@@ -29,15 +29,15 @@ Milestones 0, 1, and 2 are checked. Later milestones stay open. A checkbox requi
 
 ## 3. Ingestion and basic RAG
 
-- [ ] 3.1 Implement numbered-text/Markdown parsers and reversible original-source offset mapping.
-- [ ] 3.2 Validate missing references, incompatible dates, metadata, and source duplicates.
-- [ ] 3.3 Implement section-aware parent–child chunking, bounded overlap, and table/exception handling.
-- [ ] 3.4 Implement formatted batched sentence-transformers EmbeddingGemma embeddings with a pre-encode token-limit refusal and configuration fingerprints; repeat the two-text proof with this embedder before full ingestion.
-- [ ] 3.5 Implement idempotent generation-based indexing, rollback, and source retirement.
-- [ ] 3.6 Implement vector retrieval over the Memgraph index with an exact-cosine check.
-- [ ] 3.7 Implement independent basic RAG CLI and local generation with resolvable citations.
-- [ ] 3.8 Add tests for source coverage, token overflow, model mismatch, and missing metadata.
-- [ ] 3.9 Capture full ingestion code and a real basic-RAG terminal demonstration.
+- [x] 3.1 Implement numbered-text/Markdown parsers and reversible original-source offset mapping.
+- [x] 3.2 Validate missing references, incompatible dates, metadata, and source duplicates.
+- [x] 3.3 Implement section-aware parent–child chunking, bounded overlap, and table/exception handling.
+- [x] 3.4 Implement formatted batched sentence-transformers EmbeddingGemma embeddings with a pre-encode token-limit refusal and configuration fingerprints; repeat the two-text proof with this embedder before full ingestion.
+- [x] 3.5 Implement idempotent generation-based indexing, rollback, and source retirement.
+- [x] 3.6 Implement vector retrieval over the Memgraph index with an exact-cosine check.
+- [x] 3.7 Implement independent basic RAG CLI and local generation with resolvable citations.
+- [x] 3.8 Add tests for source coverage, token overflow, model mismatch, and missing metadata.
+- [x] 3.9 Capture full ingestion code and a real basic-RAG terminal demonstration.
 
 ## 4. Hybrid, reranking, and first evaluation
 

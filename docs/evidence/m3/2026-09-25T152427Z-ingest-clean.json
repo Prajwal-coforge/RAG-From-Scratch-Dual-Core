@@ -1,0 +1,84 @@
+{
+  "run_id": "ingest-d204fdb28c6f",
+  "snapshot_id": "clean",
+  "profile": "ordinary",
+  "reason": null,
+  "findings": [
+    {
+      "severity": "warning",
+      "code": "supersedes_absent",
+      "document_version_id": "airport-generated:AP-BAG-001:v2",
+      "message": "supersedes airport-generated:AP-BAG-001:v1, which is not in this snapshot"
+    }
+  ],
+  "decision": "no blocking findings",
+  "generation_id": "gen-3f19662fa38e2eef",
+  "fingerprint": {
+    "snapshot_id": "clean",
+    "manifest_sha256": "sha256:f7d8181e6489f0e3e6115e7a59639050540c651ee31702b7da942fab17efa3b3",
+    "documents": [
+      [
+        "airport-generated:AP-BAG-001:v2",
+        "sha256:23b214e0367eb716a83d7db19ae2e80bb54485d9487b5dcb08fc9c8a8ca5513b"
+      ],
+      [
+        "airport-generated:AP-INC-002:v1",
+        "sha256:c8fbab147faed8ed5a588ad5998f71f6c83deda4b1f61245f97e44eb4daf9e4b"
+      ],
+      [
+        "airport-generated:AP-SEC-003:v1",
+        "sha256:05100e6ed18e3d07af4f902df086a77051e5670afe87c45af6eac12f1f748cb6"
+      ]
+    ],
+    "chunker": "7dc0e473d5b4a1dbb97cde67bc0193f5db3bb48381b81afd52fc0c6c91ddd16e",
+    "embedder": {
+      "runtime": "sentence-transformers",
+      "model": "google/embeddinggemma-300m",
+      "revision": "57c266a740f537b4dc058e1b0cda161fd15afa75",
+      "dimensions": 768,
+      "max_seq_length": 2048,
+      "tokenizer": "embeddinggemma-hf-57c266a740f5"
+    },
+    "format_version": "8a3a5b049bf4",
+    "profile": "ordinary"
+  },
+  "documents": [
+    {
+      "document_version_id": "airport-generated:AP-BAG-001:v2",
+      "sections": 7,
+      "chunks": 6,
+      "max_chunk_tokens": 133
+    },
+    {
+      "document_version_id": "airport-generated:AP-INC-002:v1",
+      "sections": 7,
+      "chunks": 6,
+      "max_chunk_tokens": 131
+    },
+    {
+      "document_version_id": "airport-generated:AP-SEC-003:v1",
+      "sections": 7,
+      "chunks": 6,
+      "max_chunk_tokens": 125
+    }
+  ],
+  "verification": {
+    "node_counts": {
+      "Chunk": 18,
+      "Section": 21,
+      "PolicyVersion": 3,
+      "Policy": 3,
+      "IndexGeneration": 1
+    },
+    "index_size_before": 0,
+    "index_size_after": 18,
+    "max_readback_drift": 0.0,
+    "min_self_similarity": 1.0
+  },
+  "publication": {
+    "current": "gen-3f19662fa38e2eef",
+    "previous": null
+  },
+  "retired": null,
+  "status": "published"
+}

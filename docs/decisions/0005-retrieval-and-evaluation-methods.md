@@ -12,7 +12,8 @@ Part 2 of the assignment says to embed each chunk "with sentence-transformers". 
 - sentence-transformers truncates silently at `max_seq_length`, so every formatted input is counted with the model's tokenizer first and refused if it is over the limit.
 - Ollama and sentence-transformers vectors for the "same" model are not interchangeable. The index fingerprint records the runtime, repository, and revision, and the two are never mixed in one index.
 - The milestone 1 proof ran on Ollama and stays as recorded. The two-text proof is repeated with the sentence-transformers embedder before full ingestion (task 3.4).
-- The chunk tokenizer should count with the same tokenizer the embedder uses. Switching `GemmaTokenizer` (GGUF vocabulary) to the Hugging Face tokenizer, or showing that they agree on the corpus, is part of task 3.4.
+- The chunk tokenizer counts with the same tokenizer the embedder uses: ingestion switched from `GemmaTokenizer` (GGUF vocabulary) to the Hugging Face tokenizer in milestone 3. See `0002`.
+- The model loads from the local Hugging Face cache first and downloads only when the pinned revision is missing, so ordinary runs make no network request.
 
 ## Keyword retrieval: local BM25
 
