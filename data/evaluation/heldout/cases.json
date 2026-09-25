@@ -50,12 +50,12 @@
       "expected_status": "answered",
       "acceptable_evidence_sets": [["BAG2-5-RESTRICTED", "SEC-5-REPORT"]],
       "required_answer_facts": [
-        {"id": "stop-handling", "patterns": ["not (be )?(handled|processed|moved)( any)? further", "no further handling", "(stop|halt|cease)[a-z]* handling", "must not be handled"]},
+        {"id": "stop-handling-or-isolate", "patterns": ["not (be )?(handled|processed|moved)( any)? further", "no further handling", "(stop|halt|cease)[a-z]* handling", "must not be handled", "isolated and secured"]},
         {"id": "sec-003", "patterns": ["AP-SEC-003"]},
         {"id": "inc-002", "patterns": ["AP-INC-002"]}
       ],
       "prohibited_answer_facts": [],
-      "rationale": "Three-policy reference chain: AP-BAG-001 section 5 points to AP-SEC-003 for approval, and AP-SEC-003 section 5 points to AP-INC-002 for the report. Needs two clauses from two documents."
+      "rationale": "Three-policy reference chain: AP-BAG-001 section 5 points to AP-SEC-003 for approval, and AP-SEC-003 section 5 points to AP-INC-002 for the report. Needs two clauses from two documents. Owner review (2026-09-25, after the first held-out run): AP-BAG-001 section 5 states two requirements for the bag, not handled further until approved or removed, and isolated and secured; either answers what must happen to the bag."
     },
     {
       "id": "H-G04",

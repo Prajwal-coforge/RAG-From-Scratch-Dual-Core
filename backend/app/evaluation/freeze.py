@@ -8,7 +8,9 @@ from datetime import datetime, timezone
 from app.evaluation.cases import FREEZE, freeze_record, load_cases
 
 
-def freeze(*, reason: str | None = None, reviewed_by: str) -> dict:
+def freeze(
+    *, reason: str | None = None, reviewed_by: str, review_status: str | None = None, review_note: str | None = None
+) -> dict:
     cases = load_cases("heldout")
     previous = json.loads(FREEZE.read_text()) if FREEZE.is_file() else None
     if previous and not reason:
@@ -16,6 +18,8 @@ def freeze(*, reason: str | None = None, reviewed_by: str) -> dict:
     record = {
         "frozen_at": datetime.now(timezone.utc).isoformat(),
         "reviewed_by": reviewed_by,
+        **({"review_status": review_status} if review_status else {}),
+        **({"review_note": review_note} if review_note else {}),
         "case_count": len(cases),
         "generated_cases": sum(case.corpus_kind == "generated" for case in cases),
         "hashes": freeze_record(),
