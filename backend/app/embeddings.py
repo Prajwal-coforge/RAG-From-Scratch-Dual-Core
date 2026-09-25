@@ -1,4 +1,4 @@
-"""EmbeddingGemma requests through local Ollama."""
+"""EmbeddingGemma input formats, vector checks, and the Ollama request used in milestone 1."""
 
 from __future__ import annotations
 
@@ -7,8 +7,8 @@ from collections.abc import Sequence
 
 import httpx
 
-# Ollama's embeddinggemma template is a bare "{{ .Prompt }}", so the retrieval
-# prefixes are applied here and nowhere else.
+# Neither Ollama's embeddinggemma template nor the sentence-transformers call
+# adds a prompt, so the retrieval prefixes are applied here and nowhere else.
 DOCUMENT_FORMAT = "title: {title} | text: {text}"
 QUERY_FORMAT = "task: search result | query: {question}"
 NORM_TOLERANCE = 1e-3

@@ -1,4 +1,7 @@
-"""Milestone 1: two known texts embedded by Ollama, stored in Memgraph, and retrieved.
+"""Two known texts embedded, stored in Memgraph, and retrieved.
+
+Milestone 1 recorded this with the Ollama embedder. Milestone 3 repeats it
+with the sentence-transformers embedder before full ingestion.
 
 The smoke data uses its own label and vector index, so the production
 chunk_embedding index stays empty until real ingestion.
@@ -17,7 +20,8 @@ import httpx
 from neo4j import GraphDatabase
 
 from app.doctor import LOCK_PATH, _model_blob_digest, load_lock
-from app.embeddings import cosine, embed, format_document, format_query
+from app.embedder import OllamaEmbedder, embedder_from_lock
+from app.embeddings import cosine, format_document, format_query
 
 ROOT = Path(__file__).resolve().parents[2]
 NAMESPACE = "m1-smoke"
@@ -59,8 +63,21 @@ QUERIES = (
 )
 
 
+def make_embedder(kind: str, lock: dict, ollama: str):
+    if kind == "ollama":
+        spec = lock["ollama_embedding"]
+        digest = _model_blob_digest(ollama, spec["model"])
+        if digest != spec["blob_digest"]:
+            raise RuntimeError(f"{spec['model']} blob {digest} does not match the lock; refusing to embed")
+        return OllamaEmbedder(ollama, spec["model"], digest, spec["dimensions"])
+    if kind == "sentence-transformers":
+        return embedder_from_lock(lock)
+    raise ValueError(f"unknown embedder {kind!r}")
+
+
 def run_smoke(
     *,
+    embedder_kind: str = "sentence-transformers",
     lock_path: Path = LOCK_PATH,
     ollama: str | None = None,
     bolt: str | None = None,
@@ -69,24 +86,26 @@ def run_smoke(
     lock = load_lock(lock_path)
     ollama = (ollama or lock["ollama_url"]).rstrip("/")
     bolt = bolt or lock["memgraph"]["bolt_url"]
-    model = lock["embedding"]["model"]
-    dimensions = lock["embedding"]["dimensions"]
     metric = lock["memgraph"]["vector_metric"]
 
     started = datetime.now(timezone.utc).isoformat()
-    log(f"M1 two-text smoke test  {started}")
-    digest = _model_blob_digest(ollama, model)
-    if digest != lock["embedding"]["blob_digest"]:
-        raise RuntimeError(f"{model} blob {digest} does not match the lock; refusing to embed")
+    log(f"two-text smoke test  {started}")
+    embedder = make_embedder(embedder_kind, lock, ollama)
+    dimensions = embedder.dimensions
+    digest = embedder.revision
     runtime = {
-        "ollama_version": httpx.get(f"{ollama}/api/version", timeout=10).json()["version"],
-        "embedding_model": model,
-        "embedding_blob_digest": digest,
+        "embedder": embedder.identity,
         "dimensions": dimensions,
         "document_format": format_document("{title}", "{text}"),
         "query_format": format_query("{question}"),
     }
-    log(f"commit {git_commit()}  ollama {runtime['ollama_version']}  {model} {digest[:19]}")
+    if embedder_kind == "ollama":
+        runtime["ollama_version"] = httpx.get(f"{ollama}/api/version", timeout=10).json()["version"]
+    else:
+        import sentence_transformers
+
+        runtime["sentence_transformers_version"] = sentence_transformers.__version__
+    log(f"commit {git_commit()}  {embedder.runtime}  {embedder.model_id}@{digest[:19]}")
 
     driver = GraphDatabase.driver(bolt, auth=None)
     try:
@@ -94,6 +113,7 @@ def run_smoke(
             runtime["memgraph_version"] = session.run("SHOW VERSION").single()["version"]
             log(f"memgraph {runtime['memgraph_version']} at {bolt}")
 
+            production_before = production_size(session, lock)
             removed = reset_namespace(session)
             log(f"reset namespace {NAMESPACE}: removed {removed} old {LABEL} nodes, dropped old index if present")
 
@@ -108,7 +128,7 @@ def run_smoke(
             stored = []
             for step, item in enumerate(TEXTS, start=1):
                 formatted = format_document(item.title, item.text)
-                vector = embed(ollama, model, [formatted], dimensions)[0]
+                vector = embedder.embed([formatted])[0]
                 store_text(session, item, formatted, vector, digest)
                 readback = read_vector(session, item.id)
                 drift = max(abs(a - b) for a, b in zip(vector, readback))
@@ -138,7 +158,7 @@ def run_smoke(
             vectors = {item.id: read_vector(session, item.id) for item in TEXTS}
             results = []
             for item in QUERIES:
-                query_vector = embed(ollama, model, [format_query(item.question)], dimensions)[0]
+                query_vector = embedder.embed([format_query(item.question)])[0]
                 hits = search(session, query_vector, len(TEXTS))
                 exact = {doc_id: cosine(query_vector, vec) for doc_id, vec in vectors.items()}
                 exact_top = max(exact, key=exact.get)
@@ -163,16 +183,16 @@ def run_smoke(
                     )
                 log(f"  expected {item.expected_id}: {'PASS' if passed else 'FAIL'}")
 
-            production = next(
-                (row for row in all_index_info(session) if row["index_name"] == lock["memgraph"]["vector_index"]),
-                None,
+            production_after = production_size(session, lock)
+            log(
+                f"production index {lock['memgraph']['vector_index']} size {production_before} before, "
+                f"{production_after} after"
             )
-            production_size = production["size"] if production else None
-            log(f"production index {lock['memgraph']['vector_index']} size {production_size} (untouched)")
     finally:
         driver.close()
 
-    ok = all(result["passed"] for result in results) and index_sizes == [0, 1, 2] and production_size == 0
+    untouched = production_before is not None and production_before == production_after
+    ok = all(result["passed"] for result in results) and index_sizes == [0, 1, 2] and untouched
     log("PASS: both queries returned the expected text first" if ok else "FAIL: see results above")
     return {
         "checked_at": started,
@@ -181,7 +201,7 @@ def run_smoke(
         "namespace": NAMESPACE,
         "runtime": runtime,
         "index": {**index_info_snapshot(info), "size_after_each_step": index_sizes},
-        "production_index_size": production_size,
+        "production_index_size": {"before": production_before, "after": production_after},
         "stored": stored,
         "queries": results,
     }
@@ -231,6 +251,12 @@ def search(session, query_vector: list[float], k: int) -> list[dict]:
         ns=NAMESPACE,
     ).data()
     return [{"id": r["id"], "similarity": float(r["similarity"]), "distance": float(r["distance"])} for r in rows]
+
+
+def production_size(session, lock: dict) -> int | None:
+    name = lock["memgraph"]["vector_index"]
+    row = next((row for row in all_index_info(session) if row["index_name"] == name), None)
+    return row["size"] if row else None
 
 
 def all_index_info(session) -> list[dict]:

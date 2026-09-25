@@ -13,7 +13,9 @@ def test_summarize_requires_every_check():
 def test_runtime_lock_pins_models_and_images():
     lock = load_lock()
     assert lock["embedding"]["dimensions"] == 768
-    assert lock["embedding"]["blob_digest"].startswith("sha256:")
+    assert lock["embedding"]["runtime"] == "sentence-transformers"
+    assert len(lock["embedding"]["revision"]) == 40
+    assert lock["ollama_embedding"]["blob_digest"].startswith("sha256:")
     assert lock["chat"]["model"] == "qwen3:8b"
     assert lock["reranker"]["revision"]
     assert lock["memgraph"]["digest"].startswith("sha256:")

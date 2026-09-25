@@ -21,6 +21,12 @@ def main(argv: list[str] | None = None) -> int:
     )
     smoke = subcommands.add_parser("smoke", help="Embed two known texts, store them in Memgraph, and retrieve")
     smoke.add_argument("--evidence", type=Path, help="Write the JSON report to this path")
+    smoke.add_argument(
+        "--embedder",
+        choices=["sentence-transformers", "ollama"],
+        default="sentence-transformers",
+        help="ollama reproduces the milestone 1 run",
+    )
     corpus = subcommands.add_parser("corpus", help="Import sources, generate policies, and build manifests")
     corpus_steps = corpus.add_subparsers(dest="step", required=True)
     corpus_steps.add_parser("import", help="Fetch and verify the three pinned aviation files")
@@ -36,7 +42,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "smoke":
         from app.smoke import run_smoke
 
-        report = run_smoke()
+        report = run_smoke(embedder_kind=args.embedder)
         if args.evidence:
             args.evidence.parent.mkdir(parents=True, exist_ok=True)
             args.evidence.write_text(json.dumps(report, indent=2) + "\n")

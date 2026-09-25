@@ -13,10 +13,19 @@
     "digest": "sha256:4561711e0d7ef10825065c0823385e287f18b4f8abd5ad2d68fd0dabf5e12be8"
   },
   "embedding": {
+    "runtime": "sentence-transformers",
+    "model": "google/embeddinggemma-300m",
+    "revision": "57c266a740f537b4dc058e1b0cda161fd15afa75",
+    "dimensions": 768,
+    "max_seq_length": 2048,
+    "tokenizer": "embeddinggemma-hf-57c266a740f5"
+  },
+  "ollama_embedding": {
     "model": "embeddinggemma",
     "blob_digest": "sha256:0800cbac9c2064dde519420e75e512a83cb360de3ad5df176185dc69652fc515",
     "dimensions": 768,
-    "tokenizer": "embeddinggemma-gguf-spm-v1"
+    "tokenizer": "embeddinggemma-gguf-spm-v1",
+    "used_for": "milestone 1 proof only"
   },
   "chat": {
     "model": "qwen3:8b",
