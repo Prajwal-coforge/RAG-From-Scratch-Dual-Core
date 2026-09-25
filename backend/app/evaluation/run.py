@@ -36,6 +36,7 @@ from app.retrieve import (
     retrieve,
 )
 from app.sources import ROOT, load_snapshot
+from app.triage import missing_facts, triage
 
 TARGETS = {"candidate_recall_at_20": 0.90, "recall_at_5": 0.85, "fact_accuracy": 0.85, "citation_validity": 1.0}
 
@@ -96,6 +97,7 @@ def evaluate(
     reranker = reranker_from_lock(lock) if set(modes) & set(RERANKED) else None
     sources: dict[str, dict[str, str]] = {}
     outcomes = []
+    triage_rows: list[dict] = []
     first_answer = True
     driver, index = connect()
     try:
@@ -103,6 +105,7 @@ def evaluate(
             for case in cases:
                 if case.snapshot_id not in sources:
                     sources[case.snapshot_id] = {d.document_version_id: d.text for d in load_snapshot(case.snapshot_id).documents}
+                triage_rows.append(triage_row(case))
                 for mode in modes:
                     retrieval = retrieve(
                         session, index, embedder, case.question, case.snapshot_id,
@@ -131,6 +134,9 @@ def evaluate(
                             for hit in retrieval["hits"]
                         ],
                         "latency_ms": {"retrieval": retrieval["timing_ms"], "stages": retrieval["stage_timing_ms"]},
+                        "missing_facts": missing_facts(
+                            case.corpus_id, case.question, retrieval["hits"][0] if retrieval["hits"] else None
+                        ),
                     }
                     if answers:
                         result = answer_question(retrieval, embedder.tokenizer, sources=sources[case.snapshot_id])
@@ -200,7 +206,41 @@ def evaluate(
             if o.get("judge_disagrees")
         ],
         "needle": needle_report,
+        "triage": triage_summary(triage_rows, outcomes),
         "outcomes": outcomes,
+    }
+
+
+def triage_row(case) -> dict:
+    """Triage with no context selected, and with the case's own context selected."""
+    fields = ("status", "corpus_id", "route", "mode", "reason", "basis")
+    unselected = triage(case.question)
+    selected = triage(case.question, case.corpus_id)
+    return {
+        "case_id": case.case_id,
+        "corpus_id": case.corpus_id,
+        "unselected": {k: unselected.get(k) for k in fields},
+        "selected": {k: selected.get(k) for k in fields},
+        "signals": unselected["signals"],
+    }
+
+
+def triage_summary(rows: list[dict], outcomes: list[dict]) -> dict:
+    """Unselected: routed to the case's corpus, asked for a context, or routed elsewhere. Selected: asked when it should not."""
+    routed = [r for r in rows if r["unselected"]["status"] == "routed"]
+    flagged: dict[str, list[str]] = {}
+    for o in outcomes:
+        if o["missing_facts"]:
+            flagged.setdefault(o["mode"], []).append(o["case_id"])
+    return {
+        "cases": len(rows),
+        "unselected_correct_context": sum(r["unselected"]["corpus_id"] == r["corpus_id"] for r in routed),
+        "unselected_asked_for_context": [r["case_id"] for r in rows if r["unselected"]["status"] == "needs_clarification"],
+        "unselected_wrong_context": [r["case_id"] for r in routed if r["unselected"]["corpus_id"] != r["corpus_id"]],
+        "selected_asked_for_context": [r["case_id"] for r in rows if r["selected"]["status"] == "needs_clarification"],
+        "cross_policy_routes": [r["case_id"] for r in rows if r["selected"]["route"] == "cross_policy"],
+        "missing_fact_flags_by_mode": flagged,
+        "rows": rows,
     }
 
 
@@ -240,6 +280,16 @@ def print_summary(report: dict) -> None:
             f"  targets: {'not met: ' + ', '.join(unmet) if unmet else 'all measured targets met'}"
             f"{'; not measured: ' + ', '.join(unmeasured) if unmeasured else ''}"
             f"  (mean eligible pool {groups['all']['mean_eligible_chunks']:.1f} chunks)"
+        )
+    t = report.get("triage")
+    if t:
+        print(
+            f"triage without a selected context: {t['unselected_correct_context']}/{t['cases']} to the case's corpus, "
+            f"asked for context {t['unselected_asked_for_context'] or 'none'}, wrong context {t['unselected_wrong_context'] or 'none'}"
+        )
+        print(
+            f"triage with the case's context: asked for context {t['selected_asked_for_context'] or 'none'}; "
+            f"cross-policy {t['cross_policy_routes'] or 'none'}; missing-fact flags {t['missing_fact_flags_by_mode'] or 'none'}"
         )
     for row in report["judge_disagreements"]:
         print(f"judge disagrees: {row}")

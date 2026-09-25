@@ -55,7 +55,7 @@ Milestones 0, 1, and 2 are checked. Later milestones stay open. A checkbox requi
 
 - [x] 5.1 Build validated graph links with issuer/corpus scoping and source provenance. (Role, control, and department names in `data/graph/concepts.json` are agent-drafted and machine-checked; owner review pending.)
 - [x] 5.2 Implement bounded graph expansion and explicit graph_rerank mode.
-- [ ] 5.3 Implement triage for corpus ambiguity, missing applicability facts, and cross-policy questions.
+- [x] 5.3 Implement triage for corpus ambiguity, missing applicability facts, and cross-policy questions. (Deterministic; `data/graph/applicability.json` owner review pending. Known limitation found on held-out and left unfixed to avoid tuning on it: applicability is checked per section, so H-I02 (a rule for all pilots inside the rank-dependent Base Pay section) would get a false clarification.)
 - [ ] 5.4 Verify local Deep Agents/Ollama tool calling and inspect the full enabled tool inventory.
 - [ ] 5.5 Expose only allowlisted read tools; enforce request/step/time/delegation budgets and isolated state.
 - [ ] 5.6 Test prompt injection and absent-source behavior.

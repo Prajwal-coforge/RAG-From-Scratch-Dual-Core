@@ -48,8 +48,13 @@ def main(argv: list[str] | None = None) -> int:
     index.add_argument("--yes", action="store_true", help="Confirm reset: delete every generation and pointer")
     ask = subcommands.add_parser("ask", help="Retrieve evidence and answer with validated citations")
     ask.add_argument("question")
-    ask.add_argument("--snapshot", default="clean")
-    ask.add_argument("--mode", choices=["vector", "keyword", "hybrid", "hybrid_rerank", "graph_rerank"], default="hybrid_rerank")
+    ask.add_argument("--snapshot", help="Policy context; default: chosen by triage, which asks when the issuer is unclear")
+    ask.add_argument("--corpus", help="Select the context by corpus id instead, for example airport-generated")
+    ask.add_argument(
+        "--mode",
+        choices=["vector", "keyword", "hybrid", "hybrid_rerank", "graph_rerank"],
+        help="Default: chosen by triage (hybrid_rerank, or graph_rerank for cross-policy questions)",
+    )
     ask.add_argument("--k", type=int, default=5)
     ask.add_argument("--as-of", help="ISO date; defaults to the snapshot's as_of")
     ask.add_argument(
@@ -117,46 +122,74 @@ def run_evaluate(args: argparse.Namespace) -> int:
 
 
 def run_ask(args: argparse.Namespace) -> int:
-    from app.answer import answer_question
     from app.doctor import load_lock
     from app.embedder import embedder_from_lock
     from app.ingest import connect
+    from app.pipeline import ask_question
     from app.rerank import reranker_from_lock
-    from app.retrieve import RetrievalRefused, retrieve
+    from app.retrieve import RERANKED, RetrievalRefused
+    from app.sources import load_snapshot
 
+    from app.triage import contexts
+
+    snapshot_id = args.snapshot
+    if args.corpus:
+        serving = {c["corpus_id"]: c["snapshot_id"] for c in contexts()}
+        if args.corpus not in serving:
+            print(f"unknown corpus {args.corpus!r}; choose from {', '.join(serving)}")
+            return 2
+        if snapshot_id and load_snapshot(snapshot_id).corpus_id != args.corpus:
+            print(f"snapshot {snapshot_id} is not in corpus {args.corpus}")
+            return 2
+        snapshot_id = snapshot_id or serving[args.corpus]
     lock = load_lock()
     embedder = embedder_from_lock(lock)
-    reranker = reranker_from_lock(lock) if args.mode in ("hybrid_rerank", "graph_rerank") else None
     driver, index = connect()
     try:
         with driver.session() as session:
-            retrieval = retrieve(
+            report = ask_question(
                 session,
                 index,
                 embedder,
                 args.question,
-                args.snapshot,
+                reranker_for=lambda mode: reranker_from_lock(lock) if mode in RERANKED else None,
+                snapshot_id=snapshot_id,
+                mode=args.mode,
                 k=args.k,
                 as_of=args.as_of,
                 include_history=args.include_history,
-                mode=args.mode,
-                reranker=reranker,
             )
     except RetrievalRefused as exc:
         print(f"refused: {exc}")
         return 4
     finally:
         driver.close()
-    result = answer_question(retrieval, embedder.tokenizer)
-    report = {"retrieval": retrieval, "answer": result}
+    result = report["answer"]
     if args.evidence:
         args.evidence.parent.mkdir(parents=True, exist_ok=True)
         args.evidence.write_text(json.dumps(report, indent=2) + "\n")
     if args.json:
         print(json.dumps(report, indent=2))
     else:
-        print_ask(retrieval, result)
-    return 0 if result["status"] in ("answered", "insufficient_evidence") else 1
+        print_triage(report["triage"])
+        if report["retrieval"]:
+            print_ask(report["retrieval"], result)
+        else:
+            print(f"status: {result['status']}\nanswer:\n  {result['answer']}")
+            for follow_up in result["follow_up_questions"]:
+                print(f"  follow-up: {follow_up}")
+    return 0 if result["status"] in ("answered", "insufficient_evidence", "needs_clarification") else 1
+
+
+def print_triage(decision: dict) -> None:
+    signals = decision["signals"]
+    terms = "; ".join(f"{cid}: {', '.join(words)}" for cid, words in signals["distinctive_terms"].items()) or "none"
+    if decision["status"] == "needs_clarification":
+        print(f"triage: needs clarification, {decision['reason']}")
+    else:
+        print(f"triage: {decision['route']} in {decision['corpus_id']} ({decision['basis']}); mode {decision['mode']}; "
+              f"policies {', '.join(decision['policies']) or 'none named'}")
+    print(f"  signals: ids {signals['policy_ids'] or 'none'}; issuers named {signals['named_contexts'] or 'none'}; distinctive terms {terms}")
 
 
 def format_signals(signals: dict) -> str:
@@ -212,6 +245,8 @@ def print_ask(retrieval: dict, result: dict) -> None:
         print(f"  problem: {problem}")
     print("answer:")
     print(f"  {result['answer']}")
+    for follow_up in result.get("follow_up_questions", []):
+        print(f"  follow-up: {follow_up}")
     print("citations:")
     for cite in result["citations"]:
         spans = ", ".join(f"{s}-{e}" for s, e in cite["source_spans"])
