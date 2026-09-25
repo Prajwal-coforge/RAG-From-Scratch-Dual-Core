@@ -30,7 +30,7 @@ The recorded generation runs are in [`docs/evidence/m2/`](docs/evidence/m2/READM
 | Path | Role |
 | --- | --- |
 | `airport-policy-rag-spec/` | Handoff specification |
-| `openspec/changes/build-airport-policy-rag/` | Proposed change. Not implemented |
+| `openspec/changes/build-airport-policy-rag/` | Proposed change, not archived. Progress is in its `tasks.md` |
 | `.cursor/commands/` | OpenSpec commands: `/opsx-explore`, `/opsx-propose`, `/opsx-apply`, `/opsx-update`, `/opsx-sync`, `/opsx-archive` |
 | `backend/app/chunking/` | Section parent-child chunker |
 | `backend/app/embedder.py` | Pinned sentence-transformers embedder with the over-limit refusal |
