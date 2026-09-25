@@ -72,6 +72,22 @@
       "rationale": "Direct section-code lookup. The make-up area is mentioned in several sections of three policies."
     },
     {
+      "id": "D-G07",
+      "corpus_kind": "generated",
+      "corpus_id": "airport-generated",
+      "snapshot_id": "clean",
+      "as_of": "2025-08-01",
+      "include_history": false,
+      "question": "What does AP-SEC-003 section 2 say?",
+      "expected_status": "answered",
+      "acceptable_evidence_sets": [["SEC-2-MAKEUP"]],
+      "required_answer_facts": [
+        {"id": "authorized-only", "patterns": ["authori[sz]ed personnel"]}
+      ],
+      "prohibited_answer_facts": [],
+      "rationale": "Hybrid demonstration, added after the first dev retrieval run (2026-09-25) showed every mode ranking the labelled clause first on the original twelve. With only the identifier and section number, the question has no topic words for vector search; BM25 matches ap-sec-003 and §2 exactly."
+    },
+    {
       "id": "D-G05",
       "corpus_kind": "generated",
       "corpus_id": "airport-generated",

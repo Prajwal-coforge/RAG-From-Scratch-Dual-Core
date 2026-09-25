@@ -29,6 +29,7 @@ Rules:
 - End every sentence that states a policy fact with the numbers of the passages that support it, in square brackets, for example [2] or [1][3].
 - Keep numbers, units, deadlines, roles, and conditions exactly as the evidence states them.
 - If the evidence does not answer the question, reply with one line that starts with INSUFFICIENT_EVIDENCE: followed by what is missing. Do not guess.
+- Use that same INSUFFICIENT_EVIDENCE: line when the evidence says the requested value is not stated, or refers to another document for it that is not among the passages. Do not present a partial list or a general statement as the complete answer.
 - If passages give conflicting rules for the same situation, say so and cite each of them.
 - Answer in at most five sentences."""
 
@@ -153,11 +154,13 @@ def resolve_citation(item: dict, sources: dict[str, str]) -> dict:
     }
 
 
-def chat(messages: list[dict], *, ollama: str, model: str, expected_digest: str) -> dict:
+def chat(messages: list[dict], *, ollama: str, model: str, expected_digest: str, format: str | None = None) -> dict:
     digest = _model_blob_digest(ollama, model)
     if digest != expected_digest:
         raise AnswerError(f"{model} blob {digest} does not match the lock; refusing to generate")
     request = {"model": model, "messages": messages, "stream": False, "think": False, "options": CHAT_OPTIONS}
+    if format:
+        request["format"] = format
     response = httpx.post(f"{ollama}/api/chat", json=request, timeout=600)
     response.raise_for_status()
     body = response.json()
@@ -269,11 +272,15 @@ def answer_question(
         "status": status,
         "answer": raw if status != "unavailable" else "The generated answer failed citation checks and was withheld.",
         "validation_problems": problems,
+        "invented_citation_ids": invented,
         "claims": claims,
         "citations": citations,
         "evidence": [
             {
-                **{k: item.get(k) for k in ("evidence_id", "chunk_id", "document_title", "heading_path", "role", "linked_to", "tokens")},
+                **{
+                    k: item.get(k)
+                    for k in ("evidence_id", "chunk_id", "document_title", "heading_path", "role", "linked_to", "tokens", "text")
+                },
                 "signals": item.get("signals", {}),
             }
             for item in evidence

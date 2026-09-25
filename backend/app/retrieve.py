@@ -358,6 +358,10 @@ def search_pool(
     started = time.perf_counter()
     candidates, stages = rank_candidates(pool, question, mode, vector=vector, reranker=reranker)
     timing["rank_ms"] = round((time.perf_counter() - started) * 1000, 1)
+    for candidate in candidates:
+        props = pool.chunks[candidate["chunk_id"]]
+        for key in ("document_version_id", "document_title", "heading_path", "source_spans"):
+            candidate[key] = props[key]
     hits = [to_hit(pool, rank, c) for rank, c in enumerate(candidates[:k], start=1)]
     return {
         "mode": mode,

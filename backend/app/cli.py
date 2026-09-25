@@ -59,7 +59,17 @@ def main(argv: list[str] | None = None) -> int:
     )
     ask.add_argument("--json", action="store_true", help="Print the full JSON report")
     ask.add_argument("--evidence", type=Path, help="Write the JSON report to this path")
+    evaluate = subcommands.add_parser("evaluate", help="Run an evaluation suite across retrieval modes")
+    evaluate.add_argument("--suite", choices=["dev", "heldout"], required=True)
+    evaluate.add_argument("--modes", default="vector,keyword,hybrid,hybrid_rerank", help="Comma-separated retrieval modes")
+    evaluate.add_argument("--cases", help="Comma-separated case ids; default all")
+    evaluate.add_argument("--retrieval-only", action="store_true", help="Skip generation, fact checks, and the judge")
+    evaluate.add_argument("--no-judge", action="store_true", help="Skip the non-gating LLM judge")
+    evaluate.add_argument("--no-needle", action="store_true", help="Skip the isolated needle check")
+    evaluate.add_argument("--evidence", type=Path, help="Write the JSON report to this path")
     args = parser.parse_args(argv)
+    if args.command == "evaluate":
+        return run_evaluate(args)
     if args.command == "ask":
         return run_ask(args)
     if args.command == "corpus":
@@ -84,6 +94,26 @@ def main(argv: list[str] | None = None) -> int:
             args.evidence.write_text(json.dumps(report, indent=2) + "\n")
         return summarize(checks)
     return 2
+
+
+def run_evaluate(args: argparse.Namespace) -> int:
+    from app.evaluation.run import evaluate, print_summary, timestamp
+    from app.sources import ROOT
+
+    report = evaluate(
+        args.suite,
+        [m.strip() for m in args.modes.split(",") if m.strip()],
+        answers=not args.retrieval_only,
+        judge=not (args.retrieval_only or args.no_judge),
+        needle=not args.no_needle,
+        case_ids=[c.strip() for c in args.cases.split(",")] if args.cases else None,
+    )
+    path = args.evidence or ROOT / ".local" / "evaluations" / f"{timestamp()}-{args.suite}.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(report, indent=2) + "\n")
+    print_summary(report)
+    print(f"report: {path}")
+    return 0
 
 
 def run_ask(args: argparse.Namespace) -> int:
