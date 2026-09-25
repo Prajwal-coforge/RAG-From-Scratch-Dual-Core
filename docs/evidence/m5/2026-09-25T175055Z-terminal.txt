@@ -1,0 +1,300 @@
+milestone 5 evidence  2026-09-25T175055Z
+commit 95389855adf03432f97f567a74811130498102f1
+
+$ uv run policy-rag index status
+vector index chunk_embedding size 238
+publications:
+  clean                            current gen-df05ee25f1357f41  previous gen-5140fa5800fb2eb0
+  dirty-stale                      current gen-2ad59d76a3f8220c  previous gen-0d851c0e480a7263
+  duplicate                        current gen-da76007c402029f7  previous gen-f47ae6fde192fb67
+  historical                       current gen-65ada2fa3e409410  previous gen-969426f1fd3a1262
+  imported:aethersky-compensation  current gen-81da3086044d8c8f  previous gen-f9683437166aedf9
+  imported:skywings-baggage        current gen-2544eb8eefb94669  previous gen-ab2b8d1d461c530f
+  imported:synthetic-emissions     current gen-889b8a25a354f7a3  previous gen-6b929fe8c80e702a
+generations:
+  gen-f47ae6fde192fb67  duplicate                        previous  profile ordinary   chunks 24/24
+  gen-969426f1fd3a1262  historical                       previous  profile ordinary   chunks 24/24
+  gen-ab2b8d1d461c530f  imported:skywings-baggage        previous  profile ordinary   chunks 16/16
+  gen-f9683437166aedf9  imported:aethersky-compensation  previous  profile ordinary   chunks 10/10
+  gen-6b929fe8c80e702a  imported:synthetic-emissions     previous  profile ordinary   chunks 9/9
+  gen-0d851c0e480a7263  dirty-stale                      previous  profile evaluation chunks 18/18
+  gen-dd2b3cd2187de29e  clean                            retired   profile ordinary   chunks 0/18
+  gen-beb2806e139e8843  clean                            retired   profile ordinary   chunks 0/18
+  gen-3f19662fa38e2eef  clean                            retired   profile ordinary   chunks 0/18
+  gen-da76007c402029f7  duplicate                        published profile ordinary   chunks 24/24
+  gen-65ada2fa3e409410  historical                       published profile ordinary   chunks 24/24
+  gen-2544eb8eefb94669  imported:skywings-baggage        published profile ordinary   chunks 16/16
+  gen-81da3086044d8c8f  imported:aethersky-compensation  published profile ordinary   chunks 10/10
+  gen-889b8a25a354f7a3  imported:synthetic-emissions     published profile ordinary   chunks 9/9
+  gen-2ad59d76a3f8220c  dirty-stale                      published profile evaluation chunks 18/18
+  gen-6f321f45b8ff0bad  clean                            retired   profile ordinary   chunks 0/18
+  gen-5140fa5800fb2eb0  clean                            previous  profile ordinary   chunks 18/18
+  gen-df05ee25f1357f41  clean                            published profile ordinary   chunks 18/18
+[exit 0]
+
+$ uv run policy-rag ask What is the checked bag weight limit?
+triage: needs clarification, the question does not identify a policy issuer
+  signals: ids none; issuers named none; distinctive terms none
+status: needs_clarification
+answer:
+  More information is needed: the question does not identify a policy issuer.
+  follow-up: Which policy context do you mean: AeroPolicy Airport (clean); SkyWings Airlines (imported:skywings-baggage); AetherSky Airways (imported:aethersky-compensation); GAEA (fictional) (imported:synthetic-emissions)?
+[exit 0]
+
+$ uv run policy-rag ask Under AP-BAG-001, what does SkyWings charge for overweight bags?
+triage: needs clarification, the question names more than one issuer (AeroPolicy Airport, SkyWings Airlines)
+  signals: ids ['AP-BAG-001']; issuers named ['airport-generated', 'skywings-baggage']; distinctive terms airport-generated: ap-bag; skywings-baggage: charge, overweight, skywing
+status: needs_clarification
+answer:
+  More information is needed: the question names more than one issuer (AeroPolicy Airport, SkyWings Airlines).
+  follow-up: Which policy context do you mean: AeroPolicy Airport (clean); SkyWings Airlines (imported:skywings-baggage)?
+[exit 0]
+
+$ uv run policy-rag ask What is the SkyWings checked baggage allowance?
+triage: direct_lookup in skywings-baggage (named in the question); mode hybrid_rerank; policies none named
+  signals: ids none; issuers named ['skywings-baggage']; distinctive terms skywings-baggage: skywing
+question: What is the SkyWings checked baggage allowance?
+snapshot imported:skywings-baggage  generation gen-2544eb8eefb94669  as_of 2026-09-25  mode hybrid_rerank  k 5
+embedder google/embeddinggemma-300m@57c266a740f5  query input: task: search result | query: What is the SkyWings checked baggage allowance?
+search: Memgraph vector_search.search on chunk_embedding, k = index size 238, filtered to the generation; 16 eligible of 16, 0 excluded
+  rrf: {'k': 60, 'vector_k': 10, 'keyword_k': 10, 'fused': 12}
+  rerank: {'model': 'cross-encoder/ms-marco-MiniLM-L6-v2', 'revision': '233902d25c440f23af6f7d6e94d2946bac0bee0a', 'max_pair_tokens': 512, 'candidates': 12, 'windowed': 0, 'timing_ms': 32.4, 'score_meaning': 'raw cross-encoder relevance logit; orders passages, not a probability'}
+exact cosine check: top-k agrees True, max score gap 1.35e-07
+retrieved:
+  [1] vec #1 0.7617 | bm25 #1 3.69+0.0 | rrf 0.0328 | rerank 6.747 (was #1)  SkyWings Airlines: Luggage compliance and pricing policy / 4 Checked Baggage Allowance  chars 1368-1954
+  [2] vec #4 0.7257 | bm25 #2 3.55+0.0 | rrf 0.0318 | rerank 6.121 (was #2)  SkyWings Airlines: Luggage compliance and pricing policy / 2 Definitions  chars 307-727
+  [3] vec #2 0.7526 | bm25 #5 2.50+0.0 | rrf 0.0315 | rerank 5.079 (was #3)  SkyWings Airlines: Luggage compliance and pricing policy / 3 Carry-On Baggage Allowance  chars 757-1339
+  [4] vec #5 0.7053 | bm25 #9 1.20+0.0 | rrf 0.0299 | rerank 3.523 (was #6)  SkyWings Airlines: Luggage compliance and pricing policy / 8 Baggage Check-In and Identification  chars 3349-3601
+  [5] vec #3 0.7318 | bm25 #8 1.33+0.0 | rrf 0.0306 | rerank 3.079 (was #4)  SkyWings Airlines: Luggage compliance and pricing policy / 5 Excess Baggage Fees  chars 1977-2322
+status: needs_clarification
+answer:
+  More information is needed: the rule in SkyWings Airlines: Luggage compliance and pricing policy / 4 Checked Baggage Allowance depends on travel_class, which the question does not state.
+  follow-up: Which travel class is the passenger flying: Economy, Business, or First Class?
+citations:
+timing: retrieval 307.8 ms, answer 0.0 ms
+[exit 0]
+
+$ uv run policy-rag ask To whom is an operational incident first reported, and where does the incident policy send staff for baggage escalation procedures? --snapshot clean --mode hybrid_rerank --evidence docs/evidence/m5/2026-09-25T175055Z-multi-hybrid_rerank.json
+triage: cross_policy in airport-generated (selected by the caller); mode graph_rerank; policies AP-BAG-001, AP-INC-002
+  signals: ids none; issuers named none; distinctive terms airport-generated: escalation, incident, procedure, staff
+question: To whom is an operational incident first reported, and where does the incident policy send staff for baggage escalation procedures?
+snapshot clean  generation gen-df05ee25f1357f41  as_of 2025-08-01  mode hybrid_rerank  k 5
+embedder google/embeddinggemma-300m@57c266a740f5  query input: task: search result | query: To whom is an operational incident first reported, and where does the incident policy send staff for baggage escalation procedures?
+search: Memgraph vector_search.search on chunk_embedding, k = index size 238, filtered to the generation; 18 eligible of 18, 0 excluded
+  rrf: {'k': 60, 'vector_k': 10, 'keyword_k': 10, 'fused': 13}
+  rerank: {'model': 'cross-encoder/ms-marco-MiniLM-L6-v2', 'revision': '233902d25c440f23af6f7d6e94d2946bac0bee0a', 'max_pair_tokens': 512, 'candidates': 13, 'windowed': 0, 'timing_ms': 37.6, 'score_meaning': 'raw cross-encoder relevance logit; orders passages, not a probability'}
+exact cosine check: top-k agrees True, max score gap 1.31e-07
+retrieved:
+  [1] vec #1 0.7396 | bm25 #1 9.40+0.0 | rrf 0.0328 | rerank 6.646 (was #1)  AP-INC-002 v1 Operational Incident Response and Review / 3 Reporting and First Response  chars 1555-2262
+  [2] vec #2 0.6959 | bm25 #4 5.70+0.0 | rrf 0.0318 | rerank 3.508 (was #3)  AP-BAG-001 v2 Staff Baggage Handling and Escalation / 4 Baggage Incident Escalation  chars 2171-2875
+  [3] vec #3 0.6809 | bm25 #2 7.36+0.0 | rrf 0.0320 | rerank 3.141 (was #2)  AP-BAG-001 v2 Staff Baggage Handling and Escalation / 6 Records and Review  chars 3670-4339
+  [4] vec #4 0.6041 | bm25 #5 5.52+0.0 | rrf 0.0310 | rerank 2.458 (was #5)  AP-BAG-001 v2 Staff Baggage Handling and Escalation / 1 Purpose and Scope  chars 78-706
+  [5] vec #5 0.5855 | bm25 #3 6.87+0.0 | rrf 0.0313 | rerank 1.949 (was #4)  AP-INC-002 v1 Operational Incident Response and Review / 1 Purpose and Scope  chars 81-791
+generation: qwen3:8b sha256:a3de86cd1c13 options {'temperature': 0, 'seed': 7, 'num_ctx': 8192, 'num_predict': 1024} think false
+status: answered
+answer:
+  An operational incident is first reported to the supervisor or the Airside Duty Manager [1]. The incident policy sends staff to AP-BAG-001 section 4 for baggage escalation procedures [1].
+citations:
+  [1] AP-INC-002 v1 Operational Incident Response and Review / 3 Reporting and First Response  data/sources/generated/AP-INC-002-v1.md chars 1555-2262  resolved True
+      "All operational incidents must be reported by the affected staff member to their supervisor or the Airside Duty Manager. The Reporting Staff Member is responsible for providing a clear and accurate description of the incident, including tim…"
+timing: retrieval 194.1 ms, answer 3574.1 ms
+[exit 0]
+
+$ uv run policy-rag ask To whom is an operational incident first reported, and where does the incident policy send staff for baggage escalation procedures? --snapshot clean --evidence docs/evidence/m5/2026-09-25T175055Z-multi-triaged.json
+triage: cross_policy in airport-generated (selected by the caller); mode graph_rerank; policies AP-BAG-001, AP-INC-002
+  signals: ids none; issuers named none; distinctive terms airport-generated: escalation, incident, procedure, staff
+question: To whom is an operational incident first reported, and where does the incident policy send staff for baggage escalation procedures?
+snapshot clean  generation gen-df05ee25f1357f41  as_of 2025-08-01  mode graph_rerank  k 5
+embedder google/embeddinggemma-300m@57c266a740f5  query input: task: search result | query: To whom is an operational incident first reported, and where does the incident policy send staff for baggage escalation procedures?
+search: Memgraph vector_search.search on chunk_embedding, k = index size 238, filtered to the generation; 18 eligible of 18, 0 excluded
+  rrf: {'k': 60, 'vector_k': 10, 'keyword_k': 10, 'fused': 13}
+  graph: {'edge': 'REFERENCES', 'validation_status': 'validated', 'hops': 1, 'max_added': 10, 'policy_reference_chunks': 2, 'seeds': 13, 'edges_in_generation': 6, 'added': [], 'reached': ['0dd86a10642186d9867d51e60f57e1b3ea2f88172b01c49b8c747030cb3d4ab4', '493f7fcaeafb1a08fede9df39e70289a314fb51718b79c16e2eb4c929ee23a20', '6120c8c53769b675f0f253e18a114a5178617854e1527fbd4036372a697ed6a4', '64b2107e1a05f3febdd0263d9f6d3e24887f360c2eada0e6814cc5b038a3012a', '9000befd6cd7350aed94214cec20960939cdc42d04efbf1b7b92af04bd2db2ae', 'f2bf060629a12a2a89d321fb1306bb571d97adeafe399def3efbc35d98a40d71']}
+  rerank: {'model': 'cross-encoder/ms-marco-MiniLM-L6-v2', 'revision': '233902d25c440f23af6f7d6e94d2946bac0bee0a', 'max_pair_tokens': 512, 'candidates': 13, 'windowed': 0, 'timing_ms': 34.9, 'score_meaning': 'raw cross-encoder relevance logit; orders passages, not a probability'}
+exact cosine check: top-k agrees True, max score gap 1.31e-07
+retrieved:
+  [1] vec #1 0.7396 | bm25 #1 9.40+0.0 | rrf 0.0328 | rerank 6.646 (was #1) | graph also reached by REFERENCES -> AP-INC-002 | graph also reached by REFERENCES -> AP-INC-002  AP-INC-002 v1 Operational Incident Response and Review / 3 Reporting and First Response  chars 1555-2262
+  [2] vec #2 0.6959 | bm25 #4 5.70+0.0 | rrf 0.0318 | rerank 3.508 (was #3) | graph also reached by REFERENCES -> AP-BAG-001 section 4 | graph also reached by REFERENCES -> AP-BAG-001  AP-BAG-001 v2 Staff Baggage Handling and Escalation / 4 Baggage Incident Escalation  chars 2171-2875
+  [3] vec #3 0.6809 | bm25 #2 7.36+0.0 | rrf 0.0320 | rerank 3.141 (was #2) | graph also reached by REFERENCES -> AP-BAG-001  AP-BAG-001 v2 Staff Baggage Handling and Escalation / 6 Records and Review  chars 3670-4339
+  [4] vec #4 0.6041 | bm25 #5 5.52+0.0 | rrf 0.0310 | rerank 2.458 (was #5)  AP-BAG-001 v2 Staff Baggage Handling and Escalation / 1 Purpose and Scope  chars 78-706
+  [5] vec #5 0.5855 | bm25 #3 6.87+0.0 | rrf 0.0313 | rerank 1.949 (was #4) | graph also reached by REFERENCES -> AP-INC-002 | graph also reached by REFERENCES -> AP-INC-002  AP-INC-002 v1 Operational Incident Response and Review / 1 Purpose and Scope  chars 81-791
+generation: qwen3:8b sha256:a3de86cd1c13 options {'temperature': 0, 'seed': 7, 'num_ctx': 8192, 'num_predict': 1024} think false
+status: answered
+answer:
+  An operational incident is first reported to the supervisor or the Airside Duty Manager [1]. The incident policy sends staff to AP-BAG-001 section 4 for baggage escalation procedures [1].
+citations:
+  [1] AP-INC-002 v1 Operational Incident Response and Review / 3 Reporting and First Response  data/sources/generated/AP-INC-002-v1.md chars 1555-2262  resolved True
+      "All operational incidents must be reported by the affected staff member to their supervisor or the Airside Duty Manager. The Reporting Staff Member is responsible for providing a clear and accurate description of the incident, including tim…"
+timing: retrieval 195.9 ms, answer 1775.3 ms
+[exit 0]
+
+$ uv run policy-rag agent To whom is an operational incident first reported, and where does the incident policy send staff for baggage escalation procedures? --snapshot clean --evidence docs/evidence/m5/2026-09-25T175055Z-multi-agent.json
+triage: cross_policy in airport-generated (selected by the caller); mode graph_rerank; policies AP-BAG-001, AP-INC-002
+  signals: ids none; issuers named none; distinctive terms airport-generated: escalation, incident, procedure, staff
+agent: deepagents with ollama:qwen3:8b; budgets {'max_tool_calls': 6, 'max_delegations': 2, 'max_subagents': 2, 'delegation_depth': 1, 'time_limit_s': 120.0}
+  tool inventory: {'main': ['compare_versions', 'follow_policy_links', 'get_section', 'read_file', 'search_policies', 'task'], 'subagents': {'link-follower': ['follow_policy_links', 'get_section', 'read_file'], 'version-checker': ['compare_versions', 'get_section', 'read_file']}}
+  outcome completed in 11.39 s
+  call [main] search_policies({"modes": "hybrid", "query": "operational incident report, baggage escalation procedures"}) ok 377.7 ms
+  call [main] follow_policy_links({"allowed_relation_types": {"APPLIES_TO_ROLE": true, "MAPS_TO_CONTROL": true, "REFERENCES": true}, "seed_ids": ["S1"]}) error 1.0 ms
+  call [main] follow_policy_links({"seed_ids": ["S1"], "allowed_relation_types": []}) ok 4.6 ms
+  call [main] get_section({"section_id": "S2"}) ok 1.1 ms
+  call [main] get_section({"section_id": "S1"}) ok 1.0 ms
+  path airport-generated:AP-BAG-001:v2:4 Baggage Incident Escalation -REFERENCES-> AP-INC-002 (validated)
+  evidence chunks: 5
+status: answered
+answer:
+  An operational incident is first reported to the affected staff member's supervisor or the Airside Duty Manager [2]. The incident policy sends staff to AP-BAG-001 section 4 for baggage escalation procedures [2].
+  [2] AP-INC-002 v1 Operational Incident Response and Review / 3 Reporting and First Response  resolved True
+[exit 0]
+
+$ uv run policy-rag agent A handler finds a restricted item in a checked bag. What must happen to the bag, who approves the item, and how must the incident be reported? --evidence docs/evidence/m5/2026-09-25T175055Z-restricted-agent.json
+triage: cross_policy in airport-generated (4 terms found only in this corpus: approve, find, handler, incident); mode graph_rerank; policies AP-INC-002, AP-SEC-003
+  signals: ids none; issuers named none; distinctive terms airport-generated: approve, find, handler, incident
+agent: deepagents with ollama:qwen3:8b; budgets {'max_tool_calls': 6, 'max_delegations': 2, 'max_subagents': 2, 'delegation_depth': 1, 'time_limit_s': 120.0}
+  tool inventory: {'main': ['compare_versions', 'follow_policy_links', 'get_section', 'read_file', 'search_policies', 'task'], 'subagents': {'link-follower': ['follow_policy_links', 'get_section', 'read_file'], 'version-checker': ['compare_versions', 'get_section', 'read_file']}}
+  outcome completed in 10.54 s
+  call [main] search_policies({"modes": "keyword", "query": "restricted item checked bag procedure"}) ok 5.3 ms
+  call [main] follow_policy_links({"allowed_relation_types": ["REFERENCES"], "seed_ids": ["S1", "S2"]}) ok 7.0 ms
+  call [main] get_section({"section_id": "S1"}) ok 1.0 ms
+  call [main] get_section({"section_id": "S2"}) ok 0.8 ms
+  call [main] get_section({"section_id": "S5"}) ok 1.0 ms
+  path airport-generated:AP-BAG-001:v2:5 Restricted Items Found in Baggage -REFERENCES-> AP-SEC-003 (validated)
+  path airport-generated:AP-SEC-003:v1:5 Restricted Items Found in Baggage -REFERENCES-> AP-BAG-001 (validated)
+  path airport-generated:AP-SEC-003:v1:5 Restricted Items Found in Baggage -REFERENCES-> AP-INC-002 (validated)
+  evidence chunks: 5
+status: answered
+answer:
+  The bag must be isolated and secured to prevent unauthorized access [1], and the restricted item must be removed from the baggage and secured for further review [2]. The Security Duty Manager must approve the item [3]. The incident must be reported under AP-INC-002, including details of the item, the baggage, and the location of discovery [2].
+  [1] AP-BAG-001 v2 Staff Baggage Handling and Escalation / 5 Restricted Items Found in Baggage  resolved True
+  [2] AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals / 5 Restricted Items Found in Baggage  resolved True
+  [3] AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals / 4 Approval Procedure for Restricted Items  resolved True
+[exit 0]
+
+$ uv run policy-rag evaluate --suite dev --evidence docs/evidence/m5/2026-09-25T175055Z-dev-evaluation.json
+D-G01  vector        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2879 ms
+D-G01  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2278 ms
+D-G01  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  1738 ms
+D-G01  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  1786 ms
+D-G01  graph_rerank  cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  1194 ms
+D-G02  vector        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  3258 ms
+D-G02  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2979 ms
+D-G02  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  1518 ms
+D-G02  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  1801 ms
+D-G02  graph_rerank  cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  968 ms
+D-G03  vector        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2044 ms
+D-G03  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  3362 ms
+D-G03  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  3080 ms
+D-G03  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  3507 ms
+D-G03  graph_rerank  cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  1955 ms
+D-G04  vector        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  3130 ms
+D-G04  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2229 ms
+D-G04  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2304 ms
+D-G04  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2340 ms
+D-G04  graph_rerank  cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  825 ms
+D-G07  vector        cand@20 1.00 r@3 0.00 r@5 0.00  insufficient_evidence facts 0.00 FAIL  4078 ms
+D-G07  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  5385 ms
+D-G07  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  6238 ms
+D-G07  hybrid_rerank cand@20 1.00 r@3 0.00 r@5 1.00  answered              facts 1.00 PASS  judge True  5669 ms
+D-G07  graph_rerank  cand@20 1.00 r@3 0.00 r@5 1.00  answered              facts 1.00 PASS  judge True  3975 ms
+D-G05  vector        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  3293 ms
+D-G05  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2421 ms
+D-G05  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2482 ms
+D-G05  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2529 ms
+D-G05  graph_rerank  cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  1247 ms
+D-G06  vector        cand@20 n/a  r@3 n/a  r@5 n/a   insufficient_evidence facts n/a  PASS  3455 ms
+D-G06  keyword       cand@20 n/a  r@3 n/a  r@5 n/a   insufficient_evidence facts n/a  PASS  2622 ms
+D-G06  hybrid        cand@20 n/a  r@3 n/a  r@5 n/a   insufficient_evidence facts n/a  PASS  1970 ms
+D-G06  hybrid_rerank cand@20 n/a  r@3 n/a  r@5 n/a   insufficient_evidence facts n/a  PASS  2948 ms
+D-G06  graph_rerank  cand@20 n/a  r@3 n/a  r@5 n/a   insufficient_evidence facts n/a  PASS  1147 ms
+D-I01  vector        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge False  5540 ms
+D-I01  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge False  5070 ms
+D-I01  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge False  3954 ms
+D-I01  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge False  3365 ms
+D-I01  graph_rerank  cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge False  3084 ms
+D-I02  vector        cand@20 1.00 r@3 1.00 r@5 1.00  insufficient_evidence facts n/a  PASS  5755 ms
+D-I02  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  insufficient_evidence facts n/a  PASS  2870 ms
+D-I02  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts n/a  FAIL  judge True  2442 ms
+D-I02  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  insufficient_evidence facts n/a  PASS  5816 ms
+D-I02  graph_rerank  cand@20 1.00 r@3 1.00 r@5 1.00  insufficient_evidence facts n/a  PASS  4807 ms
+D-I03  vector        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  3406 ms
+D-I03  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2912 ms
+D-I03  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  3287 ms
+D-I03  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2926 ms
+D-I03  graph_rerank  cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  1960 ms
+D-I04  vector        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  3249 ms
+D-I04  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2010 ms
+D-I04  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2083 ms
+D-I04  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  3200 ms
+D-I04  graph_rerank  cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  1852 ms
+D-I05  vector        cand@20 1.00 r@3 1.00 r@5 1.00  insufficient_evidence facts n/a  PASS  3569 ms
+D-I05  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  insufficient_evidence facts n/a  PASS  3257 ms
+D-I05  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  insufficient_evidence facts n/a  PASS  3593 ms
+D-I05  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  insufficient_evidence facts n/a  PASS  3094 ms
+D-I05  graph_rerank  cand@20 1.00 r@3 1.00 r@5 1.00  insufficient_evidence facts n/a  PASS  2426 ms
+D-I06  vector        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  3382 ms
+D-I06  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2818 ms
+D-I06  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2930 ms
+D-I06  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2013 ms
+D-I06  graph_rerank  cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  1590 ms
+needle check in an isolated index
+  needle by_code    vector        rank 1
+  needle by_code    keyword       rank 1
+  needle by_code    hybrid        rank 1
+  needle by_code    hybrid_rerank rank 1
+  needle by_code    graph_rerank  rank 1
+  needle paraphrase vector        rank 1
+  needle paraphrase keyword       rank 1
+  needle paraphrase hybrid        rank 1
+  needle paraphrase hybrid_rerank rank 1
+  needle paraphrase graph_rerank  rank 1
+  isolation ok True
+vector:
+  all       cases 13  candidate_recall_at_20 1.00  recall_at_3 0.92  recall_at_5 0.92  fact_accuracy 0.90  case_pass_rate 0.92  citation_validity 1.00  judge_support_score 0.79  p50 3382.0 p95 5755.3 ms
+  generated cases  7  candidate_recall_at_20 1.00  recall_at_3 0.83  recall_at_5 0.83  fact_accuracy 0.83  case_pass_rate 0.86  citation_validity 1.00  judge_support_score 1.00  p50 3258.0 p95 4078.5 ms
+  imported  cases  6  candidate_recall_at_20 1.00  recall_at_3 1.00  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 1.00  citation_validity 1.00  judge_support_score 0.62  p50 3405.9 p95 5755.3 ms
+  targets: all measured targets met  (mean eligible pool 15.6 chunks)
+keyword:
+  all       cases 13  candidate_recall_at_20 1.00  recall_at_3 1.00  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 1.00  citation_validity 1.00  judge_support_score 0.81  p50 2870.2 p95 5385.4 ms
+  generated cases  7  candidate_recall_at_20 1.00  recall_at_3 1.00  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 1.00  citation_validity 1.00  judge_support_score 1.00  p50 2621.5 p95 5385.4 ms
+  imported  cases  6  candidate_recall_at_20 1.00  recall_at_3 1.00  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 1.00  citation_validity 1.00  judge_support_score 0.62  p50 2870.2 p95 5070.4 ms
+  targets: all measured targets met  (mean eligible pool 15.6 chunks)
+hybrid:
+  all       cases 13  candidate_recall_at_20 1.00  recall_at_3 1.00  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 0.92  citation_validity 1.00  judge_support_score 0.93  p50 2481.6 p95 6238.0 ms
+  generated cases  7  candidate_recall_at_20 1.00  recall_at_3 1.00  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 1.00  citation_validity 1.00  judge_support_score 1.00  p50 2303.7 p95 6238.0 ms
+  imported  cases  6  candidate_recall_at_20 1.00  recall_at_3 1.00  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 0.83  citation_validity 1.00  judge_support_score 0.86  p50 2930.5 p95 3953.8 ms
+  targets: all measured targets met  (mean eligible pool 15.6 chunks)
+hybrid_rerank:
+  all       cases 13  candidate_recall_at_20 1.00  recall_at_3 0.92  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 1.00  citation_validity 1.00  judge_support_score 0.92  p50 2948.2 p95 5816.2 ms
+  generated cases  7  candidate_recall_at_20 1.00  recall_at_3 0.83  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 1.00  citation_validity 1.00  judge_support_score 1.00  p50 2528.9 p95 5669.2 ms
+  imported  cases  6  candidate_recall_at_20 1.00  recall_at_3 1.00  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 1.00  citation_validity 1.00  judge_support_score 0.83  p50 3093.6 p95 5816.2 ms
+  targets: all measured targets met  (mean eligible pool 15.6 chunks)
+graph_rerank:
+  all       cases 13  candidate_recall_at_20 1.00  recall_at_3 0.92  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 1.00  citation_validity 1.00  judge_support_score 0.92  p50 1852.4 p95 4807.3 ms
+  generated cases  7  candidate_recall_at_20 1.00  recall_at_3 0.83  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 1.00  citation_validity 1.00  judge_support_score 1.00  p50 1193.8 p95 3974.7 ms
+  imported  cases  6  candidate_recall_at_20 1.00  recall_at_3 1.00  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 1.00  citation_validity 1.00  judge_support_score 0.83  p50 1960.2 p95 4807.3 ms
+  targets: all measured targets met  (mean eligible pool 15.6 chunks)
+triage without a selected context: 12/13 to the case's corpus, asked for context ['D-I01'], wrong context none
+triage with the case's context: asked for context none; cross-policy ['D-G03', 'D-G04', 'D-G05']; missing-fact flags none
+judge disagrees: {'case_id': 'D-I01', 'mode': 'vector', 'deterministic_pass': True, 'judge_all_supported': False}
+judge disagrees: {'case_id': 'D-I01', 'mode': 'keyword', 'deterministic_pass': True, 'judge_all_supported': False}
+judge disagrees: {'case_id': 'D-I01', 'mode': 'hybrid', 'deterministic_pass': True, 'judge_all_supported': False}
+judge disagrees: {'case_id': 'D-I01', 'mode': 'hybrid_rerank', 'deterministic_pass': True, 'judge_all_supported': False}
+judge disagrees: {'case_id': 'D-I01', 'mode': 'graph_rerank', 'deterministic_pass': True, 'judge_all_supported': False}
+judge disagrees: {'case_id': 'D-I02', 'mode': 'hybrid', 'deterministic_pass': False, 'judge_all_supported': True}
+needle isolation ok: True
+report: docs/evidence/m5/2026-09-25T175055Z-dev-evaluation.json
+[exit 0]
+
+$ uv run pytest -q -m live --junitxml docs/evidence/m5/2026-09-25T175055Z-live-junit.xml
+......................................                                   [100%]
+38 passed, 137 deselected in 88.98s (0:01:28)
+[exit 0]
+
+$ uv run python scripts/check_no_skips.py docs/evidence/m5/2026-09-25T175055Z-live-junit.xml
+38 tests, 0 skipped
+[exit 0]
+
+$ uv run pytest -q
+........................................................................ [ 52%]
+.................................................................        [100%]
+137 passed, 38 deselected in 1.16s
+[exit 0]

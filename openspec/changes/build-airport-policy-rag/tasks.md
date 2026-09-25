@@ -59,7 +59,7 @@ Milestones 0, 1, and 2 are checked. Later milestones stay open. A checkbox requi
 - [x] 5.4 Verify local Deep Agents/Ollama tool calling and inspect the full enabled tool inventory.
 - [x] 5.5 Expose only allowlisted read tools; enforce request/step/time/delegation budgets and isolated state.
 - [x] 5.6 Test prompt injection and absent-source behavior.
-- [ ] 5.7 Run a multi-policy scenario and preserve the graph paths and tool outcomes.
+- [x] 5.7 Run a multi-policy scenario and preserve the graph paths and tool outcomes.
 
 ## 6. Frontend, experiments, diagnosis, and submission
 
