@@ -38,7 +38,6 @@ def main() -> None:
                 text,
                 document_version_id=version_id,
                 document_title=document["policy_issuer"],
-                access_policy_id=document["access_policy_id"],
                 tokenizer=tokenizer,
                 config=config,
             )
@@ -51,7 +50,6 @@ def main() -> None:
                     "heading_path": child.heading_path,
                     "parent_id": child.parent_id,
                     "chunk_id": child.chunk_id,
-                    "access_policy_id": child.access_policy_id,
                     "token_count": child.token_count,
                     "overlap_tokens": child.overlap_tokens,
                     "source_start": child.source_start,

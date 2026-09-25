@@ -22,4 +22,4 @@ What stays, because it is data quality and correctness rather than access contro
 
 The application serves one local user, and every indexed policy is readable. Role, Department, and Control graph nodes stay as policy concepts named in the sources.
 
-The chunker in `backend/app/chunking/` still carries an `access_policy_id` on every section and child and still treats it as a split boundary, and `config/corpus-manifest.json` still supplies that field to `scripts/chunk_imported_corpus.py`. That code predates this decision and is left unchanged here.
+The chunker no longer carries an `access_policy_id`. Children split at document versions and parent sections only. `config/corpus-manifest.json` no longer has `tenant_id`, `classification`, or `access_policy_id`.

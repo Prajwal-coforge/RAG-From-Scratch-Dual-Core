@@ -12,7 +12,7 @@ Defaults, counted by the caller-supplied tokenizer:
 - overlap up to 50 tokens, and only whole trailing sentences
 - a section that already fits under the maximum stays one child
 
-A child never crosses a document version or an access policy. Overlap stays inside the same parent. Tables split into row groups that repeat the header. A condition and its exception stay in one child when they fit under the maximum; otherwise the condition chunk points at the exception chunk. A sentence over the maximum becomes labeled subspans with continuation links. Nothing is truncated to force a fit.
+A child never crosses a document version or a parent section. Overlap stays inside the same parent. Tables split into row groups that repeat the header. A condition and its exception stay in one child when they fit under the maximum; otherwise the condition chunk points at the exception chunk. A sentence over the maximum becomes labeled subspans with continuation links. Nothing is truncated to force a fit.
 
 The previous character-window splitter in `src/policy_rag/chunking.py` is not this strategy.
 

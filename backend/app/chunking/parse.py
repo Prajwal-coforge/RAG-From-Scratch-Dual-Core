@@ -21,7 +21,6 @@ class Section:
     text: str
     body_start: int
     body_end: int
-    access_policy_id: str
 
 
 def parse_sections(
@@ -29,12 +28,9 @@ def parse_sections(
     *,
     document_version_id: str,
     document_title: str,
-    access_policy_id: str,
-    access_by_heading: dict[str, str] | None = None,
 ) -> list[Section]:
     """Parse Markdown or numbered headings. Each heading is its own parent."""
     headings = _headings(text)
-    overrides = access_by_heading or {}
     sections: list[Section] = []
     if not headings:
         body = text
@@ -48,7 +44,6 @@ def parse_sections(
                     document_title,
                     0,
                     len(text),
-                    access_policy_id,
                 )
             )
         return sections
@@ -64,7 +59,6 @@ def parse_sections(
                 document_title,
                 0,
                 first,
-                access_policy_id,
             )
         )
 
@@ -72,7 +66,6 @@ def parse_sections(
         line_end = text.find("\n", start)
         body_start = len(text) if line_end < 0 else line_end + 1
         body_end = headings[index + 1][0] if index + 1 < len(headings) else len(text)
-        policy = overrides.get(heading, access_policy_id)
         sections.append(
             _section(
                 text,
@@ -82,7 +75,6 @@ def parse_sections(
                 heading,
                 body_start,
                 body_end,
-                policy,
             )
         )
     return sections
@@ -131,7 +123,6 @@ def _section(
     heading_path: str,
     body_start: int,
     body_end: int,
-    access_policy_id: str,
 ) -> Section:
     return Section(
         section_id=f"{document_version_id}:{heading_path}",
@@ -142,5 +133,4 @@ def _section(
         text=text,
         body_start=body_start,
         body_end=body_end,
-        access_policy_id=access_policy_id,
     )

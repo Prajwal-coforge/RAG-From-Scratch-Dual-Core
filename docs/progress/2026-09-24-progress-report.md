@@ -22,7 +22,7 @@ The imported corpus is three aviation files from `DecisionsDev/policy-corpus` at
 | Memgraph | `memgraph/memgraph-mage:3.13.0` via `infra/compose.yaml`, bound to `127.0.0.1:7687`. Lab 3.7.1 is at `http://127.0.0.1:3000`. |
 | Graph shape | Schema preview only, loaded by `infra/schema-preview.cypher`. Unique `id` constraints and an empty cosine index `chunk_embedding` (768 dimensions). Not ingested policy text. |
 | OpenSpec | CLI 1.13.2 initialized for Cursor. Commands are `.cursor/commands/opsx-*.md`. `openspec validate` passed for `build-airport-policy-rag`. The change is not archived. |
-| Chunking | `backend/app/chunking/`. Parent is one section. Child target is 300 EmbeddingGemma tokens, maximum 400, overlap at most 50 whole sentences. Version and access boundaries are not crossed. |
+| Chunking | `backend/app/chunking/`. Parent is one section. Child target is 300 EmbeddingGemma tokens, maximum 400, overlap at most 50 whole sentences. Version and section boundaries are not crossed. |
 | Two-text proof | `policy-rag smoke` at commit `cbbbd9b`. Two texts embedded by `embeddinggemma`, stored in Memgraph under their own index `smoke_text_embedding`, and each question returned its expected text first (0.6242 vs 0.1266, 0.5523 vs 0.2038). Evidence in `docs/evidence/m1/`. `chunk_embedding` stayed at size 0. |
 | Tests | 26 unit tests pass on Python 3.12.14. `pytest -m live` runs the real two-text test against Ollama and Memgraph and passed. |
 | Imported sources | Three files fetched, SHA-256 checked, Apache-2.0 `LICENSE` kept under `data/sources/imported/`. |
