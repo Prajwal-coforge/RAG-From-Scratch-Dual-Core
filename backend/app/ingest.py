@@ -514,6 +514,23 @@ def rollback(snapshot_id: str, *, bolt: str | None = None, state: State | None =
     return report
 
 
+def reset_index(*, bolt: str | None = None, log: Callable[[str], None] = print) -> int:
+    """Delete every generation and publication pointer. Schema-preview and probe nodes stay."""
+    driver, index = connect(bolt)
+    try:
+        with driver.session() as session:
+            store = GraphStore(session, index)
+            removed = session.run(
+                "MATCH (n) WHERE n.generation_id IS NOT NULL OR n:IndexGeneration OR n:Publication "
+                "DETACH DELETE n RETURN count(n) AS n"
+            ).single()["n"]
+            store.free_memory()
+            log(f"removed {removed} generation and publication nodes; vector index {index} size {store.index_size()}")
+            return int(removed)
+    finally:
+        driver.close()
+
+
 def index_status(*, bolt: str | None = None) -> dict:
     driver, index = connect(bolt)
     try:

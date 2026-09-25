@@ -44,7 +44,8 @@ def main(argv: list[str] | None = None) -> int:
     rollback = subcommands.add_parser("rollback", help="Republish the previous generation of a snapshot")
     rollback.add_argument("--snapshot", required=True)
     index = subcommands.add_parser("index", help="Show publication pointers and generations")
-    index.add_argument("action", choices=["status"])
+    index.add_argument("action", choices=["status", "reset"])
+    index.add_argument("--yes", action="store_true", help="Confirm reset: delete every generation and pointer")
     ask = subcommands.add_parser("ask", help="Basic RAG: vector retrieval and a cited local answer")
     ask.add_argument("question")
     ask.add_argument("--snapshot", default="clean")
@@ -166,10 +167,16 @@ def print_ask(retrieval: dict, result: dict) -> None:
 
 
 def run_index(args: argparse.Namespace) -> int:
-    from app.ingest import PublicationRefused, index_status, ingest, rollback
+    from app.ingest import PublicationRefused, index_status, ingest, reset_index, rollback
 
     if args.command == "index":
-        print(json.dumps(index_status(), indent=2))
+        if args.action == "reset":
+            if not args.yes:
+                print("index reset deletes every generation and publication pointer; pass --yes to confirm")
+                return 2
+            reset_index()
+            return 0
+        print_status(index_status())
         return 0
     if args.command == "rollback":
         rollback(args.snapshot)
@@ -182,6 +189,19 @@ def run_index(args: argparse.Namespace) -> int:
         args.evidence.parent.mkdir(parents=True, exist_ok=True)
         args.evidence.write_text(json.dumps(report, indent=2) + "\n")
     return 0
+
+
+def print_status(status: dict) -> None:
+    print(f"vector index {status['vector_index']} size {status['index_size']}")
+    print("publications:")
+    for row in status["publications"]:
+        print(f"  {row['snapshot_id']:32} current {row['current']}  previous {row['previous']}")
+    print("generations:")
+    for row in status["generations"]:
+        print(
+            f"  {row['id']}  {row['snapshot_id']:32} {row['status']:9} profile {row['profile']:10} "
+            f"chunks {row['stored_chunks']}/{row['chunk_count']}"
+        )
 
 
 def run_corpus(args: argparse.Namespace) -> int:
