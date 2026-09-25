@@ -2,37 +2,29 @@
 
 from __future__ import annotations
 
-import hashlib
 import json
-import urllib.request
 from pathlib import Path
 
 from app.chunking.chunk import ChunkConfig, chunk_document
 from app.chunking.gguf_tokenizer import GemmaTokenizer
+from app.corpus.imported import SOURCE_ROOT, fetch_license, fetch_verified, load_manifest
 
 ROOT = Path(__file__).resolve().parents[1]
-MANIFEST = ROOT / "airport-policy-rag-spec" / "config" / "corpus-manifest.json"
-SOURCE_ROOT = ROOT / "data" / "sources" / "imported"
 OUTPUT = ROOT / ".local" / "build" / "chunks" / "imported-chunks.jsonl"
 SUMMARY = ROOT / ".local" / "build" / "chunks" / "imported-summary.json"
-LICENSE_URL = (
-    "https://raw.githubusercontent.com/DecisionsDev/policy-corpus/"
-    "948dacadbe03ca4d978ea3d6ccc19131e6a92efb/LICENSE"
-)
 
 
 def main() -> None:
-    manifest = json.loads(MANIFEST.read_text())
-    SOURCE_ROOT.mkdir(parents=True, exist_ok=True)
+    manifest = load_manifest()
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    _fetch_license()
+    fetch_license()
     tokenizer = GemmaTokenizer()
     config = ChunkConfig()
     summary = []
     with OUTPUT.open("w") as handle:
         for document in manifest["documents"]:
             path = SOURCE_ROOT / document["path"]
-            text = _fetch_verified(document["source_url"], path, document["sha256"])
+            text = fetch_verified(document["source_url"], path, document["sha256"])
             version_id = f"{document['corpus_id']}:{document['sha256'][:12]}"
             children = chunk_document(
                 text,
@@ -84,28 +76,6 @@ def main() -> None:
             )
     SUMMARY.write_text(json.dumps({"tokenizer": tokenizer.name, "documents": summary}, indent=2))
     print(f"wrote {OUTPUT}")
-
-
-def _fetch_verified(url: str, path: Path, expected: str) -> str:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    if path.exists():
-        data = path.read_bytes()
-    else:
-        with urllib.request.urlopen(url, timeout=60) as response:
-            data = response.read()
-        path.write_bytes(data)
-    digest = hashlib.sha256(data).hexdigest()
-    if digest != expected:
-        raise SystemExit(f"{path} sha256 {digest} does not match {expected}")
-    return data.decode("utf-8")
-
-
-def _fetch_license() -> None:
-    destination = SOURCE_ROOT / "LICENSE"
-    if destination.exists():
-        return
-    with urllib.request.urlopen(LICENSE_URL, timeout=60) as response:
-        destination.write_bytes(response.read())
 
 
 if __name__ == "__main__":

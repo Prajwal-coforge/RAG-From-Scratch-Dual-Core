@@ -21,7 +21,17 @@ def main(argv: list[str] | None = None) -> int:
     )
     smoke = subcommands.add_parser("smoke", help="Embed two known texts, store them in Memgraph, and retrieve")
     smoke.add_argument("--evidence", type=Path, help="Write the JSON report to this path")
+    corpus = subcommands.add_parser("corpus", help="Import sources, generate policies, and build manifests")
+    corpus_steps = corpus.add_subparsers(dest="step", required=True)
+    corpus_steps.add_parser("import", help="Fetch and verify the three pinned aviation files")
+    generate = corpus_steps.add_parser("generate", help="Generate the AeroPolicy documents with the local model")
+    generate.add_argument("--only", nargs="+", help="Policy keys to generate, for example bag-v2")
+    generate.add_argument("--force", action="store_true", help="Replace existing generated documents")
+    manifests = corpus_steps.add_parser("manifests", help="Build the four dataset manifests from the catalog")
+    manifests.add_argument("--force", action="store_true", help="Replace manifests whose content changed")
     args = parser.parse_args(argv)
+    if args.command == "corpus":
+        return run_corpus(args)
     if args.command == "smoke":
         from app.smoke import run_smoke
 
@@ -40,6 +50,26 @@ def main(argv: list[str] | None = None) -> int:
             args.evidence.write_text(json.dumps(report, indent=2) + "\n")
         return summarize(checks)
     return 2
+
+
+def run_corpus(args: argparse.Namespace) -> int:
+    if args.step == "import":
+        from app.corpus.imported import import_sources
+
+        for row in import_sources():
+            print(f"verified {row['corpus_id']}: {row['path']} {row['sha256'][:12]}")
+        return 0
+    if args.step == "generate":
+        from app.corpus.generate import generate_all
+
+        generate_all(keys=tuple(args.only) if args.only else None, force=args.force)
+        return 0
+    from app.corpus.manifests import build_manifests, load_catalog, write_manifests
+
+    sums = write_manifests(build_manifests(load_catalog()), force=args.force)
+    for name, digest in sums.items():
+        print(f"{name}: {digest[:19]}")
+    return 0
 
 
 if __name__ == "__main__":
