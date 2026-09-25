@@ -11,12 +11,17 @@ The system SHALL provide independently executable vector, hybrid, reranked, grap
 - **THEN** the report isolates candidate-retrieval differences without changing the source or generation settings.
 
 ### Requirement: RET-02 Hybrid candidate merging
-The system SHALL combine semantic and keyword candidates using a documented rank-combination and deduplication rule.
+The system SHALL combine semantic candidates with locally implemented BM25 keyword candidates using reciprocal rank fusion and a documented deduplication rule.
 
 #### Scenario: Exact section identifier
 - **GIVEN** a query containing a policy identifier
 - **WHEN** hybrid search runs
 - **THEN** keyword and vector contributions remain observable and repeated chunks appear once.
+
+#### Scenario: Identifier tokens survive keyword indexing
+- **GIVEN** chunk text containing AP-BAG-001, section 4.2, and 23 kg
+- **WHEN** the BM25 index is built and queried for those terms
+- **THEN** each is matched as a single term and its BM25 score, exact-match boost, and rank are recorded.
 
 ### Requirement: RET-04 Independent reranking
 The system SHALL explicitly rescore question-passage pairs after initial retrieval and retain before/after ordering.

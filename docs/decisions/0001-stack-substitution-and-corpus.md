@@ -9,7 +9,7 @@ The assignment in `airport-policy-rag-spec/ORIGINAL_ASSIGNMENT.txt` suggests a l
 
 | Concern | Assignment wording | Selected stack |
 | --- | --- | --- |
-| Embeddings | `sentence-transformers`, local, no API key | Ollama `embeddinggemma`, 768-dimensional vectors, `/api/embed`, `truncate=false` |
+| Embeddings | `sentence-transformers`, local, no API key | `sentence-transformers` with `google/embeddinggemma-300m`, 768-dimensional vectors, over-limit inputs refused (`0005-retrieval-and-evaluation-methods.md`). The milestone 1 proof used Ollama `embeddinggemma` |
 | Vector store | `chromadb`, local, no account | Memgraph Community with a persistent volume and a real vector index |
 | Answer model | an LLM API, hosted APIs allowed | Local Ollama `qwen3:8b` only. No hosted fallback |
 | Reranker | `sentence-transformers` cross-encoder | Unchanged: `cross-encoder/ms-marco-MiniLM-L6-v2` |
@@ -34,7 +34,7 @@ Imported files, kept as separate issuers:
 
 Hashes and raw URLs are in `airport-policy-rag-spec/config/corpus-manifest.json`. SkyWings rules do not apply to AetherSky employees. Selecting more than one corpus is not permission to blend them.
 
-The four generated documents are still required and do not exist yet:
+The four generated documents, in `data/sources/generated/`:
 
 1. AP-BAG-001 v2 — Staff Baggage Handling and Escalation (10-minute deadline)
 2. AP-INC-002 v1 — Operational Incident Response and Review

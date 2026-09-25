@@ -32,7 +32,7 @@ All items are pending. A checkbox requires its associated test or recorded evide
 - [ ] 3.1 Implement numbered-text/Markdown parsers and reversible original-source offset mapping.
 - [ ] 3.2 Validate missing references, incompatible dates, metadata, and source duplicates.
 - [ ] 3.3 Implement section-aware parent–child chunking, bounded overlap, and table/exception handling.
-- [ ] 3.4 Implement formatted batched embeddings with truncate=false and configuration fingerprints.
+- [ ] 3.4 Implement formatted batched sentence-transformers EmbeddingGemma embeddings with a pre-encode token-limit refusal and configuration fingerprints; repeat the two-text proof with this embedder before full ingestion.
 - [ ] 3.5 Implement idempotent generation-based indexing, rollback, and source retirement.
 - [ ] 3.6 Implement vector retrieval over the Memgraph index with an exact-cosine check.
 - [ ] 3.7 Implement independent basic RAG CLI and local generation with resolvable citations.
@@ -41,13 +41,13 @@ All items are pending. A checkbox requires its associated test or recorded evide
 
 ## 4. Hybrid, reranking, and first evaluation
 
-- [ ] 4.1 Implement keyword search preserving identifiers, phrases, units, and negation.
+- [ ] 4.1 Implement local BM25 keyword search with an exact-identifier boost, preserving identifiers, phrases, units, and negation.
 - [ ] 4.2 Implement documented rank fusion and stable chunk deduplication.
 - [ ] 4.3 Implement actual cross-encoder pair scoring and checked 512-token paired inputs.
 - [ ] 4.4 Implement parent/exception context packing and evidence-budget handling.
 - [ ] 4.5 Draft and source-review 12 development and 12 held-out questions; include at least 8 generated-corpus cases in held-out.
 - [ ] 4.6 Freeze held-out labels and hashes before tuning; keep all evaluation artifacts out of ingestion.
-- [ ] 4.7 Implement pytest recall, answer facts, status, and citation metrics.
+- [ ] 4.7 Implement pytest recall, deterministic answer facts, status, and citation metrics; report a non-gating LLM-judge support score and the needle retrieval ranks per mode.
 - [ ] 4.8 Run and capture a development query demonstrating hybrid improvement over vector-only.
 - [ ] 4.9 Run a real-service integration CI job; do not use skipped/mocked checks as submission evidence.
 

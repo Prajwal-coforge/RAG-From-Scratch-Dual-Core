@@ -1,6 +1,6 @@
 # Airport Policy RAG — Development Specification
 
-Version: 1.1 · Prepared 2026-09-24 · Revised 2026-09-25: data governance layer and authentication removed
+Version: 1.2 · Prepared 2026-09-24 · Revised 2026-09-25: data governance layer and authentication removed; embeddings through sentence-transformers, BM25 keyword retrieval, non-gating LLM-judge report, needle retrieval check
 Status: approved project direction; implementation and performance remain unverified.
 Audience: the development agent on the user's work laptop.
 
@@ -11,7 +11,7 @@ Build a working local internal policy assistant for airport/airline staff. It mu
 Use the DecisionsDev/policy-corpus aviation examples as the imported corpus. “Airport corpus” in this specification means the three aviation-related documents identified below; it does not mean a single real airport's policy collection.
 
 Decisions:
-- Local Ollama for document/query embeddings, corpus generation, agent reasoning, and answer generation.
+- Local sentence-transformers for document/query embeddings (EmbeddingGemma) and reranking, as the assignment names. Local Ollama for corpus generation, agent reasoning, and answer generation.
 - Memgraph for vector persistence/search and policy relationships; no Chroma.
 - A local cross-encoder for reranking through sentence-transformers.
 - A JavaScript frontend using React and Vite.
@@ -121,7 +121,7 @@ Imported examples supplement these generated documents. They do not replace the 
 flowchart TD
     S[Versioned policy files and manifests] --> I[Parse and validate]
     I --> C[Section-aware child chunks and parents]
-    C --> E[Ollama EmbeddingGemma]
+    C --> E[sentence-transformers EmbeddingGemma]
     E --> M[Memgraph vectors and policy graph]
     I --> G[Validated policy relationships]
     G --> M
@@ -147,7 +147,7 @@ Proposed defaults:
 - Python 3.11+ compatible with locked dependencies.
 - React + Vite, JavaScript (JSX); package lock committed.
 - Memgraph Community with a persistent local volume, a pinned compatible image, and required vector procedures verified.
-- Ollama embeddinggemma, full 768-dimensional vectors.
+- google/embeddinggemma-300m through sentence-transformers, pinned revision, full 768-dimensional vectors. The Hugging Face repository is gated: accept the Gemma license and authenticate locally once; never commit the token. Ollama embeddinggemma served the milestone 1 proof and stays available only as a recorded earlier configuration, never mixed into the same index.
 - Ollama qwen3:8b for chat/tool calling. Preflight memory and actual tool-call compatibility before enabling agent mode.
 - cross-encoder/ms-marco-MiniLM-L6-v2 through sentence-transformers; pin resolved model revision.
 - pytest for automated tests; Playwright for frontend behavior and screenshots.
@@ -157,7 +157,7 @@ Do not invent dependency versions. Resolve compatible versions during preflight,
 
 Backend on host + Memgraph in Docker + Ollama on host is the initial deployment. Make host/container URLs configurable; localhost has different meanings inside a container. Bind development services to loopback where practical.
 
-Check actual /api/embed and /api/chat responses, 768-vector length, tokenizer loading, cross-encoder inference, Memgraph persistence after restart, and one tool call through the selected local agent adapter.
+Check actual sentence-transformers embeddings and /api/chat responses, 768-vector length, tokenizer loading, cross-encoder inference, Memgraph persistence after restart, and one tool call through the selected local agent adapter.
 
 ## 7. Data contracts
 
@@ -253,7 +253,12 @@ Document: title: <policy and section> | text: <chunk>
 Query: task: search result | query: <question>
 ~~~
 
-Use /api/embed, batches, bounded retry/backoff, and truncate=false. Verify
+Embed with sentence-transformers `encode` on the already formatted strings,
+with no built-in prompt, so the prefix is applied once; the model's own
+`query`/`document` prompts would add a second prefix and force `title: none`.
+sentence-transformers truncates silently at `max_seq_length`, so count every
+formatted input with the model's own tokenizer first and refuse any input over
+the limit; this replaces Ollama's truncate=false. Batch inputs. Verify
 finite values, vector length 768, and expected normalization. Use cosine
 similarity; never compare embeddings from different models just because the
 dimension matches.
@@ -322,9 +327,13 @@ Cap by available eligible documents. Deduplicate by chunk identity, not
 just similar wording or titles.
 
 Keyword retrieval preserves identifiers, section numbers, negation, units,
-and acronyms. A transparent local implementation is sufficient: exact
-identifier/phrase matches then token-overlap rank, with documented weights.
-Optional BM25 is permitted but unnecessary initially.
+and acronyms. Implement Okapi BM25 locally without a search library
+(k1 = 1.5, b = 0.75, over the same child chunks, including title and heading
+text), with a tokenizer that keeps identifiers such as AP-BAG-001, section
+numbers such as 4.2, and number-unit pairs such as 23 kg as single terms.
+Add a documented exact-match boost when a query identifier or quoted phrase
+appears verbatim in a chunk. Record the BM25 score, the boost, and the rank
+for every keyword candidate.
 
 RRF combines ranked lists, not raw incomparable scores:
 score(d) = sum over matching lists of 1 / (60 + rank_in_list(d)).
@@ -481,7 +490,18 @@ Metrics:
 - For multiple acceptable evidence sets, score against the best fully
   specified acceptable set; document the chosen formula.
 - Answer fact accuracy: fraction of required facts correctly expressed,
-  with exact numeric/unit checks and supported paraphrase matching.
+  with exact numeric/unit checks and supported paraphrase matching. These
+  deterministic checks, plus prohibited facts and status, decide pass/fail.
+- LLM-judge support score (reported, never gating): the local chat model
+  rates each answer claim as supported or unsupported by the cited evidence,
+  with a fixed rubric prompt at temperature 0. Disclose that the judge is the
+  same model that generated the answer, and record judge/deterministic
+  disagreements for manual review.
+- Needle retrieval check: plant one unique synthetic sentence (for example a
+  made-up form code) in an isolated evaluation index among the real chunks,
+  ask for it by code and by paraphrase, and record the rank each mode
+  (vector, keyword, hybrid, hybrid_rerank) gives it. The needle never enters
+  a published index.
 - Case pass rate: expected status, all required facts, and no prohibited facts.
 - Citation validity and manually sampled claim support.
 - Warm/cold stage latency, p50/p95 for sufficiently many runs, actual run count.
@@ -596,9 +616,11 @@ M0: inspect target workspace, preflight hardware/dependencies, initialize
 OpenSpec in the actual project without replacing existing instructions.
 M1: real two-text embed/store/retrieve test; save proof before full ingestion.
 M2: source manifests, genuine generated policies, and quality fixtures.
-M3: parsers, chunking, embeddings, Memgraph indexing, and deterministic
-basic RAG with citations.
-M4: keyword fusion, cross-encoder, fixed test labels, and first live CI.
+M3: parsers, chunking, sentence-transformers embeddings (repeat the two-text
+proof with this embedder before full ingestion), Memgraph indexing, and
+deterministic basic RAG with citations.
+M4: BM25 keyword fusion, cross-encoder, fixed test labels, needle retrieval
+check, LLM-judge support report, and first live CI.
 M5: graph relationships, policy triage, bounded Deep Agents, and agent
 safety tests.
 M6: frontend, held-out comparisons, diagnosis, final evidence, and PDF.
@@ -686,8 +708,9 @@ Before declaring complete:
 
 - Corpus and upstream provenance: https://github.com/DecisionsDev/policy-corpus
 - OpenSpec behavior/change concepts: https://github.com/Fission-AI/OpenSpec/blob/main/docs/concepts.md
-- Ollama embeddings: https://docs.ollama.com/capabilities/embeddings
-- Ollama embedding request/truncation: https://docs.ollama.com/api/embed
+- EmbeddingGemma model card: https://huggingface.co/google/embeddinggemma-300m
+- sentence-transformers usage: https://sbert.net/
+- Ollama embeddings (milestone 1 proof): https://docs.ollama.com/api/embed
 - EmbeddingGemma dimensions/input formatting: https://ai.google.dev/gemma/docs/embeddinggemma/model_card
 - Reranker model: https://huggingface.co/cross-encoder/ms-marco-MiniLM-L6-v2
 - Reranker input configuration: https://huggingface.co/cross-encoder/ms-marco-MiniLM-L6-v2/blob/main/config.json

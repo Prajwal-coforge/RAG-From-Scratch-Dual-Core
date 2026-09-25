@@ -10,6 +10,16 @@ The project SHALL include fixed source-grounded cases measuring retrieval recall
 - **WHEN** the automated harness runs
 - **THEN** per-case results and separate recall/answer metrics are recorded with configuration fingerprints.
 
+#### Scenario: Deterministic grading with a reported judge
+- **GIVEN** an answer, its cited evidence, and the case's required and prohibited facts
+- **WHEN** the answer is graded
+- **THEN** deterministic fact checks decide pass or fail, and a local LLM-judge support score is reported alongside without changing the outcome.
+
+#### Scenario: Needle retrieval check
+- **GIVEN** one unique synthetic sentence added to an isolated evaluation index among the real chunks
+- **WHEN** it is requested by its code and by paraphrase in each retrieval mode
+- **THEN** the rank each mode gives it is recorded, and the needle never enters a published index.
+
 ### Requirement: EVA-02 No benchmark contamination
 The system SHALL keep expected answers and decision datasets out of the retrieval corpus.
 
