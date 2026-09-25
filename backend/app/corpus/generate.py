@@ -1,8 +1,9 @@
 """Generate the four AeroPolicy documents with the locked local chat model.
 
 Every attempt is saved with its exact request, the raw Ollama response, and
-the check results. A document is accepted only when a draft passes every
-check; failing drafts stay on disk as part of the record.
+the check results. A rejected draft is sent back to the model with the
+failed checks for a full rewrite. A document is accepted only when a draft
+passes every check; failing drafts stay on disk as part of the record.
 """
 
 from __future__ import annotations
@@ -65,17 +66,33 @@ def build_prompt(spec: PolicySpec) -> str:
     )
 
 
-def build_request(model: str, spec: PolicySpec, seed: int) -> dict:
+def build_request(model: str, spec: PolicySpec, seed: int, previous: tuple[str, list[str]] | None = None) -> dict:
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "user", "content": build_prompt(spec)},
+    ]
+    if previous is not None:
+        draft, problems = previous
+        messages.append({"role": "assistant", "content": draft})
+        messages.append({"role": "user", "content": revision_prompt(problems)})
     return {
         "model": model,
         "stream": False,
         "think": False,
         "options": {**OPTIONS, "seed": seed},
-        "messages": [
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": build_prompt(spec)},
-        ],
+        "messages": messages,
     }
+
+
+def revision_prompt(problems: list[str]) -> str:
+    listed = "\n".join(f"- {problem}" for problem in problems)
+    return (
+        "That draft failed these checks:\n"
+        f"{listed}\n\n"
+        "Rewrite the whole document so it passes every check and still follows all the original "
+        "instructions. The prose must total between 600 and 700 words, not counting headings. "
+        "Output only the document."
+    )
 
 
 def generate_all(
@@ -116,8 +133,9 @@ def generate_all(
     accepted: dict[str, tuple[PolicySpec, str, dict]] = {}
     for spec in specs:
         attempts = []
+        previous: tuple[str, list[str]] | None = None
         for seed in range(1, MAX_ATTEMPTS + 1):
-            request = build_request(model, spec, seed)
+            request = build_request(model, spec, seed, previous)
             response = httpx.post(f"{ollama}/api/chat", json=request, timeout=600)
             response.raise_for_status()
             body = response.json()
@@ -130,7 +148,8 @@ def generate_all(
             (attempt_dir / "raw.md").write_text(raw)
             checks = {"ok": report.ok, "prose_words": report.prose_words, "problems": report.problems}
             (attempt_dir / "checks.json").write_text(json.dumps(checks, indent=2) + "\n")
-            attempts.append({"seed": seed, "raw_sha256": _sha(raw), **checks})
+            attempts.append({"seed": seed, "revision_of_previous": previous is not None, "raw_sha256": _sha(raw), **checks})
+            previous = (raw, report.problems)
             state = "accepted" if report.ok else "rejected: " + "; ".join(report.problems)
             log(f"{spec.key} seed {seed}: {report.prose_words} words, {state}")
             if report.ok:
@@ -178,6 +197,7 @@ def catalog_entry(spec: PolicySpec, final: str, raw: str, run: dict, source: dic
             "model_blob_digest": run["model_blob_digest"],
             "seed": source["seed"],
             "attempt_dir": source["attempt_dir"],
+            "revisions_requested": source["seed"] - 1,
             "raw_sha256": _sha(raw),
             "edits_after_generation": "surrounding whitespace stripped; no wording changed",
         },

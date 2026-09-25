@@ -108,6 +108,15 @@ def test_prompt_and_request_carry_every_requirement():
         assert item in prompt
 
 
+def test_a_rejected_draft_is_sent_back_with_its_problems():
+    spec = BY_KEY["sec-v1"]
+    request = build_request("qwen3:8b", spec, seed=2, previous=("short draft", ["485 prose words, outside 550-750"]))
+    roles = [message["role"] for message in request["messages"]]
+    assert roles == ["system", "user", "assistant", "user"]
+    assert request["messages"][2]["content"] == "short draft"
+    assert "485 prose words" in request["messages"][3]["content"]
+
+
 def test_checksum_mismatch_is_refused_and_nothing_is_written(tmp_path, monkeypatch):
     target = tmp_path / "policy.txt"
 
