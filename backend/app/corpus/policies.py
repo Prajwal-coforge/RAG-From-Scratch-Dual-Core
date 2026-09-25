@@ -45,7 +45,6 @@ class PolicySpec:
     effective_to: str | None
     publication_status: str
     clause_section: str
-    section_forbidden: tuple[str, ...] = ()
     supersedes: str | None = None
 
     @property
@@ -71,6 +70,7 @@ BAGGAGE_BRIEF = (
 )
 
 ESCALATION_SECTION = "4. Baggage Incident Escalation"
+# Vague timing words would compete with the only deadline in the baggage policy.
 VAGUE_TIMING = ("immediately", "promptly", "as soon as", "without delay")
 
 POLICIES = (
@@ -83,12 +83,11 @@ POLICIES = (
         brief=BAGGAGE_BRIEF,
         verbatim=(ESCALATION_CLAUSE.format(minutes=10),),
         references=("AP-INC-002", "AP-SEC-003"),
-        forbidden=("30 minutes",),
+        forbidden=("30 minutes", *VAGUE_TIMING),
         effective_from="2025-07-01",
         effective_to=None,
         publication_status="active",
         clause_section=ESCALATION_SECTION,
-        section_forbidden=VAGUE_TIMING,
         supersedes=f"{CORPUS_ID}:AP-BAG-001:v1",
     ),
     PolicySpec(
@@ -165,12 +164,11 @@ POLICIES = (
         brief=BAGGAGE_BRIEF,
         verbatim=(ESCALATION_CLAUSE.format(minutes=30),),
         references=("AP-INC-002", "AP-SEC-003"),
-        forbidden=("10 minutes",),
+        forbidden=("10 minutes", *VAGUE_TIMING),
         effective_from="2025-01-01",
         effective_to="2025-06-30",
         publication_status="superseded",
         clause_section=ESCALATION_SECTION,
-        section_forbidden=VAGUE_TIMING,
     ),
 )
 

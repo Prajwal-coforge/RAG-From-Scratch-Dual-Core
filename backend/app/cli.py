@@ -27,6 +27,7 @@ def main(argv: list[str] | None = None) -> int:
     generate = corpus_steps.add_parser("generate", help="Generate the AeroPolicy documents with the local model")
     generate.add_argument("--only", nargs="+", help="Policy keys to generate, for example bag-v2")
     generate.add_argument("--force", action="store_true", help="Replace existing generated documents")
+    corpus_steps.add_parser("review", help="Apply the recorded review edits to the accepted drafts")
     manifests = corpus_steps.add_parser("manifests", help="Build the four dataset manifests from the catalog")
     manifests.add_argument("--force", action="store_true", help="Replace manifests whose content changed")
     args = parser.parse_args(argv)
@@ -63,6 +64,12 @@ def run_corpus(args: argparse.Namespace) -> int:
         from app.corpus.generate import generate_all
 
         generate_all(keys=tuple(args.only) if args.only else None, force=args.force)
+        return 0
+    if args.step == "review":
+        from app.corpus.review import apply_review
+
+        for key, entry in apply_review()["documents"].items():
+            print(f"{key}: {len(entry['review']['edits'])} edits  {entry['content_sha256'][:19]}")
         return 0
     from app.corpus.manifests import build_manifests, load_catalog, write_manifests
 

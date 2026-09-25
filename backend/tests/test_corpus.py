@@ -14,6 +14,7 @@ from app.corpus.manifests import (
     write_manifests,
 )
 from app.corpus.policies import BY_KEY, ESCALATION_CLAUSE, POLICIES
+from app.corpus.review import ReviewError, apply_review
 from app.corpus.validate import DraftReport, check_draft, count_prose_words
 
 FILLER = "Staff follow this policy during every shift and record what they did in plain words. "
@@ -216,6 +217,62 @@ def test_manifests_are_write_once(tmp_path):
     manifests["clean"]["purpose"] = "changed"
     with pytest.raises(ManifestError, match="write-once"):
         write_manifests(manifests, out)
+
+
+def reviewable(tmp_path, key="sec-v1"):
+    spec = BY_KEY[key]
+    raw = draft(spec, 7).replace("Staff follow", "Staff  follow", 1)
+    attempt = tmp_path / "runs" / "r" / key / "attempt-1"
+    attempt.mkdir(parents=True)
+    (attempt / "raw.md").write_text(raw)
+    run = {"run_id": "r", "model": "qwen3:8b", "model_blob_digest": "sha256:x"}
+    entry = catalog_entry(spec, raw.strip() + "\n", raw, run, {"seed": 1, "attempt_dir": str(attempt.relative_to(tmp_path))})
+    (tmp_path / spec.filename).write_text(raw.strip() + "\n")
+    catalog = tmp_path / "catalog.json"
+    catalog.write_text(json.dumps({"corpus_id": "airport-generated", "documents": {key: entry}}))
+    return catalog, raw, entry
+
+
+def test_review_edits_are_recorded_and_the_raw_draft_is_kept(tmp_path):
+    catalog, raw, entry = reviewable(tmp_path)
+    edits = tmp_path / "review-edits.json"
+    edit = {"find": "Staff  follow", "replace": "Staff follow", "reason": "double space"}
+    edits.write_text(json.dumps({"sec-v1": {"raw_sha256": entry["generation"]["raw_sha256"], "edits": [edit]}}))
+    result = apply_review(catalog, edits, tmp_path)
+    reviewed = result["documents"]["sec-v1"]
+    final = (tmp_path / "AP-SEC-003-v1.md").read_text()
+    assert "Staff  follow" not in final
+    assert reviewed["review"]["edits"] == [edit]
+    assert reviewed["content_sha256"] == "sha256:" + hashlib.sha256(final.encode()).hexdigest()
+    assert (tmp_path / entry["generation"]["attempt_dir"] / "raw.md").read_text() == raw
+
+
+def test_review_edits_pinned_to_another_draft_are_refused(tmp_path):
+    catalog, _raw, _entry = reviewable(tmp_path)
+    edits = tmp_path / "review-edits.json"
+    edits.write_text(json.dumps({"sec-v1": {"raw_sha256": "sha256:other", "edits": []}}))
+    with pytest.raises(ReviewError, match="different draft"):
+        apply_review(catalog, edits, tmp_path)
+
+
+@pytest.mark.parametrize("find", ["no such text", "Staff follow this policy"])
+def test_review_edits_must_match_exactly_once(tmp_path, find):
+    catalog, _raw, entry = reviewable(tmp_path)
+    edits = tmp_path / "review-edits.json"
+    edit = {"find": find, "replace": "x", "reason": "test"}
+    edits.write_text(json.dumps({"sec-v1": {"raw_sha256": entry["generation"]["raw_sha256"], "edits": [edit]}}))
+    with pytest.raises(ReviewError, match="exactly once"):
+        apply_review(catalog, edits, tmp_path)
+
+
+def test_review_edits_cannot_break_the_checks(tmp_path):
+    catalog, _raw, entry = reviewable(tmp_path)
+    edits = tmp_path / "review-edits.json"
+    spec = BY_KEY["sec-v1"]
+    edit = {"find": spec.verbatim[0], "replace": "Approval is needed.", "reason": "test"}
+    edits.write_text(json.dumps({"sec-v1": {"raw_sha256": entry["generation"]["raw_sha256"], "edits": [edit]}}))
+    with pytest.raises(ReviewError, match="fails its checks"):
+        apply_review(catalog, edits, tmp_path)
 
 
 @pytest.mark.skipif(not (MANIFESTS / "clean.json").exists(), reason="manifests not generated yet")

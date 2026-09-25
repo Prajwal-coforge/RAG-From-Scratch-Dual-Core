@@ -57,13 +57,7 @@ def build_prompt(spec: PolicySpec) -> str:
         "- Paragraphs only. No bullet points, numbered lists, or tables.\n"
         "- Do not state any dates, years, or version numbers.\n"
         "- Do not state any time limit in minutes other than those in the required sentences.\n"
-        + (
-            f"- In section \"{spec.clause_section}\", do not use the words "
-            + ", ".join(f'"{word}"' for word in spec.section_forbidden)
-            + "; the required sentence is the only timing rule there.\n"
-            if spec.section_forbidden
-            else ""
-        )
+        "- Never use these phrases anywhere: " + ", ".join(f'"{p}"' for p in spec.forbidden) + ".\n"
     )
 
 
@@ -213,8 +207,8 @@ def catalog_entry(spec: PolicySpec, final: str, raw: str, run: dict, source: dic
             "seed": source["seed"],
             "attempt_dir": source["attempt_dir"],
             "raw_sha256": _sha(raw),
-            "edits_after_generation": "surrounding whitespace stripped; no wording changed",
         },
+        "review": {"whitespace": "leading and trailing whitespace stripped", "edits": []},
     }
 
 

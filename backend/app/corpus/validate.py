@@ -75,9 +75,6 @@ def check_draft(text: str, spec: PolicySpec) -> DraftReport:
             problems.append(f"missing required clause: {clause[:60]}...")
         elif normalize_space(clause) not in home:
             problems.append(f"required clause is not in section {spec.clause_section!r}")
-    for phrase in spec.section_forbidden:
-        if phrase in home.lower():
-            problems.append(f"section {spec.clause_section!r} uses {phrase!r} alongside the deadline")
     for reference in spec.references:
         if reference not in flat:
             problems.append(f"missing reference to {reference}")
