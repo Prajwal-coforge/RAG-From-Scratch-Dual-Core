@@ -25,6 +25,7 @@ from app.chunking.chunk import ChildChunk, ChunkConfig, chunk_document
 from app.chunking.parse import Section, parse_sections
 from app.doctor import load_lock
 from app.embeddings import FORMAT_VERSION, cosine
+from app.graph import GRAPH_VERSION, GraphPlan, build_graph, concepts_sha256
 from app.sources import Finding, Snapshot, SourceDocument, load_snapshot, publication_decision, validate_snapshot
 from app.state import State, now
 
@@ -56,6 +57,7 @@ class Plan:
     documents: list[DocumentPlan]
     fingerprint: dict
     generation_id: str
+    graph: GraphPlan
 
     @property
     def chunks(self) -> list[ChildChunk]:
@@ -95,10 +97,11 @@ def build_plan(snapshot: Snapshot, embedder, *, profile: str = "ordinary", confi
         "embedder": embedder.identity,
         "format_version": FORMAT_VERSION,
         "profile": profile,
+        "graph": {"version": GRAPH_VERSION, "concepts": concepts_sha256()},
     }
     raw = json.dumps(fingerprint, sort_keys=True, separators=(",", ":"))
     generation_id = "gen-" + hashlib.sha256(raw.encode()).hexdigest()[:16]
-    return Plan(snapshot, documents, fingerprint, generation_id)
+    return Plan(snapshot, documents, fingerprint, generation_id, build_graph(documents))
 
 
 def check_coverage(source: SourceDocument, sections: list[Section], chunks: list[ChildChunk]) -> None:
@@ -187,6 +190,39 @@ class GraphStore:
                     old=f"{gen}:{doc.source.supersedes}",
                     g=gen,
                 ).consume()
+        self._write_graph(gen, plan.graph)
+
+    def _write_graph(self, gen: str, graph: GraphPlan) -> None:
+        for label, items in (("Role", graph.roles), ("Control", graph.controls), ("Department", graph.departments)):
+            if items:
+                self.run(
+                    f"UNWIND $items AS i CREATE (n:{label}) SET n = i, n.id = $g + ':' + i.corpus_id + ':' + i.id, "
+                    "n.concept_id = i.id, n.generation_id = $g",
+                    items=items,
+                    g=gen,
+                ).consume()
+        if graph.owned_by:
+            self.run(
+                "UNWIND $rows AS r MATCH (p:Policy {id: $g + ':' + r.corpus_id + ':' + r.policy_id}) "
+                "MATCH (d:Department {id: $g + ':' + r.corpus_id + ':' + r.department}) "
+                "CREATE (p)-[:OWNED_BY {generation_id: $g, validation_status: 'catalog-metadata'}]->(d)",
+                rows=graph.owned_by,
+                g=gen,
+            ).consume()
+        targets = {"REFERENCES": "Policy", "APPLIES_TO_ROLE": "Role", "MAPS_TO_CONTROL": "Control"}
+        for kind, label in targets.items():
+            rows = [link.as_dict() for link in graph.links if link.kind == kind]
+            if not rows:
+                continue
+            self.run(
+                f"UNWIND $rows AS r MATCH (s:Section {{id: $g + ':' + r.section_id}}) "
+                f"MATCH (t:{label} {{id: $g + ':' + r.corpus_id + ':' + r.target}}) "
+                f"CREATE (s)-[:{kind} {{generation_id: $g, document_version_id: r.document_version_id, "
+                "target_section: r.target_section, source_start: r.start, source_end: r.end, evidence: r.evidence, "
+                "validation_status: r.validation_status}]->(t)",
+                rows=rows,
+                g=gen,
+            ).consume()
 
     def _write_document(self, gen: str, doc: DocumentPlan, vectors: dict[str, list[float]], meta: dict) -> None:
         src = doc.source
@@ -284,6 +320,18 @@ class GraphStore:
         for label, n in expected.items():
             if counts.get(label, 0) != n:
                 raise IngestError(f"{label} count {counts.get(label, 0)} != expected {n}")
+        edges = {
+            row["kind"]: row["n"]
+            for row in self.run(
+                "MATCH ()-[r]->() WHERE r.generation_id = $g AND type(r) IN ['REFERENCES', 'APPLIES_TO_ROLE', 'MAPS_TO_CONTROL', 'OWNED_BY'] "
+                "RETURN type(r) AS kind, count(r) AS n",
+                g=gen,
+            ).data()
+        }
+        wanted = {k: v for k, v in plan.graph.counts().items() if k != "unresolved"}
+        if {k: edges.get(k, 0) for k in wanted} != wanted:
+            raise IngestError(f"graph edges {edges} != expected {wanted}")
+        counts["graph_edges"] = edges
         index_after = self.index_size()
         if index_after != index_before + len(plan.chunks):
             raise IngestError(f"vector index size {index_after} != {index_before} + {len(plan.chunks)}")
@@ -371,6 +419,9 @@ def generation_meta(plan: Plan, embedder, *, profile: str, reason: str | None, f
         "dimensions": identity["dimensions"],
         "document_count": len(plan.documents),
         "chunk_count": len(plan.chunks),
+        "graph_version": GRAPH_VERSION,
+        "graph_counts": json.dumps(plan.graph.counts(), sort_keys=True),
+        "graph_unresolved": json.dumps(plan.graph.unresolved),
     }
 
 
@@ -427,6 +478,10 @@ def ingest(
             for doc in plan.documents
         ]
         log(f"plan {gen}: {len(plan.documents)} documents, {sum(len(d.sections) for d in plan.documents)} sections, {len(plan.chunks)} chunks")
+        report["graph"] = {"counts": plan.graph.counts(), "unresolved": plan.graph.unresolved}
+        log(f"graph {GRAPH_VERSION}: {plan.graph.counts()}")
+        for item in plan.graph.unresolved:
+            log(f"  unresolved {item.get('reference') or item.get('control')}: {item['reason']}")
 
         driver, index = connect(bolt)
         try:

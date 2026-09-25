@@ -49,7 +49,7 @@ def main(argv: list[str] | None = None) -> int:
     ask = subcommands.add_parser("ask", help="Retrieve evidence and answer with validated citations")
     ask.add_argument("question")
     ask.add_argument("--snapshot", default="clean")
-    ask.add_argument("--mode", choices=["vector", "keyword", "hybrid", "hybrid_rerank"], default="hybrid_rerank")
+    ask.add_argument("--mode", choices=["vector", "keyword", "hybrid", "hybrid_rerank", "graph_rerank"], default="hybrid_rerank")
     ask.add_argument("--k", type=int, default=5)
     ask.add_argument("--as-of", help="ISO date; defaults to the snapshot's as_of")
     ask.add_argument(
@@ -61,7 +61,7 @@ def main(argv: list[str] | None = None) -> int:
     ask.add_argument("--evidence", type=Path, help="Write the JSON report to this path")
     evaluate = subcommands.add_parser("evaluate", help="Run an evaluation suite across retrieval modes")
     evaluate.add_argument("--suite", choices=["dev", "heldout"], required=True)
-    evaluate.add_argument("--modes", default="vector,keyword,hybrid,hybrid_rerank", help="Comma-separated retrieval modes")
+    evaluate.add_argument("--modes", default="vector,keyword,hybrid,hybrid_rerank,graph_rerank", help="Comma-separated retrieval modes")
     evaluate.add_argument("--cases", help="Comma-separated case ids; default all")
     evaluate.add_argument("--retrieval-only", action="store_true", help="Skip generation, fact checks, and the judge")
     evaluate.add_argument("--no-judge", action="store_true", help="Skip the non-gating LLM judge")
@@ -126,7 +126,7 @@ def run_ask(args: argparse.Namespace) -> int:
 
     lock = load_lock()
     embedder = embedder_from_lock(lock)
-    reranker = reranker_from_lock(lock) if args.mode == "hybrid_rerank" else None
+    reranker = reranker_from_lock(lock) if args.mode in ("hybrid_rerank", "graph_rerank") else None
     driver, index = connect()
     try:
         with driver.session() as session:
@@ -170,6 +170,10 @@ def format_signals(signals: dict) -> str:
         parts.append(f"rrf {signals['rrf']:.4f}")
     if "rerank_score" in signals:
         parts.append(f"rerank {signals['rerank_score']:.3f} (was #{signals['rank_before_rerank']})")
+    for path in signals.get("graph_paths", []):
+        section = f" section {path['target_section']}" if path["target_section"] else ""
+        how = "added by" if signals["graph_added"] else "also reached by"
+        parts.append(f"graph {how} {path['edge']} -> {path['target_policy_id']}{section}")
     return " | ".join(parts)
 
 

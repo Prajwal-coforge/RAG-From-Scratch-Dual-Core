@@ -53,8 +53,8 @@ Milestones 0, 1, and 2 are checked. Later milestones stay open. A checkbox requi
 
 ## 5. Graph, triage, and agents
 
-- [ ] 5.1 Build validated graph links with issuer/corpus scoping and source provenance.
-- [ ] 5.2 Implement bounded graph expansion and explicit graph_rerank mode.
+- [x] 5.1 Build validated graph links with issuer/corpus scoping and source provenance. (Role, control, and department names in `data/graph/concepts.json` are agent-drafted and machine-checked; owner review pending.)
+- [x] 5.2 Implement bounded graph expansion and explicit graph_rerank mode.
 - [ ] 5.3 Implement triage for corpus ambiguity, missing applicability facts, and cross-policy questions.
 - [ ] 5.4 Verify local Deep Agents/Ollama tool calling and inspect the full enabled tool inventory.
 - [ ] 5.5 Expose only allowlisted read tools; enforce request/step/time/delegation budgets and isolated state.

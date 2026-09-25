@@ -3,7 +3,7 @@ import pytest
 from app.answer import answer_question, build_evidence
 from app.keyword import EXACT_BOOST, BM25Index, exact_terms, tokenize
 from app.rerank import Reranker
-from app.retrieve import RRF_K, Pool, linked_context, rank_candidates, rrf_fuse
+from app.retrieve import MAX_GRAPH_CANDIDATES, RRF_K, Pool, graph_expand, linked_context, rank_candidates, rrf_fuse
 
 
 def chunk(cid, text, *, title="AP-BAG-001 v2 Staff Baggage", heading="4 Escalation", section="s4", start=0, **extra):
@@ -110,6 +110,66 @@ def test_hybrid_rerank_records_every_signal_and_the_rank_change():
     assert stages["rrf"]["k"] == RRF_K and stages["rerank"]["candidates"] == 3
     vector_only, _ = rank_candidates(pool, question, "vector", vector=vector)
     assert [c["chunk_id"] for c in vector_only] == ["b", "a", "c"]
+
+
+def reference(section_id, target, target_section=None, corpus="airport-generated"):
+    return {
+        "section_id": section_id, "target": target, "corpus_id": corpus, "target_section": target_section,
+        "evidence": f"see {target}", "start": 10, "end": 20, "document_version_id": "airport-generated:AP-BAG-001:v2",
+    }
+
+
+def graph_pool():
+    chunks = [
+        chunk("seed", "Report a found item under AP-SEC-003 section 5.", section="bag-s4"),
+        chunk("sec5", "Restricted items need approval.", section="sec-s5", heading="5 Restricted Items", policy_id="AP-SEC-003"),
+        chunk("sec2", "Make-up area access.", section="sec-s2", heading="2 Staff Access", policy_id="AP-SEC-003"),
+        chunk("inc1", "Incident scope.", section="inc-s1", heading="1 Scope", policy_id="AP-INC-002"),
+        chunk("inc3", "Log every incident.", section="inc-s3", heading="3 Logging", policy_id="AP-INC-002"),
+        chunk("inc4", "Review after incidents.", section="inc-s4", heading="4 Review", policy_id="AP-INC-002"),
+        chunk("other", "Other corpus text.", section="x", heading="5 Items", policy_id="AP-SEC-003", corpus_id="skywings"),
+    ]
+    pool = pool_of(chunks)
+    pool.references = {"bag-s4": [reference("bag-s4", "AP-SEC-003", "5"), reference("bag-s4", "AP-INC-002")]}
+    return pool
+
+
+def test_graph_expansion_follows_one_validated_hop_with_provenance():
+    pool = graph_pool()
+    vector = [{"chunk_id": cid, "rank": r} for r, cid in enumerate(["seed", "inc4", "inc1", "sec2", "inc3", "sec5", "other"], 1)]
+    added, paths = graph_expand(pool, ["seed"], vector)
+    assert added == ["sec5", "inc4", "inc1"]
+    path = paths["sec5"][0]
+    assert path["from_chunk_id"] == "seed" and path["target_section"] == "5" and path["hops"] == 1
+    assert path["validation_status"] == "validated" and path["source_span"] == [10, 20]
+    assert "other" not in paths and "sec2" not in paths
+    again, _ = graph_expand(pool, ["sec5", "inc4", "inc1"], vector)
+    assert again == []
+
+
+def test_graph_expansion_is_capped_and_marks_existing_candidates():
+    pool = graph_pool()
+    added, paths = graph_expand(pool, ["seed", "sec5"], None)
+    assert "sec5" not in added and paths["sec5"][0]["from_chunk_id"] == "seed"
+    many = [chunk(f"t{i}", "text", section=f"t{i}", heading="5 Items", policy_id="AP-SEC-003") for i in range(15)]
+    big = pool_of([chunk("seed", "x", section="bag-s4"), *many])
+    big.references = {"bag-s4": [reference("bag-s4", "AP-SEC-003", "5")]}
+    added, _ = graph_expand(big, ["seed"], None)
+    assert len(added) == MAX_GRAPH_CANDIDATES
+
+
+def test_graph_rerank_adds_linked_chunks_before_reranking():
+    pool = graph_pool()
+    vector = [{"chunk_id": "seed", "rank": 1, "similarity": 0.9, "exact_cosine": 0.9}]
+    reranker = Reranker("fake", "0" * 40, 512, model=FakeCross())
+    candidates, stages = rank_candidates(pool, "report found item", "graph_rerank", vector=vector, reranker=reranker)
+    by_id = {c["chunk_id"]: c["signals"] for c in candidates}
+    assert "sec5" in by_id and by_id["sec5"]["graph_added"] is True
+    assert by_id["sec5"]["graph_paths"][0]["edge"] == "REFERENCES" and "rerank_score" in by_id["sec5"]
+    assert stages["graph"]["hops"] == 1 and "sec5" in stages["graph"]["added"]
+    assert stages["rerank"]["candidates"] == len(candidates) <= 30
+    hybrid, _ = rank_candidates(pool, "report found item", "hybrid_rerank", vector=vector, reranker=reranker)
+    assert not any("graph_paths" in c["signals"] for c in hybrid)
 
 
 def test_overlong_rerank_pair_is_windowed_not_truncated():

@@ -22,7 +22,19 @@ from app.evaluation.needle import run_needle
 from app.ingest import connect
 from app.keyword import B, EXACT_BOOST, K1
 from app.rerank import reranker_from_lock
-from app.retrieve import CANDIDATE_K, FINAL_K, KEYWORD_K, MAX_RERANK_CANDIDATES, MODES, RRF_K, VECTOR_K, retrieve
+from app.retrieve import (
+    CANDIDATE_K,
+    FINAL_K,
+    GRAPH_HOPS,
+    KEYWORD_K,
+    MAX_GRAPH_CANDIDATES,
+    MAX_RERANK_CANDIDATES,
+    MODES,
+    RERANKED,
+    RRF_K,
+    VECTOR_K,
+    retrieve,
+)
 from app.sources import ROOT, load_snapshot
 
 TARGETS = {"candidate_recall_at_20": 0.90, "recall_at_5": 0.85, "fact_accuracy": 0.85, "citation_validity": 1.0}
@@ -40,6 +52,7 @@ def configuration(lock: dict, modes: list[str], answers: bool, judge: bool) -> d
         "retrieval": {
             "candidate_k": CANDIDATE_K, "vector_k": VECTOR_K, "keyword_k": KEYWORD_K, "rrf_k": RRF_K,
             "final_k": FINAL_K, "max_rerank_candidates": MAX_RERANK_CANDIDATES,
+            "graph": {"hops": GRAPH_HOPS, "max_added": MAX_GRAPH_CANDIDATES, "edge": "REFERENCES", "validation_status": "validated"},
             "bm25": {"k1": K1, "b": B, "exact_boost": EXACT_BOOST},
         },
         "embedder": lock["embedding"],
@@ -80,7 +93,7 @@ def evaluate(
     if case_ids:
         cases = [c for c in cases if c.case_id in case_ids]
     embedder = embedder_from_lock(lock)
-    reranker = reranker_from_lock(lock) if "hybrid_rerank" in modes else None
+    reranker = reranker_from_lock(lock) if set(modes) & set(RERANKED) else None
     sources: dict[str, dict[str, str]] = {}
     outcomes = []
     first_answer = True

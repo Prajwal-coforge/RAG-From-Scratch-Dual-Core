@@ -1,9 +1,14 @@
-"""Retrieval over the published generation of one snapshot, in four modes.
+"""Retrieval over the published generation of one snapshot, in five modes.
 
 vector         Memgraph vector search, top 20 candidates
 keyword        BM25 with an exact-identifier boost, top 20 candidates
 hybrid         reciprocal rank fusion of vector top 10 and keyword top 10
 hybrid_rerank  the hybrid candidates reordered by a cross-encoder
+graph_rerank   the hybrid candidates plus chunks reached over one validated
+               REFERENCES edge, reordered by the cross-encoder. A reference
+               naming a section adds that section's chunks; a reference to a
+               whole policy adds its two chunks most similar to the question.
+               At most ten chunks are added, each with its path.
 
 Each mode returns its candidate pool (the chunks the final stage chooses
 from, used for candidate recall) and the final top k, with every signal
@@ -24,16 +29,21 @@ from dataclasses import asdict, dataclass, field
 from datetime import date
 
 from app.embeddings import cosine, format_query
+from app.graph import section_number
 from app.keyword import BM25Index
 
 SCORE_AGREEMENT = 1e-4
-MODES = ("vector", "keyword", "hybrid", "hybrid_rerank")
+MODES = ("vector", "keyword", "hybrid", "hybrid_rerank", "graph_rerank")
+RERANKED = ("hybrid_rerank", "graph_rerank")
 CANDIDATE_K = 20
 VECTOR_K = 10
 KEYWORD_K = 10
 RRF_K = 60
 FINAL_K = 5
 MAX_RERANK_CANDIDATES = 30
+GRAPH_HOPS = 1
+MAX_GRAPH_CANDIDATES = 10
+POLICY_REFERENCE_CHUNKS = 2
 LABEL = "Chunk"
 
 
@@ -120,6 +130,7 @@ class Pool:
     eligible: list[str]
     excluded: list[dict]
     label: str = LABEL
+    references: dict[str, list[dict]] = field(default_factory=dict)
 
     @property
     def eligible_chunks(self) -> list[dict]:
@@ -142,7 +153,18 @@ def load_pool(session, generation: dict, as_of: str, include_history: bool, labe
             eligible.append(props["chunk_id"])
     if len(chunks) != generation["chunk_count"]:
         raise RetrievalRefused(f"generation {generation['id']} has {len(chunks)} of {generation['chunk_count']} chunks")
-    return Pool(generation, chunks, eligible, excluded, label)
+    references: dict[str, list[dict]] = {}
+    if label == LABEL:
+        rows = session.run(
+            "MATCH (s:Section {generation_id: $g})-[r:REFERENCES]->(p:Policy) WHERE r.validation_status = 'validated' "
+            "RETURN s.section_id AS section_id, p.policy_id AS target, p.corpus_id AS corpus_id, r.target_section AS target_section, "
+            "r.evidence AS evidence, r.source_start AS start, r.source_end AS end, r.document_version_id AS document_version_id "
+            "ORDER BY section_id, target, target_section",
+            g=generation["id"],
+        ).data()
+        for row in rows:
+            references.setdefault(row["section_id"], []).append(row)
+    return Pool(generation, chunks, eligible, excluded, label, references)
 
 
 def vector_ranking(session, index: str, pool: Pool, query_vector: list[float]) -> tuple[list[dict], dict]:
@@ -200,6 +222,48 @@ def rrf_fuse(vector: list[dict], keyword: list[dict], k: int = RRF_K) -> list[di
     return ordered
 
 
+def graph_expand(pool: Pool, seeds: list[str], vector: list[dict] | None) -> tuple[list[str], dict[str, list[dict]]]:
+    """Follow validated REFERENCES edges one hop from the seed chunks' sections.
+
+    Returns the chunks added (seed order, then edge order, at most
+    MAX_GRAPH_CANDIDATES) and every path found, including paths to chunks
+    that were already candidates.
+    """
+    vector_rank = {r["chunk_id"]: r["rank"] for r in vector or []}
+    eligible = [pool.chunks[cid] for cid in pool.eligible]
+    present, added = set(seeds), []
+    paths: dict[str, list[dict]] = {}
+    for seed in seeds:
+        source = pool.chunks[seed]
+        for edge in pool.references.get(source["section_id"], []):
+            targets = [
+                c for c in eligible
+                if c["corpus_id"] == edge["corpus_id"] and c["policy_id"] == edge["target"]
+                and (edge["target_section"] is None or section_number(c["heading_path"]) == edge["target_section"])
+            ]
+            targets.sort(key=lambda c: (vector_rank.get(c["chunk_id"], len(vector_rank) + 1), c["source_start"], c["chunk_id"]))
+            if edge["target_section"] is None:
+                targets = targets[:POLICY_REFERENCE_CHUNKS]
+            for target in targets:
+                cid = target["chunk_id"]
+                paths.setdefault(cid, []).append({
+                    "edge": "REFERENCES",
+                    "hops": GRAPH_HOPS,
+                    "from_chunk_id": seed,
+                    "from_section_id": source["section_id"],
+                    "target_policy_id": edge["target"],
+                    "target_section": edge["target_section"],
+                    "evidence": edge["evidence"],
+                    "source_span": [edge["start"], edge["end"]],
+                    "source_document_version_id": edge["document_version_id"],
+                    "validation_status": "validated",
+                })
+                if cid not in present and len(added) < MAX_GRAPH_CANDIDATES:
+                    present.add(cid)
+                    added.append(cid)
+    return added, paths
+
+
 def rank_candidates(
     pool: Pool,
     question: str,
@@ -228,10 +292,28 @@ def rank_candidates(
         order = [e["chunk_id"] for e in fused][:MAX_RERANK_CANDIDATES]
         stages["rrf"] = {"k": RRF_K, "vector_k": VECTOR_K, "keyword_k": KEYWORD_K, "fused": len(fused)}
 
+    graph_added: set[str] = set()
+    graph_paths: dict[str, list[dict]] = {}
+    if mode == "graph_rerank":
+        added, graph_paths = graph_expand(pool, order, vector)
+        graph_added = set(added)
+        order = (order + added)[:MAX_RERANK_CANDIDATES]
+        stages["graph"] = {
+            "edge": "REFERENCES",
+            "validation_status": "validated",
+            "hops": GRAPH_HOPS,
+            "max_added": MAX_GRAPH_CANDIDATES,
+            "policy_reference_chunks": POLICY_REFERENCE_CHUNKS,
+            "seeds": len(order) - len(added),
+            "edges_in_generation": sum(len(v) for v in pool.references.values()),
+            "added": added,
+            "reached": sorted(graph_paths),
+        }
+
     rerank_by_id: dict[str, dict] = {}
-    if mode == "hybrid_rerank":
+    if mode in RERANKED:
         if reranker is None:
-            raise RetrievalRefused("hybrid_rerank needs the pinned reranker")
+            raise RetrievalRefused(f"{mode} needs the pinned reranker")
         started = time.perf_counter()
         records = reranker.score(question, [pool.chunks[cid] for cid in order])
         rerank_by_id = {r["chunk_id"]: r for r in records}
@@ -255,9 +337,11 @@ def rank_candidates(
             signals.update(
                 keyword_rank=kw["rank"], bm25=kw["bm25"], boost=kw["boost"], exact_terms=kw["exact_terms"], keyword_score=kw["score"]
             )
-        if mode in ("hybrid", "hybrid_rerank"):
+        if mode in ("hybrid", *RERANKED) and cid in fused_by_id:
             entry = fused_by_id[cid]
             signals.update(rrf=entry["rrf"], rrf_parts=entry["rrf_parts"], rrf_rank=entry["rank"])
+        if cid in graph_paths:
+            signals.update(graph_added=cid in graph_added, graph_paths=graph_paths[cid])
         if cid in rerank_by_id:
             r = rerank_by_id[cid]
             signals.update(
