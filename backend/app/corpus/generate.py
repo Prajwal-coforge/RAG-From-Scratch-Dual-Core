@@ -17,7 +17,7 @@ from pathlib import Path
 import httpx
 
 from app.corpus.policies import CORPUS_ID, ISSUER, OWNER, POLICIES, PolicySpec
-from app.corpus.validate import check_draft
+from app.corpus.validate import ACCEPT_MAX_WORDS, ACCEPT_MIN_WORDS, DraftReport, check_draft
 from app.doctor import LOCK_PATH, _model_blob_digest, load_lock
 from app.smoke import git_commit
 
@@ -25,6 +25,7 @@ ROOT = Path(__file__).resolve().parents[3]
 GENERATED = ROOT / "data" / "sources" / "generated"
 CATALOG = GENERATED / "catalog.json"
 MAX_ATTEMPTS = 6
+TARGET_WORDS = 650
 OPTIONS = {"temperature": 0.4, "num_ctx": 8192, "num_predict": 2048}
 
 SYSTEM_PROMPT = (
@@ -66,15 +67,15 @@ def build_prompt(spec: PolicySpec) -> str:
     )
 
 
-def build_request(model: str, spec: PolicySpec, seed: int, previous: tuple[str, list[str]] | None = None) -> dict:
+def build_request(model: str, spec: PolicySpec, seed: int, previous: tuple[str, DraftReport] | None = None) -> dict:
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": build_prompt(spec)},
     ]
     if previous is not None:
-        draft, problems = previous
+        draft, report = previous
         messages.append({"role": "assistant", "content": draft})
-        messages.append({"role": "user", "content": revision_prompt(problems)})
+        messages.append({"role": "user", "content": revision_prompt(report, len(spec.sections))})
     return {
         "model": model,
         "stream": False,
@@ -84,14 +85,27 @@ def build_request(model: str, spec: PolicySpec, seed: int, previous: tuple[str, 
     }
 
 
-def revision_prompt(problems: list[str]) -> str:
-    listed = "\n".join(f"- {problem}" for problem in problems)
+def revision_prompt(report: DraftReport, sections: int) -> str:
+    listed = "\n".join(f"- {problem}" for problem in report.problems)
+    words = report.prose_words
+    if words < ACCEPT_MIN_WORDS:
+        length = (
+            f"The prose is {words} words, which is too short. Add about {TARGET_WORDS - words} words "
+            f"by giving each of the {sections} sections two more sentences of concrete detail."
+        )
+    elif words > ACCEPT_MAX_WORDS:
+        length = (
+            f"The prose is {words} words, which is too long. Remove about {words - TARGET_WORDS} words "
+            "by cutting repetition from every section."
+        )
+    else:
+        length = f"Keep the prose at about {words} words."
     return (
         "That draft failed these checks:\n"
         f"{listed}\n\n"
+        f"{length}\n\n"
         "Rewrite the whole document so it passes every check and still follows all the original "
-        "instructions. The prose must total between 600 and 700 words, not counting headings. "
-        "Output only the document."
+        "instructions. Output only the document."
     )
 
 
@@ -133,7 +147,7 @@ def generate_all(
     accepted: dict[str, tuple[PolicySpec, str, dict]] = {}
     for spec in specs:
         attempts = []
-        previous: tuple[str, list[str]] | None = None
+        previous: tuple[str, DraftReport] | None = None
         for seed in range(1, MAX_ATTEMPTS + 1):
             request = build_request(model, spec, seed, previous)
             response = httpx.post(f"{ollama}/api/chat", json=request, timeout=600)
@@ -149,7 +163,8 @@ def generate_all(
             checks = {"ok": report.ok, "prose_words": report.prose_words, "problems": report.problems}
             (attempt_dir / "checks.json").write_text(json.dumps(checks, indent=2) + "\n")
             attempts.append({"seed": seed, "revision_of_previous": previous is not None, "raw_sha256": _sha(raw), **checks})
-            previous = (raw, report.problems)
+            # A revision that repeats the draft verbatim would repeat forever, so start fresh instead.
+            previous = None if previous is not None and raw == previous[0] else (raw, report)
             state = "accepted" if report.ok else "rejected: " + "; ".join(report.problems)
             log(f"{spec.key} seed {seed}: {report.prose_words} words, {state}")
             if report.ok:
@@ -197,7 +212,6 @@ def catalog_entry(spec: PolicySpec, final: str, raw: str, run: dict, source: dic
             "model_blob_digest": run["model_blob_digest"],
             "seed": source["seed"],
             "attempt_dir": source["attempt_dir"],
-            "revisions_requested": source["seed"] - 1,
             "raw_sha256": _sha(raw),
             "edits_after_generation": "surrounding whitespace stripped; no wording changed",
         },

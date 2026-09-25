@@ -4,7 +4,7 @@ import json
 import pytest
 
 from app.corpus import imported
-from app.corpus.generate import build_prompt, build_request, catalog_entry
+from app.corpus.generate import build_prompt, build_request, catalog_entry, revision_prompt
 from app.corpus.manifests import (
     MANIFESTS,
     ManifestError,
@@ -14,7 +14,7 @@ from app.corpus.manifests import (
     write_manifests,
 )
 from app.corpus.policies import BY_KEY, ESCALATION_CLAUSE, POLICIES
-from app.corpus.validate import check_draft, count_prose_words
+from app.corpus.validate import DraftReport, check_draft, count_prose_words
 
 FILLER = "Staff follow this policy during every shift and record what they did in plain words. "
 
@@ -110,11 +110,19 @@ def test_prompt_and_request_carry_every_requirement():
 
 def test_a_rejected_draft_is_sent_back_with_its_problems():
     spec = BY_KEY["sec-v1"]
-    request = build_request("qwen3:8b", spec, seed=2, previous=("short draft", ["485 prose words, outside 550-750"]))
+    report = DraftReport(prose_words=485, headings=[], problems=["485 prose words, outside 550-750"])
+    request = build_request("qwen3:8b", spec, seed=2, previous=("short draft", report))
     roles = [message["role"] for message in request["messages"]]
     assert roles == ["system", "user", "assistant", "user"]
     assert request["messages"][2]["content"] == "short draft"
-    assert "485 prose words" in request["messages"][3]["content"]
+    feedback = request["messages"][3]["content"]
+    assert "485 prose words" in feedback
+    assert "too short. Add about 165 words" in feedback
+
+
+def test_long_drafts_are_told_how_much_to_cut():
+    report = DraftReport(prose_words=900, headings=[], problems=["900 prose words, outside 550-750"])
+    assert "too long. Remove about 250 words" in revision_prompt(report, 6)
 
 
 def test_checksum_mismatch_is_refused_and_nothing_is_written(tmp_path, monkeypatch):
