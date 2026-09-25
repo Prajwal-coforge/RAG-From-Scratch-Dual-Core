@@ -80,6 +80,35 @@ def test_publish_then_roll_back(embedder, published):
     assert pointer("clean")["current"] == original
 
 
+def generation_state(generation_id):
+    driver, index = connect()
+    try:
+        with driver.session() as session:
+            store = GraphStore(session, index)
+            chunks = session.run(
+                "MATCH (c:Chunk {generation_id: $g}) RETURN count(c) AS n", g=generation_id
+            ).single()["n"]
+            return (store.generation(generation_id) or {}).get("status"), chunks, store.index_size()
+    finally:
+        driver.close()
+
+
+def test_third_publication_retires_the_oldest_generation(embedder, published):
+    first = ingest("clean", embedder=embedder, log=quiet)
+    original = first["generation_id"]
+    original_chunks = sum(doc["chunks"] for doc in first["documents"])
+    second = ingest("clean", embedder=embedder, config=ALTERNATE, log=quiet)["generation_id"]
+    third = ingest("clean", embedder=embedder, config=ChunkConfig(target_tokens=250), log=quiet)
+    assert third["retired"] == original
+    status, chunks, size_after = generation_state(original)
+    assert (status, chunks) == ("retired", 0)
+    assert size_after == third["verification"]["index_size_after"] - original_chunks
+    assert pointer("clean")["previous"] == second
+    restored = ingest("clean", embedder=embedder, log=quiet)
+    assert restored["generation_id"] == original and restored["status"] == "published"
+    assert restored["retired"] == second
+
+
 def test_damaged_fixture_needs_the_evaluation_profile(embedder):
     with pytest.raises(PublicationRefused):
         ingest("dirty-stale", embedder=embedder, log=quiet)
