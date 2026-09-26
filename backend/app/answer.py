@@ -119,7 +119,13 @@ def build_evidence(
 
 def user_message(question: str, evidence: list[dict]) -> str:
     blocks = "\n\n".join(item["block"] for item in evidence)
-    return f"Evidence:\n\n{blocks}\n\nQuestion: {question}"
+    note = ""
+    if len({item.get("corpus_id") for item in evidence if item.get("corpus_id")}) > 1:
+        note = (
+            "These passages come from more than one policy issuer. "
+            "Attribute each fact to its document. Do not merge their rules into one rule.\n\n"
+        )
+    return f"Evidence:\n\n{blocks}\n\n{note}Question: {question}"
 
 
 def cited_ids(text: str) -> list[int]:
@@ -229,8 +235,10 @@ def answer_question(
     }
 
     if sources is None:
-        snapshot = load_snapshot(retrieval["snapshot_id"])
-        sources = {doc.document_version_id: doc.text for doc in snapshot.documents}
+        sources = {}
+        for snapshot_id in _snapshot_ids(retrieval):
+            for doc in load_snapshot(snapshot_id).documents:
+                sources[doc.document_version_id] = doc.text
     by_id = {item["evidence_id"]: item for item in evidence}
     ids = cited_ids(raw)
     invented = [n for n in ids if n not in by_id]
@@ -250,7 +258,7 @@ def answer_question(
                 "section_path": item["heading_path"],
                 "source_spans": item["source_spans"],
                 "source_url": f"/api/sources/{item['chunk_id']}",
-                "path": _source_path(item, retrieval["snapshot_id"]),
+                "path": _source_path(item, _snapshot_ids(retrieval)),
                 **resolution,
             }
         )
@@ -290,13 +298,21 @@ def answer_question(
     }
 
 
-def _source_path(item: dict, snapshot_id: str) -> str | None:
-    try:
-        snapshot = load_snapshot(snapshot_id)
-    except Exception:
-        return None
-    for doc in snapshot.documents:
-        if doc.document_version_id == item["document_version_id"]:
-            path = Path(doc.path)
-            return str(path.relative_to(ROOT)) if path.is_relative_to(ROOT) else str(path)
+def _snapshot_ids(retrieval: dict) -> list[str]:
+    ids = retrieval.get("snapshot_ids")
+    if ids:
+        return list(ids)
+    return [retrieval["snapshot_id"]]
+
+
+def _source_path(item: dict, snapshot_ids: list[str]) -> str | None:
+    for snapshot_id in snapshot_ids:
+        try:
+            snapshot = load_snapshot(snapshot_id)
+        except Exception:
+            continue
+        for doc in snapshot.documents:
+            if doc.document_version_id == item["document_version_id"]:
+                path = Path(doc.path)
+                return str(path.relative_to(ROOT)) if path.is_relative_to(ROOT) else str(path)
     return None

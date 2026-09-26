@@ -9,10 +9,12 @@ description = "Local airport and airline policy RAG lab"
 requires-python = ">=3.11"
 dependencies = [
   "deepagents>=0.7.19",
+  "fastapi>=0.141.1",
   "httpx",
   "langchain-ollama>=1.1.0",
   "neo4j",
   "sentence-transformers",
+  "uvicorn[standard]>=0.54.0",
 ]
 
 [project.scripts]

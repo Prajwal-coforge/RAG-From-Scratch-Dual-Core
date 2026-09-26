@@ -79,6 +79,43 @@ class Hit:
 HISTORY_STATUSES = ("active", "superseded")
 
 
+def latest_in_force_date(rows: list[dict], today: date | None = None) -> str:
+    """The day the newest active version is already in force.
+
+    Active chunks contribute their effective_from. The result is the latest
+    of those dates, and not a date after today, so a future version is not
+    treated as current. Chunks with no effective date do not move the result.
+    If none record a date, the result is today.
+    """
+    today = today or date.today()
+    starts = []
+    for row in rows:
+        if row.get("publication_status") != "active":
+            continue
+        start = row.get("effective_from")
+        if not start:
+            continue
+        starts.append(date.fromisoformat(start))
+    if not starts:
+        return today.isoformat()
+    return min(max(starts), today).isoformat()
+
+
+def resolve_as_of(session, generation: dict, as_of: str | None, label: str = LABEL) -> tuple[str, str]:
+    """A caller-supplied date is kept. Otherwise the newest active version decides."""
+    if not label.isidentifier():
+        raise ValueError(f"bad label {label!r}")
+    if as_of:
+        date.fromisoformat(as_of)
+        return as_of, "caller"
+    rows = session.run(
+        f"MATCH (c:{label} {{generation_id: $g}}) "
+        "RETURN c.publication_status AS publication_status, c.effective_from AS effective_from",
+        g=generation["id"],
+    ).data()
+    return latest_in_force_date(rows), "latest active effective date"
+
+
 def eligibility(props: dict, as_of: str, include_history: bool) -> str | None:
     """Return why a chunk is excluded, or None when it may be used.
 
@@ -482,8 +519,7 @@ def retrieve(
     started = time.perf_counter()
     generation = published_generation(session, snapshot_id)
     check_compatible(generation, embedder)
-    as_of = as_of or generation["as_of"]
-    date.fromisoformat(as_of)
+    as_of, as_of_basis = resolve_as_of(session, generation, as_of)
     pool = load_pool(session, generation, as_of, include_history)
     result = search_pool(session, index, pool, embedder, question, mode=mode, k=k, reranker=reranker)
     return {
@@ -492,6 +528,7 @@ def retrieve(
         "corpus_id": generation["corpus_id"],
         "index_generation_id": generation["id"],
         "as_of": as_of,
+        "as_of_basis": as_of_basis,
         "include_history": include_history,
         "question": question,
         "embedder": embedder.identity,

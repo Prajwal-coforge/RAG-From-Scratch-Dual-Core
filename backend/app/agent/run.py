@@ -18,10 +18,10 @@ from app.agent.harness import Budget, UnsafeAgent, build, local_model
 from app.agent.tools import RunContext, make_tools
 from app.answer import answer_question
 from app.doctor import load_lock
-from app.pipeline import clarification
-from app.retrieve import check_compatible, context_chunks, load_pool, published_generation, to_hit
-from app.sources import load_snapshot
-from app.triage import missing_facts, triage
+from app.pipeline import ask_question, clarification, resolve_context
+from app.retrieve import check_compatible, context_chunks, load_pool, published_generation, resolve_as_of, to_hit
+from app.route import route_corpora
+from app.triage import missing_facts
 
 MAX_TOOL_CALLS = 6
 MAX_DELEGATIONS = 2
@@ -95,18 +95,28 @@ def run_agent(
     model=None,
     time_limit_s: float = TIME_LIMIT_S,
     chat_fn=None,
+    router_fn=None,
 ) -> dict:
     started = time.perf_counter()
     trace_id = f"agent-{uuid.uuid4().hex[:12]}"
-    selected = load_snapshot(snapshot_id).corpus_id if snapshot_id else None
-    decision = triage(question, selected)
+    decision = resolve_context(question, snapshot_id, router_fn or route_corpora)
     if decision["status"] == "needs_clarification":
         return {"trace_id": trace_id, "triage": decision, "agent": None,
                 "answer": clarification(question, decision["reason"], decision["follow_up_questions"])}
+    if len(decision.get("snapshot_ids") or []) > 1:
+        report = ask_question(
+            session, index, embedder, question, reranker_for=lambda mode: reranker,
+            as_of=as_of, include_history=include_history, chat_fn=chat_fn, router_fn=lambda _question: decision,
+        )
+        report["agent"] = {
+            "outcome": "not_run",
+            "reason": "the question matched more than one published context; each was searched and cited separately",
+        }
+        return report
     snapshot_id = snapshot_id or decision["snapshot_id"]
     generation = published_generation(session, snapshot_id)
     check_compatible(generation, embedder)
-    as_of = as_of or generation["as_of"]
+    as_of, _basis = resolve_as_of(session, generation, as_of)
     pool = load_pool(session, generation, as_of, include_history)
     ctx = RunContext(session, index, embedder, reranker, pool, snapshot_id)
     tools = make_tools(ctx)

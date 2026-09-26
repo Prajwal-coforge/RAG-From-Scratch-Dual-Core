@@ -80,15 +80,109 @@ class NoEmbedder:
     tokenizer = None
 
 
+class CountingEmbedder:
+    class tokenizer:
+        name = "test"
+
+        @staticmethod
+        def count(text):
+            return max(1, len(text.split()))
+
+
 def no_chat(*args, **kwargs):
     raise AssertionError("generation must not run")
 
 
-def test_unclear_issuer_is_answered_with_a_clarification_before_retrieval(monkeypatch):
-    monkeypatch.setattr(pipeline, "retrieve", lambda *a, **k: pytest.fail("retrieval must not run"))
-    report = pipeline.ask_question(None, "idx", NoEmbedder(), "What is the checked bag weight limit?", reranker_for=lambda m: None)
-    assert report["retrieval"] is None and report["answer"]["status"] == "needs_clarification"
-    assert report["answer"]["follow_up_questions"] and report["answer"]["citations"] == []
+def test_unclear_issuer_is_searched_without_asking_for_a_context(monkeypatch):
+    seen = {}
+
+    def fake_retrieve(session, index, embedder, question, snapshot_id, **kwargs):
+        seen["snapshot_id"] = snapshot_id
+        seen["mode"] = kwargs["mode"]
+        return {
+            "mode": kwargs["mode"],
+            "corpus_id": "skywings-baggage",
+            "snapshot_id": snapshot_id,
+            "index_generation_id": "gen-test",
+            "as_of": "2026-01-01",
+            "include_history": False,
+            "question": question,
+            "timing_ms": 1.0,
+            "stage_timing_ms": {},
+            "search": {"method": "test", "eligible": 1, "generation_chunks": 1, "excluded": [], "stages": {}},
+            "hits": [{
+                "rank": 1, "chunk_id": "c1", "document_version_id": "skywings-baggage:doc",
+                "document_title": "SkyWings", "corpus_id": "skywings-baggage", "policy_id": "SKY",
+                "version": "1", "section_id": "s5", "heading_path": "5 Excess Baggage Fees",
+                "text": "No single piece over 32 kg will be accepted as checked baggage.",
+                "publication_status": "active", "effective_from": None, "effective_to": None,
+                "source_spans": [[0, 10]], "similarity": 0.5, "signals": {"rerank_score": 1.0},
+                "context": {"mandatory": [], "parent": []},
+            }],
+            "context_chunks": {},
+            "candidates": [],
+        }
+
+    def fake_route(_question):
+        return {
+            "status": "routed", "route": "model", "basis": "test",
+            "corpus_ids": ["skywings-baggage"], "snapshot_ids": ["imported:skywings-baggage"], "raw": "{}",
+        }
+
+    def fake_chat(messages, **kwargs):
+        return {"response": {"message": {"content": "INSUFFICIENT_EVIDENCE: not in the passage"}}, "model_blob_digest": "x"}
+
+    monkeypatch.setattr(pipeline, "retrieve", fake_retrieve)
+    report = pipeline.ask_question(
+        None, "idx", CountingEmbedder(), "What is the checked bag weight limit?",
+        reranker_for=lambda mode: None, router_fn=fake_route, chat_fn=fake_chat,
+    )
+    assert seen["snapshot_id"] == "imported:skywings-baggage"
+    assert "policy context" not in report["answer"]["answer"].lower()
+    assert report["retrieval"]["hits"]
+
+
+def test_several_contexts_are_searched_and_not_blended_into_a_menu(monkeypatch):
+    seen = []
+
+    def fake_retrieve(session, index, embedder, question, snapshot_id, **kwargs):
+        seen.append(snapshot_id)
+        corpus = "airport-generated" if snapshot_id == "clean" else "skywings-baggage"
+        return {
+            "mode": kwargs["mode"], "corpus_id": corpus, "snapshot_id": snapshot_id,
+            "index_generation_id": f"gen-{snapshot_id}", "as_of": "2026-01-01", "include_history": False,
+            "question": question, "timing_ms": 1.0, "stage_timing_ms": {},
+            "search": {"method": "test", "eligible": 1, "generation_chunks": 1, "excluded": [], "stages": {}},
+            "hits": [{
+                "rank": 1, "chunk_id": snapshot_id, "document_version_id": snapshot_id,
+                "document_title": corpus, "corpus_id": corpus, "policy_id": "P", "version": "1",
+                "section_id": "s", "heading_path": "1 Purpose", "text": f"Rule from {corpus}.",
+                "publication_status": "active", "effective_from": None, "effective_to": None,
+                "source_spans": [[0, 4]], "similarity": 0.4, "signals": {"rerank_score": 2.0 if corpus == "skywings-baggage" else 1.0},
+                "context": {"mandatory": [], "parent": []},
+            }],
+            "context_chunks": {}, "candidates": [],
+        }
+
+    def fake_route(_question):
+        return {
+            "status": "routed", "route": "model", "basis": "test",
+            "corpus_ids": ["airport-generated", "skywings-baggage"],
+            "snapshot_ids": ["clean", "imported:skywings-baggage"], "raw": "{}",
+        }
+
+    def fake_chat(messages, **kwargs):
+        assert "more than one policy issuer" in messages[1]["content"]
+        return {"response": {"message": {"content": "INSUFFICIENT_EVIDENCE: see the passages"}}, "model_blob_digest": "x"}
+
+    monkeypatch.setattr(pipeline, "retrieve", fake_retrieve)
+    report = pipeline.ask_question(
+        None, "idx", CountingEmbedder(), "What is the baggage limit for every airline?",
+        reranker_for=lambda mode: None, router_fn=fake_route, chat_fn=fake_chat,
+    )
+    assert seen == ["clean", "imported:skywings-baggage"]
+    assert [hit["chunk_id"] for hit in report["retrieval"]["hits"]] == ["imported:skywings-baggage", "clean"]
+    assert "Which policy context" not in report["answer"]["answer"]
 
 
 def test_missing_fact_stops_before_generation(monkeypatch):

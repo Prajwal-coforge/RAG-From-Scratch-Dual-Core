@@ -41,6 +41,11 @@ def main(argv: list[str] | None = None) -> int:
     ingest.add_argument("--profile", choices=["ordinary", "evaluation"], default="ordinary")
     ingest.add_argument("--reason", help="Required with --profile evaluation; recorded on the generation")
     ingest.add_argument("--evidence", type=Path, help="Write the JSON report to this path")
+    etl = subcommands.add_parser("etl", help="Write bronze, silver, and gold zone files for a snapshot")
+    etl.add_argument("--snapshot", required=True, help="clean, duplicate, dirty-stale, historical, or imported:<corpus_id>")
+    etl.add_argument("--profile", choices=["ordinary", "evaluation"], default="ordinary")
+    etl.add_argument("--reason", help="Required with --profile evaluation when the snapshot has blocking findings")
+    etl.add_argument("--evidence", type=Path, help="Write the JSON report to this path")
     rollback = subcommands.add_parser("rollback", help="Republish the previous generation of a snapshot")
     rollback.add_argument("--snapshot", required=True)
     index = subcommands.add_parser("index", help="Show publication pointers and generations")
@@ -48,7 +53,7 @@ def main(argv: list[str] | None = None) -> int:
     index.add_argument("--yes", action="store_true", help="Confirm reset: delete every generation and pointer")
     ask = subcommands.add_parser("ask", help="Retrieve evidence and answer with validated citations")
     ask.add_argument("question")
-    ask.add_argument("--snapshot", help="Policy context; default: chosen by triage, which asks when the issuer is unclear")
+    ask.add_argument("--snapshot", help="Force one snapshot. When omitted, a named issuer is used, otherwise the local model chooses")
     ask.add_argument("--corpus", help="Select the context by corpus id instead, for example airport-generated")
     ask.add_argument(
         "--mode",
@@ -66,7 +71,7 @@ def main(argv: list[str] | None = None) -> int:
     ask.add_argument("--evidence", type=Path, help="Write the JSON report to this path")
     agent = subcommands.add_parser("agent", help="Answer with the bounded local Deep Agents mode")
     agent.add_argument("question")
-    agent.add_argument("--snapshot", help="Policy context; default: chosen by triage")
+    agent.add_argument("--snapshot", help="Force one snapshot. When omitted, routing chooses the context")
     agent.add_argument("--as-of", help="ISO date; defaults to the snapshot's as_of")
     agent.add_argument("--include-history", action="store_true")
     agent.add_argument("--json", action="store_true", help="Print the full JSON report")
@@ -88,6 +93,8 @@ def main(argv: list[str] | None = None) -> int:
         return run_agent_command(args)
     if args.command == "corpus":
         return run_corpus(args)
+    if args.command == "etl":
+        return run_etl(args)
     if args.command in ("ingest", "rollback", "index"):
         return run_index(args)
     if args.command == "smoke":
@@ -315,6 +322,28 @@ def print_ask(retrieval: dict, result: dict) -> None:
         excerpt = " ".join(cite["excerpt"].split())
         print(f"      \"{excerpt[:240]}{'…' if len(excerpt) > 240 else ''}\"")
     print(f"timing: retrieval {retrieval['timing_ms']} ms, answer {result['timing_ms']} ms")
+
+
+def run_etl(args: argparse.Namespace) -> int:
+    from app.doctor import load_lock
+    from app.embedder import embedder_from_lock
+    from app.medallion import run_medallion
+
+    report = run_medallion(args.snapshot, embedder_from_lock(load_lock()), profile=args.profile, reason=args.reason)
+    print(
+        f"bronze {report['bronze_documents']} documents  silver errors {report['silver_errors']}  "
+        f"publishable {report['publishable']}"
+    )
+    print(f"decision: {report['decision']}")
+    if report["publishable"]:
+        print(f"gold generation {report['generation_id']}  chunks {report['gold_chunks']}")
+    else:
+        print("gold withheld")
+    print(f"zones: {report['output']}")
+    if args.evidence:
+        args.evidence.parent.mkdir(parents=True, exist_ok=True)
+        args.evidence.write_text(json.dumps(report, indent=2) + "\n")
+    return 0 if report["publishable"] else 3
 
 
 def run_index(args: argparse.Namespace) -> int:

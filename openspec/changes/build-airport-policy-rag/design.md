@@ -20,7 +20,7 @@ Decisions:
 - A Python backend using FastAPI and Pydantic.
 - No data governance layer: no authentication, user identities, roles, per-document or per-section access control, or audit log. The application serves one local user, and every indexed policy is readable.
 - OpenSpec for development requirements and change tracking.
-- No data lake, object-storage service, lakehouse, warehouse, Spark, or medallion storage zones. Retain a straightforward ingest → validate → chunk → embed → index process.
+- No data lake, object-storage service, lakehouse, warehouse, or Spark. Ingest stays snapshot → validate → chunk → embed → index. `policy-rag etl` also writes bronze, silver, and gold JSON under `.local/medallion/`; retrieval does not read those files (`docs/decisions/0006-medallion-zones-without-a-lake.md`).
 - Ordinary version-controlled source fixtures, local build artifacts, SQLite application metadata, and the Memgraph volume are sufficient storage.
 - No hosted model fallback, cloud tracing, public deployment, or external account requirement.
 
@@ -438,21 +438,20 @@ Proposed endpoints:
 
 Ask JSON accepts question (max 2,000 characters), corpus_id, as_of, mode,
 and conversation_id if implemented. Server validates snapshot and mode.
-Unknown fields and raw Cypher are rejected. Cross-corpus comparison must
-be explicit.
+Unknown fields and raw Cypher are rejected. A question that names no issuer is routed by the local chat model to one or more published contexts; the user is not asked to pick a corpus. Passages from different issuers stay attributed to their own documents. An explicit snapshot on the CLI remains available for evaluation.
 
 Use clear validation, 404 for unknown source IDs, 422 for malformed
 requests, 503 for missing services, and a controlled timeout response. Do
 not return stack traces.
 
 Frontend screens:
-1. Ask: corpus selector, question, optional date, answer, citations, status.
+1. Ask: question, optional date, answer, citations, status. No corpus selector.
 2. Evidence drawer: original source excerpts and section/version labels.
 3. Explain retrieval: method, selected snippets, graph paths, timing.
 4. Evaluation view: actual metrics, run configuration, comparisons.
 
 Keep development knobs in an optional evaluation panel. Keep the damaged
-dataset out of the default corpus selector. Use accessible controls and responsive layout. No mocked metrics or fabricated
+dataset out of model routing. Use accessible controls and responsive layout. No mocked metrics or fabricated
 “passing” badges in the final application.
 
 ## 16. Evaluation design

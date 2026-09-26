@@ -63,9 +63,9 @@ Milestones 0, 1, and 2 are checked. Later milestones stay open. A checkbox requi
 
 ## 6. Frontend, experiments, diagnosis, and submission
 
-- [ ] 6.1 Implement accessible JavaScript corpus selection, question/answer, citation drawer, and trace views.
+- [x] 6.1 Implement accessible JavaScript corpus selection, question/answer, citation drawer, and trace views.
 - [ ] 6.2 Implement graph visualization and the evaluation screen.
-- [ ] 6.3 Run frontend tests for unavailable services, conflicting sources, and citation display.
+- [x] 6.3 Run frontend tests for unavailable services, conflicting sources, and citation display.
 - [ ] 6.4 Compare chunking/overlap/model variants on development data and document decisions.
 - [ ] 6.5 Run frozen held-out mode comparisons; retain actual metrics, per-case failures, latency, and configuration.
 - [ ] 6.6 Run the dirty-stale source experiment; preserve the real flawed response and source-based diagnosis.

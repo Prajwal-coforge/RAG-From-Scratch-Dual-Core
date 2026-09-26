@@ -64,6 +64,15 @@ docker compose -f infra/compose.yaml up -d
 
 Lab is at http://127.0.0.1:3000. The database Bolt port is `127.0.0.1:7687`. `infra/schema-preview.cypher` creates the constraints, the `chunk_embedding` index, and a few schema-preview nodes that the doctor's persistence check uses. Ingested policy text arrives through `policy-rag ingest`.
 
+The Ask screen:
+
+```bash
+uv run uvicorn app.api:app --app-dir backend --host 127.0.0.1 --port 8000
+cd frontend && npm install && npm run dev
+```
+
+Open http://127.0.0.1:5173. The page calls the local API. A question with no named issuer is routed by the local model across the published contexts. The damaged `dirty-stale` snapshot is not one of them. `--snapshot` on the CLI still forces one context for a lab run.
+
 Two-text retrieval proof. It embeds two known texts, stores them in Memgraph under their own `smoke_text_embedding` index, and checks that each question returns the right one. `--embedder ollama` reproduces the milestone 1 run:
 
 ```bash
@@ -84,6 +93,8 @@ uv run policy-rag rollback --snapshot clean
 Snapshots are `clean`, `duplicate`, `historical`, `dirty-stale`, and `imported:<corpus_id>`. `dirty-stale` is a damaged fixture and publishes only with `--profile evaluation --reason "..."`. `ask` uses the snapshot's `as_of` date by default. `--as-of` and `--include-history` answer from the version in force on another date. `--json` prints the full retrieval trace and answer report.
 
 Each ingest builds a new index generation and moves the snapshot's publication pointer only after verification. Re-ingesting unchanged input does nothing. Runtime state (embedding cache and run records) is in `.local/state.sqlite`, which is not committed.
+
+`policy-rag etl --snapshot clean` writes bronze, silver, and gold JSON for that snapshot under `.local/medallion/`. Bronze records landed file hashes, silver runs the same publication gate as ingest, and gold stores the chunk plan ingest would publish. These files are not a data lake and are not read by retrieval.
 
 The recorded milestone 3 run is in [`docs/evidence/m3/`](docs/evidence/m3/README.md), produced by `scripts/record-m3-evidence.sh`.
 

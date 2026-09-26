@@ -125,3 +125,21 @@ def test_eligibility_uses_status_now_and_dates_for_history():
     assert eligibility(v1, "2025-08-01", True).startswith("expired")
     assert eligibility({"publication_status": "draft"}, "2025-08-01", True) == "status draft"
     assert eligibility({"publication_status": "active"}, "2025-08-01", False) is None
+
+
+def test_latest_in_force_date_uses_the_newest_active_version_not_a_future_one():
+    from datetime import date
+
+    from app.retrieve import latest_in_force_date
+
+    current = [
+        {"publication_status": "superseded", "effective_from": "2024-01-01"},
+        {"publication_status": "active", "effective_from": "2025-01-01"},
+        {"publication_status": "active", "effective_from": "2025-07-01"},
+        {"publication_status": "active", "effective_from": None},
+    ]
+    future = [*current, {"publication_status": "active", "effective_from": "2027-01-01"}]
+    today = date(2026, 9, 25)
+    assert latest_in_force_date(current, today=today) == "2025-07-01"
+    assert latest_in_force_date(future, today=today) == "2026-09-25"
+    assert latest_in_force_date([{"publication_status": "active"}], today=today) == "2026-09-25"
