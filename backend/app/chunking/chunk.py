@@ -61,7 +61,6 @@ class ChildChunk:
     heading_path: str
     text: str
     spans: tuple[tuple[int, int], ...]
-    access_policy_id: str
     token_count: int
     overlap_tokens: int
     part_index: int
@@ -107,18 +106,14 @@ def chunk_document(
     *,
     document_version_id: str,
     document_title: str,
-    access_policy_id: str,
     tokenizer: Tokenizer,
     config: ChunkConfig | None = None,
-    access_by_heading: dict[str, str] | None = None,
 ) -> list[ChildChunk]:
     settings = config or ChunkConfig()
     sections = parse_sections(
         text,
         document_version_id=document_version_id,
         document_title=document_title,
-        access_policy_id=access_policy_id,
-        access_by_heading=access_by_heading,
     )
     children: list[ChildChunk] = []
     for section in sections:
@@ -237,7 +232,6 @@ def _child(
         heading_path=section.heading_path,
         text=rendered,
         spans=spans,
-        access_policy_id=section.access_policy_id,
         token_count=tokenizer.count(rendered),
         overlap_tokens=overlap_tokens,
         part_index=part_index,

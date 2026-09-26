@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "note": "Reviewed policy concepts for the graph. Roles are linked to a section only where the role name appears verbatim in that section. Controls are linked only through exact anchor sentences, each checked to occur once in the named section. Departments come from the catalog owner field. These nodes describe policy content; they do not control who can read anything.",
+  "reviewed_by": "Drafted by the coding agent from the source text and catalog; every name and anchor is machine-checked at ingest. Project-owner review pending.",
+  "corpora": {
+    "airport-generated": {
+      "departments": [
+        {
+          "id": "DEPT-AIRPORT-OPS",
+          "name": "AeroPolicy Airport Operations",
+          "provenance": "data/sources/generated/catalog.json owner field",
+          "owns_policies": ["AP-BAG-001", "AP-INC-002", "AP-SEC-003"]
+        }
+      ],
+      "roles": [
+        {"id": "ROLE-BAGGAGE-DUTY-SUPERVISOR", "name": "Baggage Duty Supervisor"},
+        {"id": "ROLE-INCIDENT-COORDINATOR", "name": "Incident Coordinator"},
+        {"id": "ROLE-SECURITY-DUTY-MANAGER", "name": "Security Duty Manager"},
+        {"id": "ROLE-REPORTING-STAFF-MEMBER", "name": "Reporting Staff Member"},
+        {"id": "ROLE-AIRSIDE-DUTY-MANAGER", "name": "Airside Duty Manager"},
+        {"id": "ROLE-LINE-MANAGER", "name": "Line Manager"}
+      ],
+      "controls": [
+        {
+          "id": "CTRL-BAGGAGE-ESCALATION",
+          "name": "Baggage incident escalation",
+          "anchors": [
+            {"document_version_id": "airport-generated:AP-BAG-001:v1", "section": "4", "anchor": "the handler must escalate the incident to the Baggage Duty Supervisor within 30 minutes of discovery"},
+            {"document_version_id": "airport-generated:AP-BAG-001:v2", "section": "4", "anchor": "the handler must escalate the incident to the Baggage Duty Supervisor within 10 minutes of discovery"},
+            {"document_version_id": "airport-generated:AP-INC-002:v1", "section": "3", "anchor": "must refer to AP-BAG-001 section 4 for escalation procedures"}
+          ]
+        },
+        {
+          "id": "CTRL-RESTRICTED-ITEM-APPROVAL",
+          "name": "Restricted-items approval procedure",
+          "anchors": [
+            {"document_version_id": "airport-generated:AP-SEC-003:v1", "section": "4", "anchor": "Approval to carry a restricted item airside must be granted in writing by the Security Duty Manager"},
+            {"document_version_id": "airport-generated:AP-BAG-001:v1", "section": "5", "anchor": "approved or removed under the restricted-items approval procedure in AP-SEC-003"},
+            {"document_version_id": "airport-generated:AP-BAG-001:v2", "section": "5", "anchor": "approved or removed under the restricted-items approval procedure in AP-SEC-003"}
+          ]
+        },
+        {
+          "id": "CTRL-INCIDENT-LOG",
+          "name": "Incident log",
+          "anchors": [
+            {"document_version_id": "airport-generated:AP-BAG-001:v1", "section": "6", "anchor": "All baggage incidents must be recorded in the incident log"},
+            {"document_version_id": "airport-generated:AP-BAG-001:v2", "section": "6", "anchor": "All baggage incidents must be recorded in a centralized incident log"}
+          ]
+        },
+        {
+          "id": "CTRL-POST-INCIDENT-REVIEW",
+          "name": "Post-incident review",
+          "anchors": [
+            {"document_version_id": "airport-generated:AP-INC-002:v1", "section": "4", "anchor": "all necessary information is gathered for the post-incident review"},
+            {"document_version_id": "airport-generated:AP-INC-002:v1", "section": "6", "anchor": "the outcomes of the post-incident review"}
+          ]
+        }
+      ]
+    }
+  }
+}

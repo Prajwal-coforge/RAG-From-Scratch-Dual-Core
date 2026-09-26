@@ -1,0 +1,33 @@
+{
+  "description": "Facts that change which rule applies. A fact is required when the top retrieved section is one whose rule differs by that fact and the question gives no value for it. Triage asks for the fact instead of guessing.",
+  "reviewed_by": "Drafted by the coding agent from the source text; every value is machine-checked to appear in each listed section. Project-owner review pending.",
+  "corpora": {
+    "airport-generated": [],
+    "skywings-baggage": [
+      {
+        "fact": "travel_class",
+        "follow_up": "Which travel class is the passenger flying: Economy, Business, or First Class?",
+        "values": {"Economy Class": ["economy"], "Business Class": ["business"], "First Class": ["first class"]},
+        "sections": ["3", "4"],
+        "section_mentions": {"3": ["Economy", "Business/First"], "4": ["Economy", "Business", "First Class"]}
+      }
+    ],
+    "aethersky-compensation": [
+      {
+        "fact": "pilot_rank",
+        "follow_up": "Is the pilot a First Officer or a Captain?",
+        "values": {"First Officer": ["first officer"], "Captain": ["captain"]},
+        "sections": ["2.1"],
+        "section_mentions": {"2.1": ["First Officer", "Captain"]}
+      },
+      {
+        "fact": "aircraft_type",
+        "follow_up": "Is the aircraft narrow-body or wide-body?",
+        "values": {"narrow-body": ["narrow-body", "narrow body"], "wide-body": ["wide-body", "wide body"]},
+        "sections": ["2.1"],
+        "section_mentions": {"2.1": ["narrow-body", "wide-body"]}
+      }
+    ],
+    "synthetic-emissions": []
+  }
+}

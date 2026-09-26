@@ -13,9 +13,6 @@ from pathlib import Path
 
 import httpx
 from neo4j import GraphDatabase
-
-from app.chunking.gguf_tokenizer import MODEL_DIGEST, GemmaTokenizer, embeddinggemma_blob
-
 ROOT = Path(__file__).resolve().parents[2]
 LOCK_PATH = ROOT / "config" / "runtime.lock.json"
 
@@ -41,7 +38,7 @@ def run_doctor(*, restart_memgraph: bool = False, lock_path: Path = LOCK_PATH) -
     bolt = os.environ.get("MEMGRAPH_BOLT_URL", lock["memgraph"]["bolt_url"])
     checks = [
         check_memgraph(bolt, lock),
-        check_embeddings(ollama, lock),
+        check_embeddings(lock),
         check_tokenizer(lock),
         check_chat(ollama, lock),
         check_reranker(lock),
@@ -120,36 +117,33 @@ def check_memgraph_persistence(bolt: str, container: str = "airport-policy-memgr
     return Check("memgraph_persistence", True, "probe and schema preview survived a Memgraph restart")
 
 
-def check_embeddings(ollama: str, lock: dict) -> Check:
-    model = lock["embedding"]["model"]
-    dimensions = lock["embedding"]["dimensions"]
+def check_embeddings(lock: dict) -> Check:
+    spec = lock["embedding"]
     try:
-        digest = _model_blob_digest(ollama, model)
-        response = httpx.post(
-            f"{ollama}/api/embed",
-            json={"model": model, "input": "airport policy smoke", "truncate": False},
-            timeout=120,
-        )
-        response.raise_for_status()
-        vectors = response.json()["embeddings"]
+        from app.embedder import embedder_from_lock
+
+        embedder = embedder_from_lock(lock)
+        vectors = embedder.embed(["airport policy smoke"])
     except Exception as exc:
-        return Check("embeddings", False, f"embed request failed: {exc.__class__.__name__}")
-    if digest != lock["embedding"]["blob_digest"]:
-        return Check("embeddings", False, "embedding model blob does not match the lock")
-    if len(vectors) != 1 or len(vectors[0]) != dimensions or not all(math.isfinite(value) for value in vectors[0]):
-        return Check("embeddings", False, "embedding response was not one finite 768-dimensional vector")
-    return Check("embeddings", True, f"{model} returned one finite {dimensions}-dimensional vector")
+        return Check("embeddings", False, f"sentence-transformers embedding failed: {exc.__class__.__name__}: {exc}")
+    if embedder.max_tokens != spec["max_seq_length"]:
+        return Check("embeddings", False, f"max_seq_length {embedder.max_tokens} does not match the lock")
+    return Check(
+        "embeddings",
+        True,
+        f"{spec['model']}@{spec['revision'][:12]} returned one unit-length {len(vectors[0])}-dimensional vector",
+    )
 
 
 def check_tokenizer(lock: dict) -> Check:
-    blob = embeddinggemma_blob()
-    if not blob.is_file():
-        return Check("tokenizer", False, "local embeddinggemma GGUF blob is not installed")
-    if blob.name != MODEL_DIGEST.replace(":", "-"):
-        return Check("tokenizer", False, "local embeddinggemma blob does not match the lock")
-    if lock["embedding"]["tokenizer"] != GemmaTokenizer.name:
-        return Check("tokenizer", False, "tokenizer name does not match the lock")
-    tokenizer = GemmaTokenizer(blob)
+    try:
+        from app.embedder import embedder_from_lock
+
+        tokenizer = embedder_from_lock(lock).tokenizer
+    except Exception as exc:
+        return Check("tokenizer", False, f"tokenizer failed to load: {exc.__class__.__name__}")
+    if lock["embedding"]["tokenizer"] != tokenizer.name:
+        return Check("tokenizer", False, f"tokenizer {tokenizer.name} does not match the lock")
     if tokenizer.count("the") != 1 or tokenizer.count("Hello world") != 2:
         return Check("tokenizer", False, "tokenizer counts did not match the EmbeddingGemma check")
     return Check("tokenizer", True, f"{tokenizer.name} counts 'the' as 1 and 'Hello world' as 2")

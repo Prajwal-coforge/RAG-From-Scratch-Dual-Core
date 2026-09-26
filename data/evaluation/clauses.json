@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "note": "Stable source clause labels. A clause is an exact anchor sentence in one document version; a chunk covers the clause when its spans contain the whole anchor. Labels do not depend on chunking.",
+  "clauses": {
+    "BAG2-1-SCOPE": {
+      "document_version_id": "airport-generated:AP-BAG-001:v2",
+      "section": "1",
+      "anchor": "The policy applies to all baggage handlers, baggage duty supervisors, and ramp leads."
+    },
+    "BAG2-3-INSPECT": {
+      "document_version_id": "airport-generated:AP-BAG-001:v2",
+      "section": "3",
+      "anchor": "Handlers must inspect baggage for any signs of damage or tampering before loading."
+    },
+    "BAG2-4-ESCALATE": {
+      "document_version_id": "airport-generated:AP-BAG-001:v2",
+      "section": "4",
+      "anchor": "the handler must escalate the incident to the Baggage Duty Supervisor within 10 minutes of discovery and must report it under AP-INC-002."
+    },
+    "BAG1-4-ESCALATE": {
+      "document_version_id": "airport-generated:AP-BAG-001:v1",
+      "section": "4",
+      "anchor": "the handler must escalate the incident to the Baggage Duty Supervisor within 30 minutes of discovery and must report it under AP-INC-002."
+    },
+    "BAG2-5-RESTRICTED": {
+      "document_version_id": "airport-generated:AP-BAG-001:v2",
+      "section": "5",
+      "anchor": "If a restricted item is found in a bag during baggage handling, the bag must not be handled further until it is approved or removed under the restricted-items approval procedure in AP-SEC-003."
+    },
+    "INC-2-CATEGORIES": {
+      "document_version_id": "airport-generated:AP-INC-002:v1",
+      "section": "2",
+      "anchor": "Operational incidents are categorized into four types: baggage, restricted-item, ramp safety, and equipment."
+    },
+    "INC-3-REPORT": {
+      "document_version_id": "airport-generated:AP-INC-002:v1",
+      "section": "3",
+      "anchor": "All operational incidents must be reported by the affected staff member to their supervisor or the Airside Duty Manager."
+    },
+    "INC-3-BAGREF": {
+      "document_version_id": "airport-generated:AP-INC-002:v1",
+      "section": "3",
+      "anchor": "For baggage incidents, the Reporting Staff Member must refer to AP-BAG-001 section 4 for escalation procedures."
+    },
+    "INC-4-RECORD": {
+      "document_version_id": "airport-generated:AP-INC-002:v1",
+      "section": "4",
+      "anchor": "The Incident Coordinator must open an incident record for every reported incident before the end of the shift in which it was reported."
+    },
+    "INC-5-LEAD": {
+      "document_version_id": "airport-generated:AP-INC-002:v1",
+      "section": "5",
+      "anchor": "The review meeting is led by the Incident Coordinator and includes representatives from all relevant departments."
+    },
+    "SEC-2-MAKEUP": {
+      "document_version_id": "airport-generated:AP-SEC-003:v1",
+      "section": "2",
+      "anchor": "The baggage make-up area is restricted to authorized personnel only."
+    },
+    "SEC-4-APPROVAL": {
+      "document_version_id": "airport-generated:AP-SEC-003:v1",
+      "section": "4",
+      "anchor": "Approval to carry a restricted item airside must be granted in writing by the Security Duty Manager before the item passes the staff screening point."
+    },
+    "SEC-4-ENDORSE": {
+      "document_version_id": "airport-generated:AP-SEC-003:v1",
+      "section": "4",
+      "anchor": "The Line Manager must endorse the request to confirm its necessity and compliance with safety standards."
+    },
+    "SEC-5-REPORT": {
+      "document_version_id": "airport-generated:AP-SEC-003:v1",
+      "section": "5",
+      "anchor": "The incident must be reported under AP-INC-002, including details of the item, the baggage, and the location of discovery."
+    },
+    "SEC-6-RETENTION": {
+      "document_version_id": "airport-generated:AP-SEC-003:v1",
+      "section": "6",
+      "anchor": "All records related to restricted items, including approval requests, incident reports, and handling procedures, must be maintained for a minimum of two years."
+    },
+    "SKY-4-ECONOMY-WEIGHT": {
+      "document_version_id": "skywings-baggage:luggage_policy:319cbb92315b",
+      "section": "4",
+      "anchor": "Weight Limit: Up to 23 kg (50 lbs)."
+    },
+    "SKY-5-CARGO": {
+      "document_version_id": "skywings-baggage:luggage_policy:319cbb92315b",
+      "section": "5",
+      "anchor": "No single piece over 32 kg (70 lbs) or exceeding 203 cm (80 in) in total dimensions will be accepted as checked baggage and must be shipped as cargo."
+    },
+    "SKY-7-DG-REFERENCE": {
+      "document_version_id": "skywings-baggage:luggage_policy:319cbb92315b",
+      "section": "7",
+      "anchor": "Note: For a detailed list, refer to the SkyWings Airlines Dangerous Goods Policy."
+    },
+    "SKY-12-MOBILITY-FREE": {
+      "document_version_id": "skywings-baggage:luggage_policy:319cbb92315b",
+      "section": "12",
+      "anchor": "Mobility aids (wheelchairs, walkers) transported free of charge."
+    },
+    "SKY-12-NOTICE": {
+      "document_version_id": "skywings-baggage:luggage_policy:319cbb92315b",
+      "section": "12",
+      "anchor": "Must notify the airline at least 48 hours in advance."
+    },
+    "AE-2.1-MINIMUM": {
+      "document_version_id": "aethersky-compensation:aethersky-airways-pilot-compensation-policy:b418ecf530c7",
+      "section": "2.1",
+      "anchor": "A minimum of 75 flight hours per month is guaranteed for all active pilots."
+    },
+    "AE-2.1-RATE-UNSTATED": {
+      "document_version_id": "aethersky-compensation:aethersky-airways-pilot-compensation-policy:b418ecf530c7",
+      "section": "2.1",
+      "anchor": "The base hourly rate reflects qualifications, operational responsibility, and market benchmarks."
+    },
+    "AE-3-PER-DIEM": {
+      "document_version_id": "aethersky-compensation:aethersky-airways-pilot-compensation-policy:b418ecf530c7",
+      "section": "3",
+      "anchor": "The domestic per diem rate is set at $3.25 per hour and international assignments are compensated at $5.00 per hour."
+    },
+    "GAEA-1.3-DEADLINE": {
+      "document_version_id": "synthetic-emissions:airplane_pollution_compliance:186f4afe7c63",
+      "section": "1",
+      "anchor": "Submitted annually by March 31st for the preceding calendar year."
+    },
+    "GAEA-2.2-NOX": {
+      "document_version_id": "synthetic-emissions:airplane_pollution_compliance:186f4afe7c63",
+      "section": "2",
+      "anchor": "≤ 15 grams NOx per kilonewton of rated thrust during the Landing and Takeoff (LTO) cycle."
+    }
+  }
+}

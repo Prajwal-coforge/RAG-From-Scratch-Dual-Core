@@ -1,0 +1,529 @@
+{
+  "trace_id": "agent-e06fa88ae0fc",
+  "triage": {
+    "status": "routed",
+    "route": "cross_policy",
+    "mode": "graph_rerank",
+    "corpus_id": "airport-generated",
+    "snapshot_id": "clean",
+    "issuer": "AeroPolicy Airport",
+    "basis": "4 terms found only in this corpus: approve, find, handler, incident",
+    "policies": [
+      "AP-INC-002",
+      "AP-SEC-003"
+    ],
+    "follow_up_questions": [],
+    "signals": {
+      "policy_ids": [],
+      "named_contexts": [],
+      "distinctive_terms": {
+        "airport-generated": [
+          "approve",
+          "find",
+          "handler",
+          "incident"
+        ]
+      },
+      "confident_context": "airport-generated",
+      "selected": null
+    }
+  },
+  "agent": {
+    "framework": "deepagents",
+    "model": {
+      "provider": "ollama",
+      "name": "qwen3:8b",
+      "blob_digest": "sha256:a3de86cd1c132c822487ededd47a324c50491393e6565cd14bafa40d0b8e686f"
+    },
+    "budgets": {
+      "max_tool_calls": 6,
+      "max_delegations": 2,
+      "max_subagents": 2,
+      "delegation_depth": 1,
+      "time_limit_s": 120.0
+    },
+    "corpus_id": "airport-generated",
+    "snapshot_id": "clean",
+    "index_generation_id": "gen-df05ee25f1357f41",
+    "tool_inventory": {
+      "main": [
+        "compare_versions",
+        "follow_policy_links",
+        "get_section",
+        "read_file",
+        "search_policies",
+        "task"
+      ],
+      "subagents": {
+        "link-follower": [
+          "follow_policy_links",
+          "get_section",
+          "read_file"
+        ],
+        "version-checker": [
+          "compare_versions",
+          "get_section",
+          "read_file"
+        ]
+      }
+    },
+    "outcome": "completed",
+    "error": null,
+    "elapsed_s": 10.54,
+    "tool_calls": [
+      {
+        "scope": "main",
+        "tool": "search_policies",
+        "args": {
+          "modes": "keyword",
+          "query": "restricted item checked bag procedure"
+        },
+        "started_s": 1.6,
+        "outcome": "ok",
+        "duration_ms": 5.3
+      },
+      {
+        "scope": "main",
+        "tool": "follow_policy_links",
+        "args": {
+          "allowed_relation_types": [
+            "REFERENCES"
+          ],
+          "seed_ids": [
+            "S1",
+            "S2"
+          ]
+        },
+        "started_s": 5.06,
+        "outcome": "ok",
+        "duration_ms": 7.0
+      },
+      {
+        "scope": "main",
+        "tool": "get_section",
+        "args": {
+          "section_id": "S1"
+        },
+        "started_s": 6.68,
+        "outcome": "ok",
+        "duration_ms": 1.0
+      },
+      {
+        "scope": "main",
+        "tool": "get_section",
+        "args": {
+          "section_id": "S2"
+        },
+        "started_s": 8.0,
+        "outcome": "ok",
+        "duration_ms": 0.8
+      },
+      {
+        "scope": "main",
+        "tool": "get_section",
+        "args": {
+          "section_id": "S5"
+        },
+        "started_s": 9.35,
+        "outcome": "ok",
+        "duration_ms": 1.0
+      }
+    ],
+    "refused_calls": [],
+    "searches": [
+      {
+        "query": "restricted item checked bag procedure",
+        "mode": "keyword",
+        "chunk_ids": [
+          "c49776fbd681146fd2ac62fd39513511011801e811c554f640b76cdd59f05675",
+          "f2bf060629a12a2a89d321fb1306bb571d97adeafe399def3efbc35d98a40d71",
+          "d65443d5118d4907c007b8a192642f7a02247ab6928fa4fee59b0a4545cb9e40",
+          "0dd86a10642186d9867d51e60f57e1b3ea2f88172b01c49b8c747030cb3d4ab4",
+          "b91129240731fef1d62a00bc17e3c135a62995f020653b1d8d7fdbed8966ac3c"
+        ],
+        "graph": null
+      }
+    ],
+    "graph_paths": [
+      {
+        "from_section_id": "airport-generated:AP-BAG-001:v2:5 Restricted Items Found in Baggage",
+        "edge": "REFERENCES",
+        "validation_status": "validated",
+        "evidence": "If a restricted item is found in a bag during baggage handling, the bag must not be handled further until it is approved or removed under the restricted-items approval procedure in AP-SEC-003.",
+        "source_span": [
+          2917,
+          3109
+        ],
+        "source_document_version_id": "airport-generated:AP-BAG-001:v2",
+        "target_policy_id": "AP-SEC-003",
+        "target_section": null,
+        "target_section_ids": [
+          "airport-generated:AP-SEC-003:v1:1 Purpose and Scope",
+          "airport-generated:AP-SEC-003:v1:2 Staff Access Zones",
+          "airport-generated:AP-SEC-003:v1:3 Restricted Items",
+          "airport-generated:AP-SEC-003:v1:4 Approval Procedure for Restricted Items",
+          "airport-generated:AP-SEC-003:v1:5 Restricted Items Found in Baggage",
+          "airport-generated:AP-SEC-003:v1:6 Records and Review"
+        ]
+      },
+      {
+        "from_section_id": "airport-generated:AP-SEC-003:v1:5 Restricted Items Found in Baggage",
+        "edge": "REFERENCES",
+        "validation_status": "validated",
+        "evidence": "A restricted item found in a checked bag must be handled in accordance with AP-BAG-001.",
+        "source_span": [
+          2917,
+          3004
+        ],
+        "source_document_version_id": "airport-generated:AP-SEC-003:v1",
+        "target_policy_id": "AP-BAG-001",
+        "target_section": null,
+        "target_section_ids": [
+          "airport-generated:AP-BAG-001:v2:1 Purpose and Scope",
+          "airport-generated:AP-BAG-001:v2:2 Roles and Responsibilities",
+          "airport-generated:AP-BAG-001:v2:3 Handling Standards",
+          "airport-generated:AP-BAG-001:v2:4 Baggage Incident Escalation",
+          "airport-generated:AP-BAG-001:v2:5 Restricted Items Found in Baggage",
+          "airport-generated:AP-BAG-001:v2:6 Records and Review"
+        ]
+      },
+      {
+        "from_section_id": "airport-generated:AP-SEC-003:v1:5 Restricted Items Found in Baggage",
+        "edge": "REFERENCES",
+        "validation_status": "validated",
+        "evidence": "The incident must be reported under AP-INC-002, including details of the item, the baggage, and the location of discovery.",
+        "source_span": [
+          3079,
+          3201
+        ],
+        "source_document_version_id": "airport-generated:AP-SEC-003:v1",
+        "target_policy_id": "AP-INC-002",
+        "target_section": null,
+        "target_section_ids": [
+          "airport-generated:AP-INC-002:v1:1 Purpose and Scope",
+          "airport-generated:AP-INC-002:v1:2 Incident Categories",
+          "airport-generated:AP-INC-002:v1:3 Reporting and First Response",
+          "airport-generated:AP-INC-002:v1:4 Incident Coordinator Duties",
+          "airport-generated:AP-INC-002:v1:5 Post-Incident Review",
+          "airport-generated:AP-INC-002:v1:6 Records"
+        ]
+      }
+    ],
+    "section_refs": {
+      "S1": "airport-generated:AP-BAG-001:v2:5 Restricted Items Found in Baggage",
+      "S2": "airport-generated:AP-SEC-003:v1:5 Restricted Items Found in Baggage",
+      "S3": "airport-generated:AP-SEC-003:v1:4 Approval Procedure for Restricted Items",
+      "S4": "airport-generated:AP-BAG-001:v2:4 Baggage Incident Escalation",
+      "S5": "airport-generated:AP-INC-002:v1:2 Incident Categories",
+      "S6": "airport-generated:AP-SEC-003:v1:1 Purpose and Scope",
+      "S7": "airport-generated:AP-SEC-003:v1:2 Staff Access Zones",
+      "S8": "airport-generated:AP-SEC-003:v1:3 Restricted Items",
+      "S9": "airport-generated:AP-SEC-003:v1:6 Records and Review",
+      "S10": "airport-generated:AP-BAG-001:v2:1 Purpose and Scope",
+      "S11": "airport-generated:AP-BAG-001:v2:2 Roles and Responsibilities",
+      "S12": "airport-generated:AP-BAG-001:v2:3 Handling Standards",
+      "S13": "airport-generated:AP-BAG-001:v2:6 Records and Review",
+      "S14": "airport-generated:AP-INC-002:v1:1 Purpose and Scope",
+      "S15": "airport-generated:AP-INC-002:v1:3 Reporting and First Response",
+      "S16": "airport-generated:AP-INC-002:v1:4 Incident Coordinator Duties",
+      "S17": "airport-generated:AP-INC-002:v1:5 Post-Incident Review",
+      "S18": "airport-generated:AP-INC-002:v1:6 Records"
+    },
+    "evidence_chunk_ids": [
+      "c49776fbd681146fd2ac62fd39513511011801e811c554f640b76cdd59f05675",
+      "f2bf060629a12a2a89d321fb1306bb571d97adeafe399def3efbc35d98a40d71",
+      "d65443d5118d4907c007b8a192642f7a02247ab6928fa4fee59b0a4545cb9e40",
+      "0dd86a10642186d9867d51e60f57e1b3ea2f88172b01c49b8c747030cb3d4ab4",
+      "b91129240731fef1d62a00bc17e3c135a62995f020653b1d8d7fdbed8966ac3c"
+    ],
+    "transcript": [
+      {
+        "role": "agent",
+        "tool_calls": [
+          {
+            "name": "search_policies",
+            "args": {
+              "modes": "keyword",
+              "query": "restricted item checked bag procedure"
+            }
+          }
+        ],
+        "text": ""
+      },
+      {
+        "role": "tool",
+        "name": "search_policies",
+        "status": "success",
+        "text": "mode keyword:\n- S1 rank 1: AP-BAG-001 v2 Staff Baggage Handling and Escalation / 5 Restricted Items Found in Baggage (status active)\n  If a restricted item is found in a bag during baggage handling, the bag must not be handled further until it is approved or removed under the restricted-items approval procedure in AP-SEC-003. The baggage handler must notify the Baggage Duty Supervisor upon discovery of the restricted item. The Baggage Duty Supervisor is responsible for initiating the approval process or coordinating the removal of the restricted item. All bags containing restricted items must "
+      },
+      {
+        "role": "agent",
+        "tool_calls": [
+          {
+            "name": "follow_policy_links",
+            "args": {
+              "allowed_relation_types": [
+                "REFERENCES"
+              ],
+              "seed_ids": [
+                "S1",
+                "S2"
+              ]
+            }
+          }
+        ],
+        "text": ""
+      },
+      {
+        "role": "tool",
+        "name": "follow_policy_links",
+        "status": "success",
+        "text": "S1 REFERENCES AP-SEC-003: S6 1 Purpose and Scope, S7 2 Staff Access Zones, S8 3 Restricted Items, S3 4 Approval Procedure for Restricted Items, S2 5 Restricted Items Found in Baggage, S9 6 Records and Review\n  because: If a restricted item is found in a bag during baggage handling, the bag must not be handled further until it is approved or removed under the restricted-items approval procedure in AP-SEC-003.\nS2 REFERENCES AP-BAG-001: S10 1 Purpose and Scope, S11 2 Roles and Responsibilities, S12 3 Handling Standards, S4 4 Baggage Incident Escalation, S1 5 Restricted Items Found in Baggage, S13"
+      },
+      {
+        "role": "agent",
+        "tool_calls": [
+          {
+            "name": "get_section",
+            "args": {
+              "section_id": "S1"
+            }
+          }
+        ],
+        "text": ""
+      },
+      {
+        "role": "tool",
+        "name": "get_section",
+        "status": "success",
+        "text": "S1: AP-BAG-001 v2 Staff Baggage Handling and Escalation / 5 Restricted Items Found in Baggage (status active)\nIf a restricted item is found in a bag during baggage handling, the bag must not be handled further until it is approved or removed under the restricted-items approval procedure in AP-SEC-003. The baggage handler must notify the Baggage Duty Supervisor upon discovery of the restricted item. The Baggage Duty Supervisor is responsible for initiating the approval process or coordinating the removal of the restricted item. All bags containing restricted items must be isolated and secured t"
+      },
+      {
+        "role": "agent",
+        "tool_calls": [
+          {
+            "name": "get_section",
+            "args": {
+              "section_id": "S2"
+            }
+          }
+        ],
+        "text": ""
+      },
+      {
+        "role": "tool",
+        "name": "get_section",
+        "status": "success",
+        "text": "S2: AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals / 5 Restricted Items Found in Baggage (status active)\nA restricted item found in a checked bag must be handled in accordance with AP-BAG-001. The item must be removed from the baggage and secured for further review. The incident must be reported under AP-INC-002, including details of the item, the baggage, and the location of discovery. All relevant staff must follow the procedures outlined in these policies to ensure proper handling and documentation. The Security Duty Manager is responsible for coordinating the response and ensu"
+      },
+      {
+        "role": "agent",
+        "tool_calls": [
+          {
+            "name": "get_section",
+            "args": {
+              "section_id": "S5"
+            }
+          }
+        ],
+        "text": ""
+      },
+      {
+        "role": "tool",
+        "name": "get_section",
+        "status": "success",
+        "text": "S5: AP-INC-002 v1 Operational Incident Response and Review / 2 Incident Categories (status active)\nOperational incidents are categorized into four types: baggage, restricted-item, ramp safety, and equipment. Baggage incidents include any event affecting the handling, loss, or damage of baggage. Restricted-item incidents involve the discovery or mishandling of prohibited items. Ramp safety incidents encompass any event that compromises the safety of personnel or aircraft on the ramp. Equipment incidents refer to malfunctions or failures of airport equipment. Each category requires specific proc"
+      },
+      {
+        "role": "agent",
+        "tool_calls": [],
+        "text": "The sections that answer the question are S1, S2, and S5."
+      }
+    ],
+    "summary": "The sections that answer the question are S1, S2, and S5.",
+    "timing_ms": 16264.6
+  },
+  "answer": {
+    "request_id": "req-b4ba23d1d460",
+    "trace_id": "agent-e06fa88ae0fc",
+    "mode_used": "agent",
+    "corpus_id": "airport-generated",
+    "snapshot_id": "clean",
+    "index_generation_id": "gen-df05ee25f1357f41",
+    "as_of": "2025-08-01",
+    "question": "A handler finds a restricted item in a checked bag. What must happen to the bag, who approves the item, and how must the incident be reported?",
+    "follow_up_questions": [],
+    "evidence_budget": {
+      "limit_tokens": 3500,
+      "used_tokens": 864,
+      "counted_with": "embeddinggemma-hf-57c266a740f5",
+      "omitted": []
+    },
+    "status": "answered",
+    "answer": "The bag must be isolated and secured to prevent unauthorized access [1], and the restricted item must be removed from the baggage and secured for further review [2]. The Security Duty Manager must approve the item [3]. The incident must be reported under AP-INC-002, including details of the item, the baggage, and the location of discovery [2].",
+    "validation_problems": [],
+    "invented_citation_ids": [],
+    "claims": [
+      {
+        "text": "The bag must be isolated and secured to prevent unauthorized access [1], and the restricted item must be removed from the baggage and secured for further review [2].",
+        "citation_ids": [
+          1,
+          2
+        ]
+      },
+      {
+        "text": "The Security Duty Manager must approve the item [3].",
+        "citation_ids": [
+          3
+        ]
+      },
+      {
+        "text": "The incident must be reported under AP-INC-002, including details of the item, the baggage, and the location of discovery [2].",
+        "citation_ids": [
+          2
+        ]
+      }
+    ],
+    "citations": [
+      {
+        "citation_id": 1,
+        "chunk_id": "c49776fbd681146fd2ac62fd39513511011801e811c554f640b76cdd59f05675",
+        "document_version_id": "airport-generated:AP-BAG-001:v2",
+        "document_title": "AP-BAG-001 v2 Staff Baggage Handling and Escalation",
+        "version": "2",
+        "section_path": "5 Restricted Items Found in Baggage",
+        "source_spans": [
+          [
+            2917,
+            3643
+          ]
+        ],
+        "source_url": "/api/sources/c49776fbd681146fd2ac62fd39513511011801e811c554f640b76cdd59f05675",
+        "path": "data/sources/generated/AP-BAG-001-v2.md",
+        "resolved": true,
+        "excerpt": "If a restricted item is found in a bag during baggage handling, the bag must not be handled further until it is approved or removed under the restricted-items approval procedure in AP-SEC-003. The baggage handler must notify the Baggage Duty Supervisor upon discovery of the restricted item. The Baggage Duty Supervisor is responsible for initiating the approval process or coordinating the removal of the restricted item. All bags containing restricted items must be isolated and secured to prevent unauthorized access. The handling of such bags must be conducted in accordance with security procedures. This ensures that restricted items are managed in compliance with applicable regulations and airport security policies.\n\n",
+        "reason": null
+      },
+      {
+        "citation_id": 2,
+        "chunk_id": "f2bf060629a12a2a89d321fb1306bb571d97adeafe399def3efbc35d98a40d71",
+        "document_version_id": "airport-generated:AP-SEC-003:v1",
+        "document_title": "AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals",
+        "version": "1",
+        "section_path": "5 Restricted Items Found in Baggage",
+        "source_spans": [
+          [
+            2917,
+            3597
+          ]
+        ],
+        "source_url": "/api/sources/f2bf060629a12a2a89d321fb1306bb571d97adeafe399def3efbc35d98a40d71",
+        "path": "data/sources/generated/AP-SEC-003-v1.md",
+        "resolved": true,
+        "excerpt": "A restricted item found in a checked bag must be handled in accordance with AP-BAG-001. The item must be removed from the baggage and secured for further review. The incident must be reported under AP-INC-002, including details of the item, the baggage, and the location of discovery. All relevant staff must follow the procedures outlined in these policies to ensure proper handling and documentation. The Security Duty Manager is responsible for coordinating the response and ensuring compliance with applicable regulations. The baggage must be isolated and inspected by security personnel before being returned to the owner or disposed of according to established procedures.\n\n",
+        "reason": null
+      },
+      {
+        "citation_id": 3,
+        "chunk_id": "d65443d5118d4907c007b8a192642f7a02247ab6928fa4fee59b0a4545cb9e40",
+        "document_version_id": "airport-generated:AP-SEC-003:v1",
+        "document_title": "AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals",
+        "version": "1",
+        "section_path": "4 Approval Procedure for Restricted Items",
+        "source_spans": [
+          [
+            2204,
+            2875
+          ]
+        ],
+        "source_url": "/api/sources/d65443d5118d4907c007b8a192642f7a02247ab6928fa4fee59b0a4545cb9e40",
+        "path": "data/sources/generated/AP-SEC-003-v1.md",
+        "resolved": true,
+        "excerpt": "Approval to carry a restricted item airside must be granted in writing by the Security Duty Manager before the item passes the staff screening point. A Requesting Staff Member must submit a written request detailing the item, its purpose, and the intended location of use. The Line Manager must endorse the request to confirm its necessity and compliance with safety standards. The Security Duty Manager reviews and approves the request based on risk assessment and operational requirements. All approvals must be documented and retained for audit purposes. The request must include a justification for the item's necessity and a plan for its safe storage and disposal.\n\n",
+        "reason": null
+      }
+    ],
+    "evidence": [
+      {
+        "evidence_id": 1,
+        "chunk_id": "c49776fbd681146fd2ac62fd39513511011801e811c554f640b76cdd59f05675",
+        "document_title": "AP-BAG-001 v2 Staff Baggage Handling and Escalation",
+        "heading_path": "5 Restricted Items Found in Baggage",
+        "role": "retrieved",
+        "linked_to": null,
+        "tokens": 176,
+        "text": "If a restricted item is found in a bag during baggage handling, the bag must not be handled further until it is approved or removed under the restricted-items approval procedure in AP-SEC-003. The baggage handler must notify the Baggage Duty Supervisor upon discovery of the restricted item. The Baggage Duty Supervisor is responsible for initiating the approval process or coordinating the removal of the restricted item. All bags containing restricted items must be isolated and secured to prevent unauthorized access. The handling of such bags must be conducted in accordance with security procedures. This ensures that restricted items are managed in compliance with applicable regulations and airport security policies.\n\n",
+        "signals": {
+          "agent_order": 1
+        }
+      },
+      {
+        "evidence_id": 2,
+        "chunk_id": "f2bf060629a12a2a89d321fb1306bb571d97adeafe399def3efbc35d98a40d71",
+        "document_title": "AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals",
+        "heading_path": "5 Restricted Items Found in Baggage",
+        "role": "retrieved",
+        "linked_to": null,
+        "tokens": 176,
+        "text": "A restricted item found in a checked bag must be handled in accordance with AP-BAG-001. The item must be removed from the baggage and secured for further review. The incident must be reported under AP-INC-002, including details of the item, the baggage, and the location of discovery. All relevant staff must follow the procedures outlined in these policies to ensure proper handling and documentation. The Security Duty Manager is responsible for coordinating the response and ensuring compliance with applicable regulations. The baggage must be isolated and inspected by security personnel before being returned to the owner or disposed of according to established procedures.\n\n",
+        "signals": {
+          "agent_order": 2
+        }
+      },
+      {
+        "evidence_id": 3,
+        "chunk_id": "d65443d5118d4907c007b8a192642f7a02247ab6928fa4fee59b0a4545cb9e40",
+        "document_title": "AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals",
+        "heading_path": "4 Approval Procedure for Restricted Items",
+        "role": "retrieved",
+        "linked_to": null,
+        "tokens": 169,
+        "text": "Approval to carry a restricted item airside must be granted in writing by the Security Duty Manager before the item passes the staff screening point. A Requesting Staff Member must submit a written request detailing the item, its purpose, and the intended location of use. The Line Manager must endorse the request to confirm its necessity and compliance with safety standards. The Security Duty Manager reviews and approves the request based on risk assessment and operational requirements. All approvals must be documented and retained for audit purposes. The request must include a justification for the item's necessity and a plan for its safe storage and disposal.\n\n",
+        "signals": {
+          "agent_order": 3
+        }
+      },
+      {
+        "evidence_id": 4,
+        "chunk_id": "0dd86a10642186d9867d51e60f57e1b3ea2f88172b01c49b8c747030cb3d4ab4",
+        "document_title": "AP-BAG-001 v2 Staff Baggage Handling and Escalation",
+        "heading_path": "4 Baggage Incident Escalation",
+        "role": "retrieved",
+        "linked_to": null,
+        "tokens": 181,
+        "text": "When a baggage handler finds a damaged, leaking, or unattended checked bag in the baggage make-up area, the handler must escalate the incident to the Baggage Duty Supervisor within 10 minutes of discovery and must report it under AP-INC-002. All baggage incidents must be documented and reported to ensure proper follow-up. The Baggage Duty Supervisor is responsible for assessing the incident and determining the appropriate action. If necessary, the incident may be escalated to the ramp lead for further review. All staff must ensure that incidents are reported accurately and in a timely manner. This procedure ensures that all baggage issues are addressed in accordance with established protocols.\n\n",
+        "signals": {
+          "agent_order": 4
+        }
+      },
+      {
+        "evidence_id": 5,
+        "chunk_id": "b91129240731fef1d62a00bc17e3c135a62995f020653b1d8d7fdbed8966ac3c",
+        "document_title": "AP-INC-002 v1 Operational Incident Response and Review",
+        "heading_path": "2 Incident Categories",
+        "role": "retrieved",
+        "linked_to": null,
+        "tokens": 162,
+        "text": "Operational incidents are categorized into four types: baggage, restricted-item, ramp safety, and equipment. Baggage incidents include any event affecting the handling, loss, or damage of baggage. Restricted-item incidents involve the discovery or mishandling of prohibited items. Ramp safety incidents encompass any event that compromises the safety of personnel or aircraft on the ramp. Equipment incidents refer to malfunctions or failures of airport equipment. Each category requires specific procedures for reporting and response, as outlined in relevant policies. These categories are defined to ensure that incidents are managed in a manner appropriate to their nature and potential impact.\n\n",
+        "signals": {
+          "agent_order": 5
+        }
+      }
+    ],
+    "generation": {
+      "model": "qwen3:8b",
+      "model_blob_digest": "sha256:a3de86cd1c132c822487ededd47a324c50491393e6565cd14bafa40d0b8e686f",
+      "options": {
+        "temperature": 0,
+        "seed": 7,
+        "num_ctx": 8192,
+        "num_predict": 1024
+      },
+      "think": false,
+      "prompt_eval_count": 1155,
+      "eval_count": 75,
+      "raw_answer": "The bag must be isolated and secured to prevent unauthorized access [1], and the restricted item must be removed from the baggage and secured for further review [2]. The Security Duty Manager must approve the item [3]. The incident must be reported under AP-INC-002, including details of the item, the baggage, and the location of discovery [2]."
+    },
+    "timing_ms": 5678.7
+  }
+}

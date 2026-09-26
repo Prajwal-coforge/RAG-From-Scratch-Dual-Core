@@ -1,0 +1,84 @@
+{
+  "run_id": "ingest-4ed69a5483bc",
+  "snapshot_id": "dirty-stale",
+  "profile": "evaluation",
+  "reason": "Lab part 8 stale-source diagnosis fixture",
+  "findings": [
+    {
+      "severity": "error",
+      "code": "evaluation_fixture",
+      "document_version_id": null,
+      "message": "snapshot dirty-stale is a damaged evaluation fixture: The delivery supplies AP-BAG-001 v1 (30-minute escalation) marked active with no end date, and omits AP-BAG-001 v2 (10-minute escalation), which is the version in force on the as_of date."
+    }
+  ],
+  "decision": "1 blocking finding(s) accepted under the evaluation profile: Lab part 8 stale-source diagnosis fixture",
+  "generation_id": "gen-0d851c0e480a7263",
+  "fingerprint": {
+    "snapshot_id": "dirty-stale",
+    "manifest_sha256": "sha256:fc3b955432d4aa8dc7c55c1c95872cf7fda379b7d9f460ca045b723f0bd83e6a",
+    "documents": [
+      [
+        "airport-generated:AP-BAG-001:v1",
+        "sha256:5b83f8f2c5b47ab766459273c36442683d2c0b7e83e3fd9b809ffdf7499c4fdb"
+      ],
+      [
+        "airport-generated:AP-INC-002:v1",
+        "sha256:c8fbab147faed8ed5a588ad5998f71f6c83deda4b1f61245f97e44eb4daf9e4b"
+      ],
+      [
+        "airport-generated:AP-SEC-003:v1",
+        "sha256:05100e6ed18e3d07af4f902df086a77051e5670afe87c45af6eac12f1f748cb6"
+      ]
+    ],
+    "chunker": "7dc0e473d5b4a1dbb97cde67bc0193f5db3bb48381b81afd52fc0c6c91ddd16e",
+    "embedder": {
+      "runtime": "sentence-transformers",
+      "model": "google/embeddinggemma-300m",
+      "revision": "57c266a740f537b4dc058e1b0cda161fd15afa75",
+      "dimensions": 768,
+      "max_seq_length": 2048,
+      "tokenizer": "embeddinggemma-hf-57c266a740f5"
+    },
+    "format_version": "8a3a5b049bf4",
+    "profile": "evaluation"
+  },
+  "documents": [
+    {
+      "document_version_id": "airport-generated:AP-BAG-001:v1",
+      "sections": 7,
+      "chunks": 6,
+      "max_chunk_tokens": 142
+    },
+    {
+      "document_version_id": "airport-generated:AP-INC-002:v1",
+      "sections": 7,
+      "chunks": 6,
+      "max_chunk_tokens": 131
+    },
+    {
+      "document_version_id": "airport-generated:AP-SEC-003:v1",
+      "sections": 7,
+      "chunks": 6,
+      "max_chunk_tokens": 125
+    }
+  ],
+  "verification": {
+    "node_counts": {
+      "Chunk": 18,
+      "Section": 21,
+      "PolicyVersion": 3,
+      "Policy": 3,
+      "IndexGeneration": 1
+    },
+    "index_size_before": 101,
+    "index_size_after": 119,
+    "max_readback_drift": 0.0,
+    "min_self_similarity": 1.0
+  },
+  "publication": {
+    "current": "gen-0d851c0e480a7263",
+    "previous": null
+  },
+  "retired": null,
+  "status": "published"
+}

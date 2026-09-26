@@ -1,0 +1,21 @@
+generation run 2026-09-25T140544Z  commit b4dce261eff08ba1b11e560f51c1676c6b53a55a  qwen3:8b sha256:a3de86cd1c13
+bag-v2 seed 1: 783 words, rejected: 783 prose words, outside 550-750; section '4. Baggage Incident Escalation' uses 'immediately' alongside the deadline
+bag-v2 seed 2: 682 words, accepted
+inc-v1 seed 1: 1420 words, rejected: 1420 prose words, outside 550-750
+inc-v1 seed 2: 907 words, rejected: 907 prose words, outside 550-750
+inc-v1 seed 3: 957 words, rejected: 957 prose words, outside 550-750
+inc-v1 seed 4: 1033 words, rejected: 1033 prose words, outside 550-750; missing reference to AP-BAG-001; missing reference to AP-SEC-003
+inc-v1 seed 5: 1090 words, rejected: 1090 prose words, outside 550-750
+inc-v1 seed 6: 969 words, rejected: 969 prose words, outside 550-750
+Traceback (most recent call last):
+  File "/Users/Prajwal.Kumar/Downloads/RAG-From-Scratch-Dual-Core/.venv/bin/policy-rag", line 10, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/Users/Prajwal.Kumar/Downloads/RAG-From-Scratch-Dual-Core/backend/app/cli.py", line 34, in main
+    return run_corpus(args)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/Prajwal.Kumar/Downloads/RAG-From-Scratch-Dual-Core/backend/app/cli.py", line 65, in run_corpus
+    generate_all(keys=tuple(args.only) if args.only else None, force=args.force)
+  File "/Users/Prajwal.Kumar/Downloads/RAG-From-Scratch-Dual-Core/backend/app/corpus/generate.py", line 143, in generate_all
+    raise GenerationFailed(f"{spec.key}: no draft passed the checks in {MAX_ATTEMPTS} attempts")
+app.corpus.generate.GenerationFailed: inc-v1: no draft passed the checks in 6 attempts

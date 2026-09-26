@@ -11,12 +11,12 @@ The system SHALL create source-linked child passages that preserve section scope
 - **THEN** children retain headings, source spans, parent links, and a path to the exception.
 
 ### Requirement: CHK-02 Enforce hard boundaries
-The system SHALL prevent chunks and overlap from crossing source versions or permission boundaries.
+The system SHALL prevent chunks and overlap from crossing document versions or parent sections.
 
-#### Scenario: Restricted neighboring section
-- **GIVEN** adjacent internal and restricted policy sections
+#### Scenario: Adjacent sections
+- **GIVEN** two adjacent sections in the same document version
 - **WHEN** chunking runs
-- **THEN** no child contains content from both access scopes.
+- **THEN** no child or overlap contains text from both sections.
 
 ### Requirement: CHK-03 Detect model input overflow
 The system SHALL detect and explicitly handle over-limit embedding and reranker inputs.

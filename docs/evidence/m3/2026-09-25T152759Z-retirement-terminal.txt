@@ -1,0 +1,45 @@
+milestone 3 retirement check  2026-09-25T152759Z
+commit d140244604a7a69a854b7a02177ddd0ef45298f8
+
+$ uv run pytest -v -m live backend/tests/test_live_rag.py
+============================= test session starts ==============================
+platform darwin -- Python 3.12.14, pytest-9.1.1, pluggy-1.6.0 -- /Users/Prajwal.Kumar/Downloads/RAG-From-Scratch-Dual-Core/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/Prajwal.Kumar/Downloads/RAG-From-Scratch-Dual-Core
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 9 items
+
+backend/tests/test_live_rag.py::test_reingest_is_idempotent PASSED       [ 11%]
+backend/tests/test_live_rag.py::test_failed_build_leaves_the_published_generation_serving PASSED [ 22%]
+backend/tests/test_live_rag.py::test_publish_then_roll_back PASSED       [ 33%]
+backend/tests/test_live_rag.py::test_third_publication_retires_the_oldest_generation PASSED [ 44%]
+backend/tests/test_live_rag.py::test_damaged_fixture_needs_the_evaluation_profile PASSED [ 55%]
+backend/tests/test_live_rag.py::test_vector_retrieval_finds_the_current_rule_and_agrees_with_exact_cosine PASSED [ 66%]
+backend/tests/test_live_rag.py::test_superseded_version_is_excluded_unless_history_is_requested PASSED [ 77%]
+backend/tests/test_live_rag.py::test_basic_rag_answer_is_cited_and_resolvable PASSED [ 88%]
+backend/tests/test_live_rag.py::test_missing_base_rate_is_reported_not_invented PASSED [100%]
+
+============================== 9 passed in 8.37s ===============================
+[exit 0]
+
+$ uv run policy-rag index status
+vector index chunk_embedding size 137
+publications:
+  clean                            current gen-3f19662fa38e2eef  previous gen-beb2806e139e8843
+  dirty-stale                      current gen-0d851c0e480a7263  previous None
+  duplicate                        current gen-f47ae6fde192fb67  previous None
+  historical                       current gen-969426f1fd3a1262  previous None
+  imported:aethersky-compensation  current gen-f9683437166aedf9  previous None
+  imported:skywings-baggage        current gen-ab2b8d1d461c530f  previous None
+  imported:synthetic-emissions     current gen-6b929fe8c80e702a  previous None
+generations:
+  gen-f47ae6fde192fb67  duplicate                        published profile ordinary   chunks 24/24
+  gen-969426f1fd3a1262  historical                       published profile ordinary   chunks 24/24
+  gen-ab2b8d1d461c530f  imported:skywings-baggage        published profile ordinary   chunks 16/16
+  gen-f9683437166aedf9  imported:aethersky-compensation  published profile ordinary   chunks 10/10
+  gen-6b929fe8c80e702a  imported:synthetic-emissions     published profile ordinary   chunks 9/9
+  gen-0d851c0e480a7263  dirty-stale                      published profile evaluation chunks 18/18
+  gen-dd2b3cd2187de29e  clean                            retired   profile ordinary   chunks 0/18
+  gen-beb2806e139e8843  clean                            previous  profile ordinary   chunks 18/18
+  gen-3f19662fa38e2eef  clean                            published profile ordinary   chunks 18/18

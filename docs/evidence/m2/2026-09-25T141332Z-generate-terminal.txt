@@ -1,0 +1,24 @@
+generation run 2026-09-25T141332Z  commit ce442d116cef14c6ab5f2362e50c8b8f769cdda0  qwen3:8b sha256:a3de86cd1c13
+bag-v2 seed 1: 631 words, rejected: section '4. Baggage Incident Escalation' uses 'promptly' alongside the deadline
+bag-v2 seed 2: 515 words, rejected: 515 prose words, outside 550-750; section '4. Baggage Incident Escalation' uses 'immediately' alongside the deadline
+bag-v2 seed 3: 674 words, rejected: section '4. Baggage Incident Escalation' uses 'immediately' alongside the deadline; section '4. Baggage Incident Escalation' uses 'promptly' alongside the deadline
+bag-v2 seed 4: 637 words, accepted
+inc-v1 seed 1: 558 words, accepted
+sec-v1 seed 1: 485 words, rejected: 485 prose words, outside 550-750
+sec-v1 seed 2: 549 words, rejected: 549 prose words, outside 550-750
+sec-v1 seed 3: 535 words, rejected: 535 prose words, outside 550-750
+sec-v1 seed 4: 515 words, rejected: 515 prose words, outside 550-750
+sec-v1 seed 5: 441 words, rejected: 441 prose words, outside 550-750
+sec-v1 seed 6: 428 words, rejected: 428 prose words, outside 550-750
+Traceback (most recent call last):
+  File "/Users/Prajwal.Kumar/Downloads/RAG-From-Scratch-Dual-Core/.venv/bin/policy-rag", line 10, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/Users/Prajwal.Kumar/Downloads/RAG-From-Scratch-Dual-Core/backend/app/cli.py", line 34, in main
+    return run_corpus(args)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/Prajwal.Kumar/Downloads/RAG-From-Scratch-Dual-Core/backend/app/cli.py", line 65, in run_corpus
+    generate_all(keys=tuple(args.only) if args.only else None, force=args.force)
+  File "/Users/Prajwal.Kumar/Downloads/RAG-From-Scratch-Dual-Core/backend/app/corpus/generate.py", line 142, in generate_all
+    raise GenerationFailed(f"{spec.key}: no draft passed the checks in {MAX_ATTEMPTS} attempts")
+app.corpus.generate.GenerationFailed: sec-v1: no draft passed the checks in 6 attempts

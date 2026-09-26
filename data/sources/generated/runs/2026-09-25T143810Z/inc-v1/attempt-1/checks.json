@@ -1,0 +1,11 @@
+{
+  "ok": false,
+  "prose_words": 538,
+  "problems": [
+    "538 prose words, outside 550-750",
+    "missing reference to AP-BAG-001",
+    "missing reference to AP-SEC-003",
+    "contains forbidden phrase 'immediately'",
+    "contains forbidden phrase 'promptly'"
+  ]
+}

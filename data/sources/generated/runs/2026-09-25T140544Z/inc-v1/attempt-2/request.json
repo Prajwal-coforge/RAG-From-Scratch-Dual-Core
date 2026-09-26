@@ -1,0 +1,21 @@
+{
+  "model": "qwen3:8b",
+  "stream": false,
+  "think": false,
+  "options": {
+    "temperature": 0.4,
+    "num_ctx": 8192,
+    "num_predict": 2048,
+    "seed": 2
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You write internal operating policies for AeroPolicy Airport, a fictional airport. Write in plain, formal English prose. Output only the policy document in Markdown, with no preamble and no closing remarks."
+    },
+    {
+      "role": "user",
+      "content": "Write policy AP-INC-002, titled \"Operational Incident Response and Review\", issued by AeroPolicy Airport.\n\nContent: How any airport operational incident is reported, coordinated, and reviewed. Name the roles Reporting Staff Member, Incident Coordinator, and Airside Duty Manager. Categories include baggage, restricted-item, ramp safety, and equipment incidents. For the baggage-specific escalation deadline, point to AP-BAG-001 section 4 and do not state a deadline in minutes yourself. For a restricted item, point to AP-SEC-003. Section 5 describes a review meeting that records the cause and corrective actions.\n\nStart with this exact first line:\n# AP-INC-002 Operational Incident Response and Review\n\nThen use exactly these section headings, in this order, and no other headings:\n## 1. Purpose and Scope\n## 2. Incident Categories\n## 3. Reporting and First Response\n## 4. Incident Coordinator Duties\n## 5. Post-Incident Review\n## 6. Records\n\nInclude each of these sentences word for word in section \"4. Incident Coordinator Duties\":\n- The Incident Coordinator must open an incident record for every reported incident before the end of the shift in which it was reported.\n\nRefer to the related policies by their IDs (AP-BAG-001, AP-SEC-003) where the text depends on them, and do not mention any other policy IDs.\n\nRules:\n- Between 650 and 750 words of prose in total, not counting headings. Each section has two or three full paragraphs.\n- Paragraphs only. No bullet points, numbered lists, or tables.\n- Do not state any dates, years, or version numbers.\n- Do not state any time limit in minutes other than those in the required sentences.\n"
+    }
+  ]
+}

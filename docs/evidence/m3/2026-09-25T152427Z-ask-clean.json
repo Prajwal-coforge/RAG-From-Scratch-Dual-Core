@@ -1,0 +1,256 @@
+{
+  "retrieval": {
+    "mode": "vector",
+    "snapshot_id": "clean",
+    "corpus_id": "airport-generated",
+    "index_generation_id": "gen-3f19662fa38e2eef",
+    "as_of": "2025-08-01",
+    "include_history": false,
+    "question": "A baggage handler finds a leaking checked bag in the make-up area. Who must they escalate it to, and how quickly?",
+    "query_input": "task: search result | query: A baggage handler finds a leaking checked bag in the make-up area. Who must they escalate it to, and how quickly?",
+    "embedder": {
+      "runtime": "sentence-transformers",
+      "model": "google/embeddinggemma-300m",
+      "revision": "57c266a740f537b4dc058e1b0cda161fd15afa75",
+      "dimensions": 768,
+      "max_seq_length": 2048,
+      "tokenizer": "embeddinggemma-hf-57c266a740f5"
+    },
+    "k": 5,
+    "search": {
+      "method": "Memgraph vector_search.search on chunk_embedding, k = index size 119, filtered to the generation",
+      "generation_chunks": 18,
+      "eligible": 18,
+      "excluded": []
+    },
+    "exact_check": {
+      "top_k_agrees": true,
+      "max_score_gap": 8.441922250135292e-08,
+      "scores_agree": true
+    },
+    "hits": [
+      {
+        "rank": 1,
+        "chunk_id": "0dd86a10642186d9867d51e60f57e1b3ea2f88172b01c49b8c747030cb3d4ab4",
+        "document_version_id": "airport-generated:AP-BAG-001:v2",
+        "document_title": "AP-BAG-001 v2 Staff Baggage Handling and Escalation",
+        "corpus_id": "airport-generated",
+        "policy_id": "AP-BAG-001",
+        "version": "2",
+        "publication_status": "active",
+        "effective_from": "2025-07-01",
+        "effective_to": null,
+        "section_id": "airport-generated:AP-BAG-001:v2:4 Baggage Incident Escalation",
+        "heading_path": "4 Baggage Incident Escalation",
+        "text": "When a baggage handler finds a damaged, leaking, or unattended checked bag in the baggage make-up area, the handler must escalate the incident to the Baggage Duty Supervisor within 10 minutes of discovery and must report it under AP-INC-002. All baggage incidents must be documented and reported to ensure proper follow-up. The Baggage Duty Supervisor is responsible for assessing the incident and determining the appropriate action. If necessary, the incident may be escalated to the ramp lead for further review. All staff must ensure that incidents are reported accurately and in a timely manner. This procedure ensures that all baggage issues are addressed in accordance with established protocols.\n\n",
+        "source_spans": [
+          [
+            2171,
+            2875
+          ]
+        ],
+        "similarity": 0.7804966568946838,
+        "exact_cosine": 0.7804966099524101
+      },
+      {
+        "rank": 2,
+        "chunk_id": "67791b7820614ad499bb77d45a2210f685b15ee30d989735db539f991ee7fd5e",
+        "document_version_id": "airport-generated:AP-BAG-001:v2",
+        "document_title": "AP-BAG-001 v2 Staff Baggage Handling and Escalation",
+        "corpus_id": "airport-generated",
+        "policy_id": "AP-BAG-001",
+        "version": "2",
+        "publication_status": "active",
+        "effective_from": "2025-07-01",
+        "effective_to": null,
+        "section_id": "airport-generated:AP-BAG-001:v2:2 Roles and Responsibilities",
+        "heading_path": "2 Roles and Responsibilities",
+        "text": "The baggage handler is responsible for the physical handling of baggage between the check-in belts, baggage make-up area, and aircraft loading zones. The baggage duty supervisor oversees the work of baggage handlers and ensures compliance with handling procedures. The ramp lead is responsible for coordinating baggage operations and ensuring that all staff follow established protocols. Each role has specific duties related to the safe and efficient movement of baggage. All staff must report any issues or irregularities to their supervisor. Supervisors are accountable for ensuring that all baggage handling activities are conducted in accordance with this policy and relevant procedures.\n\n",
+        "source_spans": [
+          [
+            741,
+            1435
+          ]
+        ],
+        "similarity": 0.5534988045692444,
+        "exact_cosine": 0.5534988375752906
+      },
+      {
+        "rank": 3,
+        "chunk_id": "493f7fcaeafb1a08fede9df39e70289a314fb51718b79c16e2eb4c929ee23a20",
+        "document_version_id": "airport-generated:AP-INC-002:v1",
+        "document_title": "AP-INC-002 v1 Operational Incident Response and Review",
+        "corpus_id": "airport-generated",
+        "policy_id": "AP-INC-002",
+        "version": "1",
+        "publication_status": "active",
+        "effective_from": "2025-01-01",
+        "effective_to": null,
+        "section_id": "airport-generated:AP-INC-002:v1:3 Reporting and First Response",
+        "heading_path": "3 Reporting and First Response",
+        "text": "All operational incidents must be reported by the affected staff member to their supervisor or the Airside Duty Manager. The Reporting Staff Member is responsible for providing a clear and accurate description of the incident, including time, location, and any immediate actions taken. The Airside Duty Manager ensures that the incident is logged and that appropriate personnel are notified. For baggage incidents, the Reporting Staff Member must refer to AP-BAG-001 section 4 for escalation procedures. For restricted items, the Reporting Staff Member must follow the procedures outlined in AP-SEC-003. The first response should prioritize the safety of personnel and the integrity of airport operations.\n\n",
+        "source_spans": [
+          [
+            1555,
+            2262
+          ]
+        ],
+        "similarity": 0.5378362536430359,
+        "exact_cosine": 0.5378362732746677
+      },
+      {
+        "rank": 4,
+        "chunk_id": "50d15b7c028ab6eed8a1c9f40469f0b81921d919b98edbb382bca6f396624788",
+        "document_version_id": "airport-generated:AP-BAG-001:v2",
+        "document_title": "AP-BAG-001 v2 Staff Baggage Handling and Escalation",
+        "corpus_id": "airport-generated",
+        "policy_id": "AP-BAG-001",
+        "version": "2",
+        "publication_status": "active",
+        "effective_from": "2025-07-01",
+        "effective_to": null,
+        "section_id": "airport-generated:AP-BAG-001:v2:1 Purpose and Scope",
+        "heading_path": "1 Purpose and Scope",
+        "text": "This policy establishes procedures for the handling of checked baggage throughout the airport's baggage handling system. It outlines the responsibilities of staff involved in the movement and management of baggage, ensuring compliance with safety, security, and operational standards. The policy applies to all baggage handlers, baggage duty supervisors, and ramp leads. It ensures that baggage is processed efficiently and that any incidents or irregularities are addressed in a structured manner. This policy supports the safe and secure transportation of baggage while maintaining the integrity of the airport's operations.\n\n",
+        "source_spans": [
+          [
+            78,
+            706
+          ]
+        ],
+        "similarity": 0.534842312335968,
+        "exact_cosine": 0.5348423240189227
+      },
+      {
+        "rank": 5,
+        "chunk_id": "9000befd6cd7350aed94214cec20960939cdc42d04efbf1b7b92af04bd2db2ae",
+        "document_version_id": "airport-generated:AP-BAG-001:v2",
+        "document_title": "AP-BAG-001 v2 Staff Baggage Handling and Escalation",
+        "corpus_id": "airport-generated",
+        "policy_id": "AP-BAG-001",
+        "version": "2",
+        "publication_status": "active",
+        "effective_from": "2025-07-01",
+        "effective_to": null,
+        "section_id": "airport-generated:AP-BAG-001:v2:6 Records and Review",
+        "heading_path": "6 Records and Review",
+        "text": "All baggage incidents must be recorded in a centralized incident log for review and analysis. The incident log must include details such as the time, location, and nature of the incident, as well as the actions taken. The Baggage Duty Supervisor is responsible for maintaining and updating the incident log. An annual review of this policy is required to ensure its continued relevance and effectiveness. The review process must include input from all relevant staff and management. Any changes to the policy must be communicated to all affected personnel. Regular reviews help ensure that the policy remains aligned with operational needs and regulatory requirements.\n",
+        "source_spans": [
+          [
+            3670,
+            4339
+          ]
+        ],
+        "similarity": 0.5214983820915222,
+        "exact_cosine": 0.5214984024203584
+      }
+    ],
+    "timing_ms": 236.4
+  },
+  "answer": {
+    "request_id": "req-c9be58cddb35",
+    "trace_id": "trace-be1ebd765a0d",
+    "mode_used": "vector",
+    "corpus_id": "airport-generated",
+    "snapshot_id": "clean",
+    "index_generation_id": "gen-3f19662fa38e2eef",
+    "as_of": "2025-08-01",
+    "question": "A baggage handler finds a leaking checked bag in the make-up area. Who must they escalate it to, and how quickly?",
+    "follow_up_questions": [],
+    "evidence_budget": {
+      "limit_tokens": 3500,
+      "used_tokens": 829,
+      "counted_with": "embeddinggemma-hf-57c266a740f5",
+      "omitted": []
+    },
+    "status": "answered",
+    "answer": "The baggage handler must escalate the incident to the Baggage Duty Supervisor within 10 minutes of discovery [1].",
+    "validation_problems": [],
+    "claims": [
+      {
+        "text": "The baggage handler must escalate the incident to the Baggage Duty Supervisor within 10 minutes of discovery [1].",
+        "citation_ids": [
+          1
+        ]
+      }
+    ],
+    "citations": [
+      {
+        "citation_id": 1,
+        "chunk_id": "0dd86a10642186d9867d51e60f57e1b3ea2f88172b01c49b8c747030cb3d4ab4",
+        "document_version_id": "airport-generated:AP-BAG-001:v2",
+        "document_title": "AP-BAG-001 v2 Staff Baggage Handling and Escalation",
+        "version": "2",
+        "section_path": "4 Baggage Incident Escalation",
+        "source_spans": [
+          [
+            2171,
+            2875
+          ]
+        ],
+        "source_url": "/api/sources/0dd86a10642186d9867d51e60f57e1b3ea2f88172b01c49b8c747030cb3d4ab4",
+        "path": "data/sources/generated/AP-BAG-001-v2.md",
+        "resolved": true,
+        "excerpt": "When a baggage handler finds a damaged, leaking, or unattended checked bag in the baggage make-up area, the handler must escalate the incident to the Baggage Duty Supervisor within 10 minutes of discovery and must report it under AP-INC-002. All baggage incidents must be documented and reported to ensure proper follow-up. The Baggage Duty Supervisor is responsible for assessing the incident and determining the appropriate action. If necessary, the incident may be escalated to the ramp lead for further review. All staff must ensure that incidents are reported accurately and in a timely manner. This procedure ensures that all baggage issues are addressed in accordance with established protocols.\n\n",
+        "reason": null
+      }
+    ],
+    "evidence": [
+      {
+        "evidence_id": 1,
+        "chunk_id": "0dd86a10642186d9867d51e60f57e1b3ea2f88172b01c49b8c747030cb3d4ab4",
+        "document_title": "AP-BAG-001 v2 Staff Baggage Handling and Escalation",
+        "heading_path": "4 Baggage Incident Escalation",
+        "similarity": 0.7804966568946838,
+        "tokens": 181
+      },
+      {
+        "evidence_id": 2,
+        "chunk_id": "67791b7820614ad499bb77d45a2210f685b15ee30d989735db539f991ee7fd5e",
+        "document_title": "AP-BAG-001 v2 Staff Baggage Handling and Escalation",
+        "heading_path": "2 Roles and Responsibilities",
+        "similarity": 0.5534988045692444,
+        "tokens": 160
+      },
+      {
+        "evidence_id": 3,
+        "chunk_id": "493f7fcaeafb1a08fede9df39e70289a314fb51718b79c16e2eb4c929ee23a20",
+        "document_title": "AP-INC-002 v1 Operational Incident Response and Review",
+        "heading_path": "3 Reporting and First Response",
+        "similarity": 0.5378362536430359,
+        "tokens": 176
+      },
+      {
+        "evidence_id": 4,
+        "chunk_id": "50d15b7c028ab6eed8a1c9f40469f0b81921d919b98edbb382bca6f396624788",
+        "document_title": "AP-BAG-001 v2 Staff Baggage Handling and Escalation",
+        "heading_path": "1 Purpose and Scope",
+        "similarity": 0.534842312335968,
+        "tokens": 150
+      },
+      {
+        "evidence_id": 5,
+        "chunk_id": "9000befd6cd7350aed94214cec20960939cdc42d04efbf1b7b92af04bd2db2ae",
+        "document_title": "AP-BAG-001 v2 Staff Baggage Handling and Escalation",
+        "heading_path": "6 Records and Review",
+        "similarity": 0.5214983820915222,
+        "tokens": 162
+      }
+    ],
+    "generation": {
+      "model": "qwen3:8b",
+      "model_blob_digest": "sha256:a3de86cd1c132c822487ededd47a324c50491393e6565cd14bafa40d0b8e686f",
+      "options": {
+        "temperature": 0,
+        "seed": 7,
+        "num_ctx": 8192,
+        "num_predict": 1024
+      },
+      "think": false,
+      "prompt_eval_count": 1063,
+      "eval_count": 24,
+      "raw_answer": "The baggage handler must escalate the incident to the Baggage Duty Supervisor within 10 minutes of discovery [1]."
+    },
+    "timing_ms": 1144.9
+  }
+}

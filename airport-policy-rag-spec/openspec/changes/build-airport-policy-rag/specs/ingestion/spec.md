@@ -18,10 +18,10 @@ The system SHALL serve only complete validated index generations and support ide
 - **WHEN** embedding fails before publication
 - **THEN** the previous generation remains available and partial results are not exposed.
 
-### Requirement: ING-03 Quality and access metadata validation
-The system SHALL flag unresolved references, conflicting active versions, and missing permissions before publication.
+### Requirement: ING-03 Quality metadata validation
+The system SHALL flag unresolved references, conflicting active versions, and missing required metadata before publication.
 
-#### Scenario: Missing access policy
-- **GIVEN** a document with no valid access metadata
+#### Scenario: Missing version metadata
+- **GIVEN** a document with no version or source hash
 - **WHEN** ordinary ingestion is requested
-- **THEN** publication is refused with a quality finding; diagnostic quality exceptions cannot disable access checks.
+- **THEN** publication is refused with a quality finding.

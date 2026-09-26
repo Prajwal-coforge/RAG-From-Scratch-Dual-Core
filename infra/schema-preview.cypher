@@ -13,7 +13,6 @@ CREATE VECTOR INDEX chunk_embedding ON :Chunk(embedding) WITH CONFIG {"dimension
 
 CREATE (bag:Policy {
   id: "schema:policy:AP-BAG-001",
-  tenant_id: "aeropolicy-demo",
   corpus_id: "airport-generated",
   policy_id: "AP-BAG-001",
   title: "Staff Baggage Handling and Escalation",
@@ -50,7 +49,6 @@ CREATE (chunk:Chunk {
 })
 CREATE (incident:Policy {
   id: "schema:policy:AP-INC-002",
-  tenant_id: "aeropolicy-demo",
   corpus_id: "airport-generated",
   policy_id: "AP-INC-002",
   title: "Operational Incident Response and Review",

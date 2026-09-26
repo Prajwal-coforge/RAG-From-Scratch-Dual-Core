@@ -1,0 +1,213 @@
+{
+  "schema_version": 1,
+  "split": "heldout",
+  "note": "Frozen before any retrieval tuning. Do not tune on these cases. Fact patterns are case-insensitive regular expressions checked against the answer text.",
+  "cases": [
+    {
+      "id": "H-G01",
+      "corpus_kind": "generated",
+      "corpus_id": "airport-generated",
+      "snapshot_id": "duplicate",
+      "as_of": "2025-08-01",
+      "include_history": false,
+      "question": "Under the baggage policy in force now, what is the deadline for escalating an unattended checked bag found in the make-up area?",
+      "expected_status": "answered",
+      "acceptable_evidence_sets": [["BAG2-4-ESCALATE"]],
+      "required_answer_facts": [
+        {"id": "ten-minutes", "patterns": ["\\b(10|ten)[\\s-]*min(ute)?s?\\b"]}
+      ],
+      "prohibited_answer_facts": [
+        {"id": "obsolete-thirty-minutes", "patterns": ["\\b(30|thirty)[\\s-]*min(ute)?s?\\b"]}
+      ],
+      "rationale": "Current versus obsolete deadline. The duplicate snapshot holds both versions; v1 (30 minutes) is superseded and must not be used."
+    },
+    {
+      "id": "H-G02",
+      "corpus_kind": "generated",
+      "corpus_id": "airport-generated",
+      "snapshot_id": "clean",
+      "as_of": "2025-08-01",
+      "include_history": false,
+      "question": "Who has to approve a staff member taking a restricted item airside, in what form, and by what point?",
+      "expected_status": "answered",
+      "acceptable_evidence_sets": [["SEC-4-APPROVAL"]],
+      "required_answer_facts": [
+        {"id": "security-duty-manager", "patterns": ["security duty manager"]},
+        {"id": "in-writing", "patterns": ["in writing", "\\bwritten\\b"]},
+        {"id": "before-screening", "patterns": ["(before|prior to)[^.]{0,60}screening point"]}
+      ],
+      "prohibited_answer_facts": [],
+      "rationale": "Single clause with three conditions: approver, form, and timing."
+    },
+    {
+      "id": "H-G03",
+      "corpus_kind": "generated",
+      "corpus_id": "airport-generated",
+      "snapshot_id": "clean",
+      "as_of": "2025-08-01",
+      "include_history": false,
+      "question": "A handler finds lithium batteries in a checked bag. What must happen to the bag, and under which policies are the item approval and the incident report handled?",
+      "expected_status": "answered",
+      "acceptable_evidence_sets": [["BAG2-5-RESTRICTED", "SEC-5-REPORT"]],
+      "required_answer_facts": [
+        {"id": "stop-handling-or-isolate", "patterns": ["not (be )?(handled|processed|moved)( any)? further", "no further handling", "(stop|halt|cease)[a-z]* handling", "must not be handled", "isolated and secured"]},
+        {"id": "sec-003", "patterns": ["AP-SEC-003"]},
+        {"id": "inc-002", "patterns": ["AP-INC-002"]}
+      ],
+      "prohibited_answer_facts": [],
+      "rationale": "Three-policy reference chain: AP-BAG-001 section 5 points to AP-SEC-003 for approval, and AP-SEC-003 section 5 points to AP-INC-002 for the report. Needs two clauses from two documents. Owner review (2026-09-25, after the first held-out run): AP-BAG-001 section 5 states two requirements for the bag, not handled further until approved or removed, and isolated and secured; either answers what must happen to the bag."
+    },
+    {
+      "id": "H-G04",
+      "corpus_kind": "generated",
+      "corpus_id": "airport-generated",
+      "snapshot_id": "clean",
+      "as_of": "2025-08-01",
+      "include_history": false,
+      "question": "What does AP-INC-002 section 4 require the Incident Coordinator to do for each reported incident, and by when?",
+      "expected_status": "answered",
+      "acceptable_evidence_sets": [["INC-4-RECORD"]],
+      "required_answer_facts": [
+        {"id": "open-record", "patterns": ["(open|create)[a-z]*\\b[^.]{0,40}record"]},
+        {"id": "end-of-shift", "patterns": ["end of (the|their|that) shift", "before the shift ends"]}
+      ],
+      "prohibited_answer_facts": [],
+      "rationale": "Direct section-code lookup."
+    },
+    {
+      "id": "H-G05",
+      "corpus_kind": "generated",
+      "corpus_id": "airport-generated",
+      "snapshot_id": "clean",
+      "as_of": "2025-08-01",
+      "include_history": false,
+      "question": "For how long must restricted-item approval requests be kept on record?",
+      "expected_status": "answered",
+      "acceptable_evidence_sets": [["SEC-6-RETENTION"]],
+      "required_answer_facts": [
+        {"id": "two-years", "patterns": ["\\b(two|2)[\\s-]*years?\\b"]}
+      ],
+      "prohibited_answer_facts": [],
+      "rationale": "Retention period stated once, in AP-SEC-003 section 6."
+    },
+    {
+      "id": "H-G06",
+      "corpus_kind": "generated",
+      "corpus_id": "airport-generated",
+      "snapshot_id": "clean",
+      "as_of": "2025-08-01",
+      "include_history": false,
+      "question": "Into which categories does the airport sort operational incidents?",
+      "expected_status": "answered",
+      "acceptable_evidence_sets": [["INC-2-CATEGORIES"]],
+      "required_answer_facts": [
+        {"id": "baggage", "patterns": ["baggage"]},
+        {"id": "restricted-item", "patterns": ["restricted[- ]items?"]},
+        {"id": "ramp-safety", "patterns": ["ramp safety"]},
+        {"id": "equipment", "patterns": ["equipment"]}
+      ],
+      "prohibited_answer_facts": [],
+      "rationale": "List recall: all four categories are required."
+    },
+    {
+      "id": "H-G07",
+      "corpus_kind": "generated",
+      "corpus_id": "airport-generated",
+      "snapshot_id": "clean",
+      "as_of": "2025-08-01",
+      "include_history": false,
+      "question": "Are ramp leads covered by the staff baggage handling policy?",
+      "expected_status": "answered",
+      "acceptable_evidence_sets": [["BAG2-1-SCOPE"]],
+      "required_answer_facts": [
+        {"id": "yes-covered", "patterns": ["\\byes\\b", "\\bappl(y|ies)\\b[^.]{0,80}ramp leads?", "ramp leads?[^.]{0,40}\\b(covered|included|appl(y|ies))\\b"]}
+      ],
+      "prohibited_answer_facts": [
+        {"id": "not-covered", "patterns": ["\\b(not|aren't|are not|isn't) (covered|included)\\b", "does not apply"]}
+      ],
+      "rationale": "Scope question answered by the policy's applicability sentence."
+    },
+    {
+      "id": "H-G08",
+      "corpus_kind": "generated",
+      "corpus_id": "airport-generated",
+      "snapshot_id": "historical",
+      "as_of": "2025-03-15",
+      "include_history": true,
+      "question": "In March 2025, how quickly did a handler have to escalate a damaged checked bag found in the make-up area?",
+      "expected_status": "answered",
+      "acceptable_evidence_sets": [["BAG1-4-ESCALATE"]],
+      "required_answer_facts": [
+        {"id": "thirty-minutes", "patterns": ["\\b(30|thirty)[\\s-]*min(ute)?s?\\b"]}
+      ],
+      "prohibited_answer_facts": [
+        {"id": "current-ten-minutes", "patterns": ["\\b(10|ten)[\\s-]*min(ute)?s?\\b"]}
+      ],
+      "rationale": "History question: v1 was in force on 2025-03-15; v2 was not yet effective."
+    },
+    {
+      "id": "H-G09",
+      "corpus_kind": "generated",
+      "corpus_id": "airport-generated",
+      "snapshot_id": "clean",
+      "as_of": "2025-08-01",
+      "include_history": false,
+      "question": "What fine does a baggage handler pay for missing the escalation deadline?",
+      "expected_status": "insufficient_evidence",
+      "acceptable_evidence_sets": [],
+      "required_answer_facts": [],
+      "prohibited_answer_facts": [
+        {"id": "invented-amount", "patterns": ["\\$\\s?\\d", "\\b\\d+\\s*(dollars|usd|eur|euros)\\b"]}
+      ],
+      "rationale": "No policy defines a fine. The answer must abstain without inventing an amount."
+    },
+    {
+      "id": "H-I01",
+      "corpus_kind": "imported",
+      "corpus_id": "skywings-baggage",
+      "snapshot_id": "imported:skywings-baggage",
+      "as_of": null,
+      "include_history": false,
+      "question": "What is the checked-bag weight limit for an Economy Class passenger?",
+      "expected_status": "answered",
+      "acceptable_evidence_sets": [["SKY-4-ECONOMY-WEIGHT"]],
+      "required_answer_facts": [
+        {"id": "23-kg", "patterns": ["\\b23\\s*kg\\b"]}
+      ],
+      "prohibited_answer_facts": [],
+      "rationale": "Reviewed source answer listed in PROJECT_SPEC section 16."
+    },
+    {
+      "id": "H-I02",
+      "corpus_kind": "imported",
+      "corpus_id": "aethersky-compensation",
+      "snapshot_id": "imported:aethersky-compensation",
+      "as_of": null,
+      "include_history": false,
+      "question": "How many flight hours per month are AetherSky pilots guaranteed?",
+      "expected_status": "answered",
+      "acceptable_evidence_sets": [["AE-2.1-MINIMUM"]],
+      "required_answer_facts": [
+        {"id": "75-hours", "patterns": ["\\b75\\b"]}
+      ],
+      "prohibited_answer_facts": [],
+      "rationale": "Reviewed source answer listed in PROJECT_SPEC section 16."
+    },
+    {
+      "id": "H-I03",
+      "corpus_kind": "imported",
+      "corpus_id": "synthetic-emissions",
+      "snapshot_id": "imported:synthetic-emissions",
+      "as_of": null,
+      "include_history": false,
+      "question": "By what date must the yearly emissions report be submitted?",
+      "expected_status": "answered",
+      "acceptable_evidence_sets": [["GAEA-1.3-DEADLINE"]],
+      "required_answer_facts": [
+        {"id": "march-31", "patterns": ["march\\s*31"]}
+      ],
+      "prohibited_answer_facts": [],
+      "rationale": "Reviewed source answer listed in PROJECT_SPEC section 16."
+    }
+  ]
+}

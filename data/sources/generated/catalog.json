@@ -1,0 +1,133 @@
+{
+  "documents": {
+    "bag-v1": {
+      "document_version_id": "airport-generated:AP-BAG-001:v1",
+      "corpus_id": "airport-generated",
+      "policy_issuer": "AeroPolicy Airport",
+      "policy_id": "AP-BAG-001",
+      "version": 1,
+      "title": "Staff Baggage Handling and Escalation",
+      "source_type": "generated",
+      "path": "AP-BAG-001-v1.md",
+      "content_sha256": "sha256:5b83f8f2c5b47ab766459273c36442683d2c0b7e83e3fd9b809ffdf7499c4fdb",
+      "effective_from": "2025-01-01",
+      "effective_to": "2025-06-30",
+      "publication_status": "superseded",
+      "supersedes": null,
+      "owner": "AeroPolicy Airport Operations",
+      "license": "Generated for this lab; fictional content",
+      "generation": {
+        "run_id": "2026-09-25T143259Z",
+        "model": "qwen3:8b",
+        "model_blob_digest": "sha256:a3de86cd1c132c822487ededd47a324c50491393e6565cd14bafa40d0b8e686f",
+        "seed": 2,
+        "attempt_dir": "data/sources/generated/runs/2026-09-25T143259Z/bag-v1/attempt-2",
+        "raw_sha256": "sha256:f22ad55702f85538226263feec4b6245b2aa9890300e6f775cd37ee9b079871e"
+      },
+      "review": {
+        "whitespace": "leading and trailing whitespace stripped",
+        "edits": []
+      }
+    },
+    "bag-v2": {
+      "document_version_id": "airport-generated:AP-BAG-001:v2",
+      "corpus_id": "airport-generated",
+      "policy_issuer": "AeroPolicy Airport",
+      "policy_id": "AP-BAG-001",
+      "version": 2,
+      "title": "Staff Baggage Handling and Escalation",
+      "source_type": "generated",
+      "path": "AP-BAG-001-v2.md",
+      "content_sha256": "sha256:23b214e0367eb716a83d7db19ae2e80bb54485d9487b5dcb08fc9c8a8ca5513b",
+      "effective_from": "2025-07-01",
+      "effective_to": null,
+      "publication_status": "active",
+      "supersedes": "airport-generated:AP-BAG-001:v1",
+      "owner": "AeroPolicy Airport Operations",
+      "license": "Generated for this lab; fictional content",
+      "generation": {
+        "run_id": "2026-09-25T143259Z",
+        "model": "qwen3:8b",
+        "model_blob_digest": "sha256:a3de86cd1c132c822487ededd47a324c50491393e6565cd14bafa40d0b8e686f",
+        "seed": 2,
+        "attempt_dir": "data/sources/generated/runs/2026-09-25T143259Z/bag-v2/attempt-2",
+        "raw_sha256": "sha256:1b9f9cd6cbe988bc0260568caaee9f4240333e9dd25bb1c84fa18edafb4169bd"
+      },
+      "review": {
+        "whitespace": "leading and trailing whitespace stripped",
+        "edits": []
+      }
+    },
+    "inc-v1": {
+      "document_version_id": "airport-generated:AP-INC-002:v1",
+      "corpus_id": "airport-generated",
+      "policy_issuer": "AeroPolicy Airport",
+      "policy_id": "AP-INC-002",
+      "version": 1,
+      "title": "Operational Incident Response and Review",
+      "source_type": "generated",
+      "path": "AP-INC-002-v1.md",
+      "content_sha256": "sha256:c8fbab147faed8ed5a588ad5998f71f6c83deda4b1f61245f97e44eb4daf9e4b",
+      "effective_from": "2025-01-01",
+      "effective_to": null,
+      "publication_status": "active",
+      "supersedes": null,
+      "owner": "AeroPolicy Airport Operations",
+      "license": "Generated for this lab; fictional content",
+      "generation": {
+        "run_id": "2026-09-25T143259Z",
+        "model": "qwen3:8b",
+        "model_blob_digest": "sha256:a3de86cd1c132c822487ededd47a324c50491393e6565cd14bafa40d0b8e686f",
+        "seed": 2,
+        "attempt_dir": "data/sources/generated/runs/2026-09-25T143259Z/inc-v1/attempt-2",
+        "raw_sha256": "sha256:7e7a0a75af0ca3580341cd0949b50e209755226bc5d7cff293c349747dec2fe0"
+      },
+      "review": {
+        "whitespace": "leading and trailing whitespace stripped",
+        "edits": [
+          {
+            "find": "must be reported immediately by the affected staff member",
+            "replace": "must be reported by the affected staff member",
+            "reason": "A general 'immediately' competes with the AP-BAG-001 section 4 deadline that this same paragraph defers to. Six regeneration attempts in run 2026-09-25T143810Z kept a vague timing word, so the one word is removed here instead."
+          }
+        ]
+      }
+    },
+    "sec-v1": {
+      "document_version_id": "airport-generated:AP-SEC-003:v1",
+      "corpus_id": "airport-generated",
+      "policy_issuer": "AeroPolicy Airport",
+      "policy_id": "AP-SEC-003",
+      "version": 1,
+      "title": "Staff Access, Restricted Items, and Approvals",
+      "source_type": "generated",
+      "path": "AP-SEC-003-v1.md",
+      "content_sha256": "sha256:05100e6ed18e3d07af4f902df086a77051e5670afe87c45af6eac12f1f748cb6",
+      "effective_from": "2025-01-01",
+      "effective_to": null,
+      "publication_status": "active",
+      "supersedes": null,
+      "owner": "AeroPolicy Airport Operations",
+      "license": "Generated for this lab; fictional content",
+      "generation": {
+        "run_id": "2026-09-25T143259Z",
+        "model": "qwen3:8b",
+        "model_blob_digest": "sha256:a3de86cd1c132c822487ededd47a324c50491393e6565cd14bafa40d0b8e686f",
+        "seed": 2,
+        "attempt_dir": "data/sources/generated/runs/2026-09-25T143259Z/sec-v1/attempt-2",
+        "raw_sha256": "sha256:c074c25d366ffedae92dd674384fe63b0137ea665ff56ffd95c75c9323db12cd"
+      },
+      "review": {
+        "whitespace": "leading and trailing whitespace stripped",
+        "edits": [
+          {
+            "find": "while air,side areas require",
+            "replace": "while airside areas require",
+            "reason": "Typo in the generated text."
+          }
+        ]
+      }
+    }
+  },
+  "corpus_id": "airport-generated"
+}

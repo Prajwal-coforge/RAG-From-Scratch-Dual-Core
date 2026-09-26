@@ -1,0 +1,29 @@
+$ uv run policy-rag smoke --evidence docs/evidence/m1/2026-09-24T212509Z-two-text-smoke.json
+M1 two-text smoke test  2026-09-24T21:25:10.059675+00:00
+commit cbbbd9b9c0e77a86c206c9ec9a6e767060ebb1af  ollama 0.34.0  embeddinggemma sha256:0800cbac9c20
+memgraph 3.13.0 at bolt://127.0.0.1:7687
+reset namespace m1-smoke: removed 2 old SmokeText nodes, dropped old index if present
+created vector index smoke_text_embedding on :SmokeText(embedding)
+  index size 0
+step 1: embedded and stored m1-smoke:baggage
+  text: Checked bags heavier than 23 kg must carry a heavy-bag tag before they are loaded onto the aircraft.
+  768 values read back, max drift 3.68e-09, index size 1
+step 2: embedded and stored m1-smoke:fuel-spill
+  text: Report any fuel spill on the apron to the airside duty manager within 15 minutes and keep vehicles away.
+  768 values read back, max drift 3.69e-09, index size 2
+index smoke_text_embedding: label+property_vector :SmokeText(embedding) dimension 768 metric cos f32 size 2
+query: How heavy can a checked suitcase be before it needs a special tag?
+  [1] m1-smoke:baggage  index similarity 0.6242  exact cosine 0.6242
+  [2] m1-smoke:fuel-spill  index similarity 0.1266  exact cosine 0.1266
+  expected m1-smoke:baggage: PASS
+query: Who should I tell about leaking jet fuel near a parked plane?
+  [1] m1-smoke:fuel-spill  index similarity 0.5523  exact cosine 0.5523
+  [2] m1-smoke:baggage  index similarity 0.2038  exact cosine 0.2038
+  expected m1-smoke:fuel-spill: PASS
+production index chunk_embedding size 0 (untouched)
+PASS: both queries returned the expected text first
+exit code 0
+
+$ uv run pytest -m live -v
+backend/tests/test_smoke.py::test_two_text_loop_against_real_ollama_and_memgraph PASSED [100%]
+======================= 1 passed, 26 deselected in 0.38s =======================

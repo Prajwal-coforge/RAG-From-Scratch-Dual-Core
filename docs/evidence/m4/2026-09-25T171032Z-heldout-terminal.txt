@@ -1,0 +1,115 @@
+milestone 4 evidence (heldout)  2026-09-25T171032Z
+commit d730fbd7f44570552185ca5933799693d76845a8
+
+$ uv run policy-rag index status
+vector index chunk_embedding size 137
+publications:
+  clean                            current gen-3f19662fa38e2eef  previous gen-beb2806e139e8843
+  dirty-stale                      current gen-0d851c0e480a7263  previous None
+  duplicate                        current gen-f47ae6fde192fb67  previous None
+  historical                       current gen-969426f1fd3a1262  previous None
+  imported:aethersky-compensation  current gen-f9683437166aedf9  previous None
+  imported:skywings-baggage        current gen-ab2b8d1d461c530f  previous None
+  imported:synthetic-emissions     current gen-6b929fe8c80e702a  previous None
+generations:
+  gen-f47ae6fde192fb67  duplicate                        published profile ordinary   chunks 24/24
+  gen-969426f1fd3a1262  historical                       published profile ordinary   chunks 24/24
+  gen-ab2b8d1d461c530f  imported:skywings-baggage        published profile ordinary   chunks 16/16
+  gen-f9683437166aedf9  imported:aethersky-compensation  published profile ordinary   chunks 10/10
+  gen-6b929fe8c80e702a  imported:synthetic-emissions     published profile ordinary   chunks 9/9
+  gen-0d851c0e480a7263  dirty-stale                      published profile evaluation chunks 18/18
+  gen-dd2b3cd2187de29e  clean                            retired   profile ordinary   chunks 0/18
+  gen-beb2806e139e8843  clean                            previous  profile ordinary   chunks 18/18
+  gen-3f19662fa38e2eef  clean                            published profile ordinary   chunks 18/18
+[exit 0]
+
+$ uv run policy-rag evaluate --suite heldout --evidence docs/evidence/m4/2026-09-25T171032Z-heldout-evaluation.json
+H-G01  vector        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  5557 ms
+H-G01  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2704 ms
+H-G01  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  1970 ms
+H-G01  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2866 ms
+H-G02  vector        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  4884 ms
+H-G02  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  3948 ms
+H-G02  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  4049 ms
+H-G02  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  4110 ms
+H-G03  vector        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge False  5309 ms
+H-G03  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  5266 ms
+H-G03  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  6062 ms
+H-G03  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  3279 ms
+H-G04  vector        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  3656 ms
+H-G04  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2675 ms
+H-G04  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2756 ms
+H-G04  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2540 ms
+H-G05  vector        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  3247 ms
+H-G05  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2377 ms
+H-G05  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2433 ms
+H-G05  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2147 ms
+H-G06  vector        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  3454 ms
+H-G06  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2536 ms
+H-G06  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2614 ms
+H-G06  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2003 ms
+H-G07  vector        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  4680 ms
+H-G07  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  4052 ms
+H-G07  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2980 ms
+H-G07  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2458 ms
+H-G08  vector        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  3891 ms
+H-G08  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2623 ms
+H-G08  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2735 ms
+H-G08  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge False  3474 ms
+H-G09  vector        cand@20 n/a  r@3 n/a  r@5 n/a   insufficient_evidence facts n/a  PASS  2319 ms
+H-G09  keyword       cand@20 n/a  r@3 n/a  r@5 n/a   insufficient_evidence facts n/a  PASS  2526 ms
+H-G09  hybrid        cand@20 n/a  r@3 n/a  r@5 n/a   insufficient_evidence facts n/a  PASS  1678 ms
+H-G09  hybrid_rerank cand@20 n/a  r@3 n/a  r@5 n/a   insufficient_evidence facts n/a  PASS  1984 ms
+H-I01  vector        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2757 ms
+H-I01  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2676 ms
+H-I01  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2751 ms
+H-I01  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  1900 ms
+H-I02  vector        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  3179 ms
+H-I02  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  1503 ms
+H-I02  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  1583 ms
+H-I02  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2019 ms
+H-I03  vector        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2647 ms
+H-I03  keyword       cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2036 ms
+H-I03  hybrid        cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2069 ms
+H-I03  hybrid_rerank cand@20 1.00 r@3 1.00 r@5 1.00  answered              facts 1.00 PASS  judge True  2014 ms
+needle check in an isolated index
+  needle by_code    vector        rank 1
+  needle by_code    keyword       rank 1
+  needle by_code    hybrid        rank 1
+  needle by_code    hybrid_rerank rank 1
+  needle paraphrase vector        rank 1
+  needle paraphrase keyword       rank 1
+  needle paraphrase hybrid        rank 1
+  needle paraphrase hybrid_rerank rank 1
+  isolation ok True
+vector:
+  all       cases 12  candidate_recall_at_20 1.00  recall_at_3 1.00  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 1.00  citation_validity 1.00  judge_support_score 0.93  p50 3454.4 p95 5557.1 ms
+  generated cases  9  candidate_recall_at_20 1.00  recall_at_3 1.00  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 1.00  citation_validity 1.00  judge_support_score 0.91  p50 3891.3 p95 5557.1 ms
+  imported  cases  3  candidate_recall_at_20 1.00  recall_at_3 1.00  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 1.00  citation_validity 1.00  judge_support_score 1.00  p50 2757.3 p95 3179.1 ms
+  targets: all measured targets met  (mean eligible pool 16.4 chunks)
+keyword:
+  all       cases 12  candidate_recall_at_20 1.00  recall_at_3 1.00  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 1.00  citation_validity 1.00  judge_support_score 1.00  p50 2623.1 p95 5266.1 ms
+  generated cases  9  candidate_recall_at_20 1.00  recall_at_3 1.00  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 1.00  citation_validity 1.00  judge_support_score 1.00  p50 2675.3 p95 5266.1 ms
+  imported  cases  3  candidate_recall_at_20 1.00  recall_at_3 1.00  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 1.00  citation_validity 1.00  judge_support_score 1.00  p50 2035.8 p95 2675.7 ms
+  targets: all measured targets met  (mean eligible pool 16.4 chunks)
+hybrid:
+  all       cases 12  candidate_recall_at_20 1.00  recall_at_3 1.00  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 1.00  citation_validity 1.00  judge_support_score 1.00  p50 2613.6 p95 6062.5 ms
+  generated cases  9  candidate_recall_at_20 1.00  recall_at_3 1.00  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 1.00  citation_validity 1.00  judge_support_score 1.00  p50 2734.8 p95 6062.5 ms
+  imported  cases  3  candidate_recall_at_20 1.00  recall_at_3 1.00  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 1.00  citation_validity 1.00  judge_support_score 1.00  p50 2069.3 p95 2750.8 ms
+  targets: all measured targets met  (mean eligible pool 16.4 chunks)
+hybrid_rerank:
+  all       cases 12  candidate_recall_at_20 1.00  recall_at_3 1.00  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 1.00  citation_validity 1.00  judge_support_score 0.92  p50 2147.4 p95 4110.0 ms
+  generated cases  9  candidate_recall_at_20 1.00  recall_at_3 1.00  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 1.00  citation_validity 1.00  judge_support_score 0.90  p50 2539.6 p95 4110.0 ms
+  imported  cases  3  candidate_recall_at_20 1.00  recall_at_3 1.00  recall_at_5 1.00  fact_accuracy 1.00  case_pass_rate 1.00  citation_validity 1.00  judge_support_score 1.00  p50 2014.1 p95 2019.0 ms
+  targets: all measured targets met  (mean eligible pool 16.4 chunks)
+judge disagrees: {'case_id': 'H-G03', 'mode': 'vector', 'deterministic_pass': True, 'judge_all_supported': False}
+judge disagrees: {'case_id': 'H-G08', 'mode': 'hybrid_rerank', 'deterministic_pass': True, 'judge_all_supported': False}
+needle isolation ok: True
+held-out freeze 2026-09-25T17:10:23.953081+00:00: hashes match; labels partially owner-reviewed (H-G03 only)
+report: docs/evidence/m4/2026-09-25T171032Z-heldout-evaluation.json
+[exit 0]
+
+$ uv run pytest -q -m live
+...............................                                          [100%]
+31 passed, 113 deselected in 55.67s
+[exit 0]

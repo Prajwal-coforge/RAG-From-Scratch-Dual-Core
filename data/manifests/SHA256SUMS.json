@@ -1,0 +1,6 @@
+{
+  "clean.json": "sha256:f7d8181e6489f0e3e6115e7a59639050540c651ee31702b7da942fab17efa3b3",
+  "duplicate.json": "sha256:a5b4bb82df5dea82e331a6a02d45604f1baea92730c271598de5f8e7b36109c4",
+  "dirty-stale.json": "sha256:fc3b955432d4aa8dc7c55c1c95872cf7fda379b7d9f460ca045b723f0bd83e6a",
+  "historical.json": "sha256:39c001f9387649dc0f7314b5e60448d40d0f56ab1ed4c592e5a15ff983eb3e9b"
+}

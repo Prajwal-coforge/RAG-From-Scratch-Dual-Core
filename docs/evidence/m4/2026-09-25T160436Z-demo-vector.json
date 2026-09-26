@@ -1,0 +1,662 @@
+{
+  "retrieval": {
+    "mode": "vector",
+    "query_input": "task: search result | query: What does AP-SEC-003 section 2 say?",
+    "k": 5,
+    "search": {
+      "method": "Memgraph vector_search.search on chunk_embedding, k = index size 137, filtered to the generation",
+      "generation_chunks": 18,
+      "eligible": 18,
+      "excluded": [],
+      "stages": {}
+    },
+    "exact_check": {
+      "top_k_agrees": true,
+      "max_score_gap": 1.2868566140467053e-07,
+      "scores_agree": true
+    },
+    "candidates": [
+      {
+        "chunk_id": "6120c8c53769b675f0f253e18a114a5178617854e1527fbd4036372a697ed6a4",
+        "signals": {
+          "final_rank": 1,
+          "vector_rank": 1,
+          "similarity": 0.5451653599739075,
+          "exact_cosine": 0.5451653427690537
+        },
+        "document_version_id": "airport-generated:AP-SEC-003:v1",
+        "document_title": "AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals",
+        "heading_path": "1 Purpose and Scope",
+        "source_spans": [
+          [
+            86,
+            805
+          ]
+        ]
+      },
+      {
+        "chunk_id": "bf84094fa0c6ff8dbb792e31273ffbb7c91896ed8f0d8974a9db343cd9b4e431",
+        "signals": {
+          "final_rank": 2,
+          "vector_rank": 2,
+          "similarity": 0.5161031484603882,
+          "exact_cosine": 0.5161031262539044
+        },
+        "document_version_id": "airport-generated:AP-SEC-003:v1",
+        "document_title": "AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals",
+        "heading_path": "6 Records and Review",
+        "source_spans": [
+          [
+            3624,
+            4315
+          ]
+        ]
+      },
+      {
+        "chunk_id": "f2bf060629a12a2a89d321fb1306bb571d97adeafe399def3efbc35d98a40d71",
+        "signals": {
+          "final_rank": 3,
+          "vector_rank": 3,
+          "similarity": 0.5138021111488342,
+          "exact_cosine": 0.5138020081311614
+        },
+        "document_version_id": "airport-generated:AP-SEC-003:v1",
+        "document_title": "AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals",
+        "heading_path": "5 Restricted Items Found in Baggage",
+        "source_spans": [
+          [
+            2917,
+            3597
+          ]
+        ]
+      },
+      {
+        "chunk_id": "d65443d5118d4907c007b8a192642f7a02247ab6928fa4fee59b0a4545cb9e40",
+        "signals": {
+          "final_rank": 4,
+          "vector_rank": 4,
+          "similarity": 0.4900251626968384,
+          "exact_cosine": 0.4900250682554995
+        },
+        "document_version_id": "airport-generated:AP-SEC-003:v1",
+        "document_title": "AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals",
+        "heading_path": "4 Approval Procedure for Restricted Items",
+        "source_spans": [
+          [
+            2204,
+            2875
+          ]
+        ]
+      },
+      {
+        "chunk_id": "c49776fbd681146fd2ac62fd39513511011801e811c554f640b76cdd59f05675",
+        "signals": {
+          "final_rank": 5,
+          "vector_rank": 5,
+          "similarity": 0.48931801319122314,
+          "exact_cosine": 0.4893179298994103
+        },
+        "document_version_id": "airport-generated:AP-BAG-001:v2",
+        "document_title": "AP-BAG-001 v2 Staff Baggage Handling and Escalation",
+        "heading_path": "5 Restricted Items Found in Baggage",
+        "source_spans": [
+          [
+            2917,
+            3643
+          ]
+        ]
+      },
+      {
+        "chunk_id": "6f38da8f42ecb8a7c64746c31affb6d2c6c6ce09a16063ffe0d0565740400b71",
+        "signals": {
+          "final_rank": 6,
+          "vector_rank": 6,
+          "similarity": 0.480160117149353,
+          "exact_cosine": 0.48016006064125316
+        },
+        "document_version_id": "airport-generated:AP-SEC-003:v1",
+        "document_title": "AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals",
+        "heading_path": "3 Restricted Items",
+        "source_spans": [
+          [
+            1532,
+            2156
+          ]
+        ]
+      },
+      {
+        "chunk_id": "119ce9af08606ffc66de6a3465ad506f15c028d972f4a61599802680a1d0a73a",
+        "signals": {
+          "final_rank": 7,
+          "vector_rank": 7,
+          "similarity": 0.4734424352645874,
+          "exact_cosine": 0.47344234149382747
+        },
+        "document_version_id": "airport-generated:AP-SEC-003:v1",
+        "document_title": "AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals",
+        "heading_path": "2 Staff Access Zones",
+        "source_spans": [
+          [
+            832,
+            1507
+          ]
+        ]
+      },
+      {
+        "chunk_id": "493f7fcaeafb1a08fede9df39e70289a314fb51718b79c16e2eb4c929ee23a20",
+        "signals": {
+          "final_rank": 8,
+          "vector_rank": 8,
+          "similarity": 0.46308887004852295,
+          "exact_cosine": 0.4630888529758088
+        },
+        "document_version_id": "airport-generated:AP-INC-002:v1",
+        "document_title": "AP-INC-002 v1 Operational Incident Response and Review",
+        "heading_path": "3 Reporting and First Response",
+        "source_spans": [
+          [
+            1555,
+            2262
+          ]
+        ]
+      },
+      {
+        "chunk_id": "64b2107e1a05f3febdd0263d9f6d3e24887f360c2eada0e6814cc5b038a3012a",
+        "signals": {
+          "final_rank": 9,
+          "vector_rank": 9,
+          "similarity": 0.45172417163848877,
+          "exact_cosine": 0.4517241612454126
+        },
+        "document_version_id": "airport-generated:AP-INC-002:v1",
+        "document_title": "AP-INC-002 v1 Operational Incident Response and Review",
+        "heading_path": "1 Purpose and Scope",
+        "source_spans": [
+          [
+            81,
+            791
+          ]
+        ]
+      },
+      {
+        "chunk_id": "2432c149181cfd2f0e11a23f0573dc7510af5d90f5e388d778ee92f1ed2695a5",
+        "signals": {
+          "final_rank": 10,
+          "vector_rank": 10,
+          "similarity": 0.4330010414123535,
+          "exact_cosine": 0.4330009307147689
+        },
+        "document_version_id": "airport-generated:AP-INC-002:v1",
+        "document_title": "AP-INC-002 v1 Operational Incident Response and Review",
+        "heading_path": "6 Records",
+        "source_spans": [
+          [
+            3829,
+            4512
+          ]
+        ]
+      },
+      {
+        "chunk_id": "50d15b7c028ab6eed8a1c9f40469f0b81921d919b98edbb382bca6f396624788",
+        "signals": {
+          "final_rank": 11,
+          "vector_rank": 11,
+          "similarity": 0.4182816743850708,
+          "exact_cosine": 0.4182816099771086
+        },
+        "document_version_id": "airport-generated:AP-BAG-001:v2",
+        "document_title": "AP-BAG-001 v2 Staff Baggage Handling and Escalation",
+        "heading_path": "1 Purpose and Scope",
+        "source_spans": [
+          [
+            78,
+            706
+          ]
+        ]
+      },
+      {
+        "chunk_id": "78922ae44c7ac8aedbc7ac663d561f86dc5cccc8dff53fbf4a1b66ed5078c2bb",
+        "signals": {
+          "final_rank": 12,
+          "vector_rank": 12,
+          "similarity": 0.39391613006591797,
+          "exact_cosine": 0.39391615348193654
+        },
+        "document_version_id": "airport-generated:AP-INC-002:v1",
+        "document_title": "AP-INC-002 v1 Operational Incident Response and Review",
+        "heading_path": "5 Post-Incident Review",
+        "source_spans": [
+          [
+            3064,
+            3813
+          ]
+        ]
+      },
+      {
+        "chunk_id": "1a3c15e9c2a9760abd7c5ecc12fb2711826924a6061fbe58ea3052f9d965198d",
+        "signals": {
+          "final_rank": 13,
+          "vector_rank": 13,
+          "similarity": 0.3933706283569336,
+          "exact_cosine": 0.3933705340872206
+        },
+        "document_version_id": "airport-generated:AP-BAG-001:v2",
+        "document_title": "AP-BAG-001 v2 Staff Baggage Handling and Escalation",
+        "heading_path": "3 Handling Standards",
+        "source_spans": [
+          [
+            1462,
+            2135
+          ]
+        ]
+      },
+      {
+        "chunk_id": "0dd86a10642186d9867d51e60f57e1b3ea2f88172b01c49b8c747030cb3d4ab4",
+        "signals": {
+          "final_rank": 14,
+          "vector_rank": 14,
+          "similarity": 0.38934093713760376,
+          "exact_cosine": 0.3893409058467559
+        },
+        "document_version_id": "airport-generated:AP-BAG-001:v2",
+        "document_title": "AP-BAG-001 v2 Staff Baggage Handling and Escalation",
+        "heading_path": "4 Baggage Incident Escalation",
+        "source_spans": [
+          [
+            2171,
+            2875
+          ]
+        ]
+      },
+      {
+        "chunk_id": "33f44878601b07be073c70985ba8c86216aa891b07136cf7acadbd1dcaf55359",
+        "signals": {
+          "final_rank": 15,
+          "vector_rank": 15,
+          "similarity": 0.372211754322052,
+          "exact_cosine": 0.37221172854349494
+        },
+        "document_version_id": "airport-generated:AP-INC-002:v1",
+        "document_title": "AP-INC-002 v1 Operational Incident Response and Review",
+        "heading_path": "4 Incident Coordinator Duties",
+        "source_spans": [
+          [
+            2298,
+            3035
+          ]
+        ]
+      },
+      {
+        "chunk_id": "b91129240731fef1d62a00bc17e3c135a62995f020653b1d8d7fdbed8966ac3c",
+        "signals": {
+          "final_rank": 16,
+          "vector_rank": 16,
+          "similarity": 0.365059494972229,
+          "exact_cosine": 0.3650593662865676
+        },
+        "document_version_id": "airport-generated:AP-INC-002:v1",
+        "document_title": "AP-INC-002 v1 Operational Incident Response and Review",
+        "heading_path": "2 Incident Categories",
+        "source_spans": [
+          [
+            819,
+            1518
+          ]
+        ]
+      },
+      {
+        "chunk_id": "9000befd6cd7350aed94214cec20960939cdc42d04efbf1b7b92af04bd2db2ae",
+        "signals": {
+          "final_rank": 17,
+          "vector_rank": 17,
+          "similarity": 0.34994930028915405,
+          "exact_cosine": 0.34994925691010276
+        },
+        "document_version_id": "airport-generated:AP-BAG-001:v2",
+        "document_title": "AP-BAG-001 v2 Staff Baggage Handling and Escalation",
+        "heading_path": "6 Records and Review",
+        "source_spans": [
+          [
+            3670,
+            4339
+          ]
+        ]
+      },
+      {
+        "chunk_id": "67791b7820614ad499bb77d45a2210f685b15ee30d989735db539f991ee7fd5e",
+        "signals": {
+          "final_rank": 18,
+          "vector_rank": 18,
+          "similarity": 0.30076324939727783,
+          "exact_cosine": 0.30076321220476326
+        },
+        "document_version_id": "airport-generated:AP-BAG-001:v2",
+        "document_title": "AP-BAG-001 v2 Staff Baggage Handling and Escalation",
+        "heading_path": "2 Roles and Responsibilities",
+        "source_spans": [
+          [
+            741,
+            1435
+          ]
+        ]
+      }
+    ],
+    "hits": [
+      {
+        "rank": 1,
+        "chunk_id": "6120c8c53769b675f0f253e18a114a5178617854e1527fbd4036372a697ed6a4",
+        "document_version_id": "airport-generated:AP-SEC-003:v1",
+        "document_title": "AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals",
+        "corpus_id": "airport-generated",
+        "policy_id": "AP-SEC-003",
+        "version": "1",
+        "publication_status": "active",
+        "effective_from": "2025-01-01",
+        "effective_to": null,
+        "section_id": "airport-generated:AP-SEC-003:v1:1 Purpose and Scope",
+        "heading_path": "1 Purpose and Scope",
+        "text": "This policy establishes procedures for managing staff access to restricted areas and the handling of restricted items within AeroPolicy Airport. It outlines the responsibilities of staff, managers, and security personnel in ensuring compliance with safety and security standards. The policy applies to all staff members, including those working in landside, airside, and baggage make-up areas. It also governs the use, transport, and storage of restricted items and defines the approval process for their movement within the airport. The purpose of this policy is to mitigate risks associated with restricted items and unauthorized access to secure zones, ensuring the safety and operational integrity of the airport.\n\n",
+        "source_spans": [
+          [
+            86,
+            805
+          ]
+        ],
+        "similarity": 0.5451653599739075,
+        "exact_cosine": 0.5451653427690537,
+        "signals": {
+          "final_rank": 1,
+          "vector_rank": 1,
+          "similarity": 0.5451653599739075,
+          "exact_cosine": 0.5451653427690537
+        },
+        "context": {
+          "mandatory": [],
+          "parent": []
+        }
+      },
+      {
+        "rank": 2,
+        "chunk_id": "bf84094fa0c6ff8dbb792e31273ffbb7c91896ed8f0d8974a9db343cd9b4e431",
+        "document_version_id": "airport-generated:AP-SEC-003:v1",
+        "document_title": "AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals",
+        "corpus_id": "airport-generated",
+        "policy_id": "AP-SEC-003",
+        "version": "1",
+        "publication_status": "active",
+        "effective_from": "2025-01-01",
+        "effective_to": null,
+        "section_id": "airport-generated:AP-SEC-003:v1:6 Records and Review",
+        "heading_path": "6 Records and Review",
+        "text": "All records related to restricted items, including approval requests, incident reports, and handling procedures, must be maintained for a minimum of two years. These records are subject to periodic review by the Security Duty Manager and senior management to ensure compliance with this policy and related procedures. Staff must ensure that all documentation is accurate, complete, and accessible for audit or investigation. Any discrepancies or non-compliance must be reported immediately and addressed through appropriate corrective actions. The Security Duty Manager is responsible for conducting quarterly reviews of all records to ensure they meet regulatory and operational standards.\n",
+        "source_spans": [
+          [
+            3624,
+            4315
+          ]
+        ],
+        "similarity": 0.5161031484603882,
+        "exact_cosine": 0.5161031262539044,
+        "signals": {
+          "final_rank": 2,
+          "vector_rank": 2,
+          "similarity": 0.5161031484603882,
+          "exact_cosine": 0.5161031262539044
+        },
+        "context": {
+          "mandatory": [],
+          "parent": []
+        }
+      },
+      {
+        "rank": 3,
+        "chunk_id": "f2bf060629a12a2a89d321fb1306bb571d97adeafe399def3efbc35d98a40d71",
+        "document_version_id": "airport-generated:AP-SEC-003:v1",
+        "document_title": "AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals",
+        "corpus_id": "airport-generated",
+        "policy_id": "AP-SEC-003",
+        "version": "1",
+        "publication_status": "active",
+        "effective_from": "2025-01-01",
+        "effective_to": null,
+        "section_id": "airport-generated:AP-SEC-003:v1:5 Restricted Items Found in Baggage",
+        "heading_path": "5 Restricted Items Found in Baggage",
+        "text": "A restricted item found in a checked bag must be handled in accordance with AP-BAG-001. The item must be removed from the baggage and secured for further review. The incident must be reported under AP-INC-002, including details of the item, the baggage, and the location of discovery. All relevant staff must follow the procedures outlined in these policies to ensure proper handling and documentation. The Security Duty Manager is responsible for coordinating the response and ensuring compliance with applicable regulations. The baggage must be isolated and inspected by security personnel before being returned to the owner or disposed of according to established procedures.\n\n",
+        "source_spans": [
+          [
+            2917,
+            3597
+          ]
+        ],
+        "similarity": 0.5138021111488342,
+        "exact_cosine": 0.5138020081311614,
+        "signals": {
+          "final_rank": 3,
+          "vector_rank": 3,
+          "similarity": 0.5138021111488342,
+          "exact_cosine": 0.5138020081311614
+        },
+        "context": {
+          "mandatory": [],
+          "parent": []
+        }
+      },
+      {
+        "rank": 4,
+        "chunk_id": "d65443d5118d4907c007b8a192642f7a02247ab6928fa4fee59b0a4545cb9e40",
+        "document_version_id": "airport-generated:AP-SEC-003:v1",
+        "document_title": "AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals",
+        "corpus_id": "airport-generated",
+        "policy_id": "AP-SEC-003",
+        "version": "1",
+        "publication_status": "active",
+        "effective_from": "2025-01-01",
+        "effective_to": null,
+        "section_id": "airport-generated:AP-SEC-003:v1:4 Approval Procedure for Restricted Items",
+        "heading_path": "4 Approval Procedure for Restricted Items",
+        "text": "Approval to carry a restricted item airside must be granted in writing by the Security Duty Manager before the item passes the staff screening point. A Requesting Staff Member must submit a written request detailing the item, its purpose, and the intended location of use. The Line Manager must endorse the request to confirm its necessity and compliance with safety standards. The Security Duty Manager reviews and approves the request based on risk assessment and operational requirements. All approvals must be documented and retained for audit purposes. The request must include a justification for the item's necessity and a plan for its safe storage and disposal.\n\n",
+        "source_spans": [
+          [
+            2204,
+            2875
+          ]
+        ],
+        "similarity": 0.4900251626968384,
+        "exact_cosine": 0.4900250682554995,
+        "signals": {
+          "final_rank": 4,
+          "vector_rank": 4,
+          "similarity": 0.4900251626968384,
+          "exact_cosine": 0.4900250682554995
+        },
+        "context": {
+          "mandatory": [],
+          "parent": []
+        }
+      },
+      {
+        "rank": 5,
+        "chunk_id": "c49776fbd681146fd2ac62fd39513511011801e811c554f640b76cdd59f05675",
+        "document_version_id": "airport-generated:AP-BAG-001:v2",
+        "document_title": "AP-BAG-001 v2 Staff Baggage Handling and Escalation",
+        "corpus_id": "airport-generated",
+        "policy_id": "AP-BAG-001",
+        "version": "2",
+        "publication_status": "active",
+        "effective_from": "2025-07-01",
+        "effective_to": null,
+        "section_id": "airport-generated:AP-BAG-001:v2:5 Restricted Items Found in Baggage",
+        "heading_path": "5 Restricted Items Found in Baggage",
+        "text": "If a restricted item is found in a bag during baggage handling, the bag must not be handled further until it is approved or removed under the restricted-items approval procedure in AP-SEC-003. The baggage handler must notify the Baggage Duty Supervisor upon discovery of the restricted item. The Baggage Duty Supervisor is responsible for initiating the approval process or coordinating the removal of the restricted item. All bags containing restricted items must be isolated and secured to prevent unauthorized access. The handling of such bags must be conducted in accordance with security procedures. This ensures that restricted items are managed in compliance with applicable regulations and airport security policies.\n\n",
+        "source_spans": [
+          [
+            2917,
+            3643
+          ]
+        ],
+        "similarity": 0.48931801319122314,
+        "exact_cosine": 0.4893179298994103,
+        "signals": {
+          "final_rank": 5,
+          "vector_rank": 5,
+          "similarity": 0.48931801319122314,
+          "exact_cosine": 0.4893179298994103
+        },
+        "context": {
+          "mandatory": [],
+          "parent": []
+        }
+      }
+    ],
+    "context_chunks": {},
+    "stage_timing_ms": {
+      "embed_ms": 1028.9,
+      "vector_ms": 9.8,
+      "rank_ms": 0.0
+    },
+    "snapshot_id": "clean",
+    "corpus_id": "airport-generated",
+    "index_generation_id": "gen-3f19662fa38e2eef",
+    "as_of": "2025-08-01",
+    "include_history": false,
+    "question": "What does AP-SEC-003 section 2 say?",
+    "embedder": {
+      "runtime": "sentence-transformers",
+      "model": "google/embeddinggemma-300m",
+      "revision": "57c266a740f537b4dc058e1b0cda161fd15afa75",
+      "dimensions": 768,
+      "max_seq_length": 2048,
+      "tokenizer": "embeddinggemma-hf-57c266a740f5"
+    },
+    "timing_ms": 1088.0
+  },
+  "answer": {
+    "request_id": "req-c5290d058042",
+    "trace_id": "trace-e9e003683329",
+    "mode_used": "vector",
+    "corpus_id": "airport-generated",
+    "snapshot_id": "clean",
+    "index_generation_id": "gen-3f19662fa38e2eef",
+    "as_of": "2025-08-01",
+    "question": "What does AP-SEC-003 section 2 say?",
+    "follow_up_questions": [],
+    "evidence_budget": {
+      "limit_tokens": 3500,
+      "used_tokens": 853,
+      "counted_with": "embeddinggemma-hf-57c266a740f5",
+      "omitted": []
+    },
+    "status": "insufficient_evidence",
+    "answer": "The evidence does not contain information about AP-SEC-003 section 2. INSUFFICIENT_EVIDENCE: section 2 content is not provided in the given passages.",
+    "validation_problems": [],
+    "invented_citation_ids": [],
+    "claims": [
+      {
+        "text": "The evidence does not contain information about AP-SEC-003 section 2.",
+        "citation_ids": []
+      },
+      {
+        "text": "INSUFFICIENT_EVIDENCE: section 2 content is not provided in the given passages.",
+        "citation_ids": []
+      }
+    ],
+    "citations": [],
+    "evidence": [
+      {
+        "evidence_id": 1,
+        "chunk_id": "6120c8c53769b675f0f253e18a114a5178617854e1527fbd4036372a697ed6a4",
+        "document_title": "AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals",
+        "heading_path": "1 Purpose and Scope",
+        "role": "retrieved",
+        "linked_to": null,
+        "tokens": 173,
+        "text": "This policy establishes procedures for managing staff access to restricted areas and the handling of restricted items within AeroPolicy Airport. It outlines the responsibilities of staff, managers, and security personnel in ensuring compliance with safety and security standards. The policy applies to all staff members, including those working in landside, airside, and baggage make-up areas. It also governs the use, transport, and storage of restricted items and defines the approval process for their movement within the airport. The purpose of this policy is to mitigate risks associated with restricted items and unauthorized access to secure zones, ensuring the safety and operational integrity of the airport.\n\n",
+        "signals": {
+          "final_rank": 1,
+          "vector_rank": 1,
+          "similarity": 0.5451653599739075,
+          "exact_cosine": 0.5451653427690537
+        }
+      },
+      {
+        "evidence_id": 2,
+        "chunk_id": "bf84094fa0c6ff8dbb792e31273ffbb7c91896ed8f0d8974a9db343cd9b4e431",
+        "document_title": "AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals",
+        "heading_path": "6 Records and Review",
+        "role": "retrieved",
+        "linked_to": null,
+        "tokens": 159,
+        "text": "All records related to restricted items, including approval requests, incident reports, and handling procedures, must be maintained for a minimum of two years. These records are subject to periodic review by the Security Duty Manager and senior management to ensure compliance with this policy and related procedures. Staff must ensure that all documentation is accurate, complete, and accessible for audit or investigation. Any discrepancies or non-compliance must be reported immediately and addressed through appropriate corrective actions. The Security Duty Manager is responsible for conducting quarterly reviews of all records to ensure they meet regulatory and operational standards.\n",
+        "signals": {
+          "final_rank": 2,
+          "vector_rank": 2,
+          "similarity": 0.5161031484603882,
+          "exact_cosine": 0.5161031262539044
+        }
+      },
+      {
+        "evidence_id": 3,
+        "chunk_id": "f2bf060629a12a2a89d321fb1306bb571d97adeafe399def3efbc35d98a40d71",
+        "document_title": "AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals",
+        "heading_path": "5 Restricted Items Found in Baggage",
+        "role": "retrieved",
+        "linked_to": null,
+        "tokens": 176,
+        "text": "A restricted item found in a checked bag must be handled in accordance with AP-BAG-001. The item must be removed from the baggage and secured for further review. The incident must be reported under AP-INC-002, including details of the item, the baggage, and the location of discovery. All relevant staff must follow the procedures outlined in these policies to ensure proper handling and documentation. The Security Duty Manager is responsible for coordinating the response and ensuring compliance with applicable regulations. The baggage must be isolated and inspected by security personnel before being returned to the owner or disposed of according to established procedures.\n\n",
+        "signals": {
+          "final_rank": 3,
+          "vector_rank": 3,
+          "similarity": 0.5138021111488342,
+          "exact_cosine": 0.5138020081311614
+        }
+      },
+      {
+        "evidence_id": 4,
+        "chunk_id": "d65443d5118d4907c007b8a192642f7a02247ab6928fa4fee59b0a4545cb9e40",
+        "document_title": "AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals",
+        "heading_path": "4 Approval Procedure for Restricted Items",
+        "role": "retrieved",
+        "linked_to": null,
+        "tokens": 169,
+        "text": "Approval to carry a restricted item airside must be granted in writing by the Security Duty Manager before the item passes the staff screening point. A Requesting Staff Member must submit a written request detailing the item, its purpose, and the intended location of use. The Line Manager must endorse the request to confirm its necessity and compliance with safety standards. The Security Duty Manager reviews and approves the request based on risk assessment and operational requirements. All approvals must be documented and retained for audit purposes. The request must include a justification for the item's necessity and a plan for its safe storage and disposal.\n\n",
+        "signals": {
+          "final_rank": 4,
+          "vector_rank": 4,
+          "similarity": 0.4900251626968384,
+          "exact_cosine": 0.4900250682554995
+        }
+      },
+      {
+        "evidence_id": 5,
+        "chunk_id": "c49776fbd681146fd2ac62fd39513511011801e811c554f640b76cdd59f05675",
+        "document_title": "AP-BAG-001 v2 Staff Baggage Handling and Escalation",
+        "heading_path": "5 Restricted Items Found in Baggage",
+        "role": "retrieved",
+        "linked_to": null,
+        "tokens": 176,
+        "text": "If a restricted item is found in a bag during baggage handling, the bag must not be handled further until it is approved or removed under the restricted-items approval procedure in AP-SEC-003. The baggage handler must notify the Baggage Duty Supervisor upon discovery of the restricted item. The Baggage Duty Supervisor is responsible for initiating the approval process or coordinating the removal of the restricted item. All bags containing restricted items must be isolated and secured to prevent unauthorized access. The handling of such bags must be conducted in accordance with security procedures. This ensures that restricted items are managed in compliance with applicable regulations and airport security policies.\n\n",
+        "signals": {
+          "final_rank": 5,
+          "vector_rank": 5,
+          "similarity": 0.48931801319122314,
+          "exact_cosine": 0.4893179298994103
+        }
+      }
+    ],
+    "generation": {
+      "model": "qwen3:8b",
+      "model_blob_digest": "sha256:a3de86cd1c132c822487ededd47a324c50491393e6565cd14bafa40d0b8e686f",
+      "options": {
+        "temperature": 0,
+        "seed": 7,
+        "num_ctx": 8192,
+        "num_predict": 1024
+      },
+      "think": false,
+      "prompt_eval_count": 1125,
+      "eval_count": 38,
+      "raw_answer": "The evidence does not contain information about AP-SEC-003 section 2. INSUFFICIENT_EVIDENCE: section 2 content is not provided in the given passages."
+    },
+    "timing_ms": 1690.4
+  }
+}

@@ -10,7 +10,7 @@ __pycache__/
 dist/
 build/
 .pytest_cache/
-.chroma/
+node_modules/
 .ruff_cache/
 .mypy_cache/
 .coverage

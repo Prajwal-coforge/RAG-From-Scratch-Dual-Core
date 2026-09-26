@@ -1,0 +1,112 @@
+:root {
+  color: #1c1917;
+  background: #f7f4ef;
+  font-family: "Iowan Old Style", Palatino, Georgia, serif;
+  line-height: 1.45;
+}
+
+body {
+  margin: 0;
+}
+
+main {
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.brand h1,
+.brand p {
+  margin: 0;
+}
+
+.brand p {
+  margin-top: 0.2rem;
+}
+
+.mark {
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: none;
+  color: #1c1917;
+}
+
+form, section, .drawer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+label {
+  font-weight: 650;
+  margin-top: 0.6rem;
+}
+
+textarea, select, input, button {
+  font: inherit;
+}
+
+textarea {
+  min-height: 6rem;
+}
+
+button, select, input, textarea {
+  border: 1px solid #44403c;
+  border-radius: 4px;
+  padding: 0.4rem 0.55rem;
+  background: #fff;
+}
+
+button {
+  cursor: pointer;
+  width: fit-content;
+}
+
+button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible {
+  outline: 3px solid #1d4ed8;
+  outline-offset: 2px;
+}
+
+.status {
+  font-weight: 700;
+  width: fit-content;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+}
+
+.status-answered { background: #dcfce7; }
+.status-needs_clarification { background: #fef3c7; }
+.status-insufficient_evidence { background: #e7e5e4; }
+.status-conflicting_sources { background: #ffedd5; }
+.status-unavailable { background: #fee2e2; }
+
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(28, 25, 23, 0.35);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.drawer {
+  width: min(28rem, 100%);
+  height: 100%;
+  background: #fff;
+  padding: 1rem;
+  overflow: auto;
+}
+
+blockquote {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 640px) {
+  main { padding: 1rem 0.75rem 2rem; }
+}

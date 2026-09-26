@@ -1,8 +1,8 @@
 schema: spec-driven
 context: |
   Build a local airport/airline policy RAG lab using the attached PROJECT_SPEC.md.
-  Memgraph, Ollama, Python FastAPI, React JavaScript, cross-encoder reranking,
-  and server-enforced Data Governance Service are selected.
-  No data lake or hosted model dependency. Current implementation is not yet verified.
+  Memgraph, Ollama, Python FastAPI, React JavaScript, and cross-encoder
+  reranking are selected. There is no data governance layer: no authentication,
+  user roles, or document access control. No data lake or hosted model dependency. Current implementation is not yet verified.
   Imported sources retain issuer boundaries; four LLM-generated policies satisfy
   the lab corpus requirement. Keep rubric-to-test-to-evidence traceability.

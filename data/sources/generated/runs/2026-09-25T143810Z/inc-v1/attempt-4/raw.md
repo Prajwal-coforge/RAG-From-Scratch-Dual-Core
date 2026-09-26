@@ -1,0 +1,19 @@
+# AP-INC-002 Operational Incident Response and Review
+
+## 1. Purpose and Scope  
+This policy establishes procedures for the reporting, coordination, and review of operational incidents at AeroPolicy Airport. It ensures a consistent and effective response to incidents that may affect safety, security, or operational efficiency. The policy applies to all incidents occurring on airside, landside, or within airport facilities. It outlines the roles and responsibilities of personnel involved in incident management and defines categories of incidents requiring specific actions. The procedures outlined in this policy are designed to support continuous improvement and compliance with regulatory and internal standards.
+
+## 2. Incident Categories  
+Operational incidents are categorized into four types: baggage, restricted-item, ramp safety, and equipment. Baggage incidents include any event involving lost, damaged, or misplaced luggage. Restricted-item incidents involve the discovery of prohibited items within airport premises. Ramp safety incidents encompass any event that threatens the safety of personnel or aircraft on the ramp. Equipment incidents involve malfunctions or failures of airport equipment that could impact operations. Each category may require specific actions and escalation procedures as outlined in related policies.
+
+## 3. Reporting and First Response  
+All personnel are required to report any operational incident immediately upon discovery. The Reporting Staff Member is responsible for providing a clear and accurate description of the incident to the appropriate authority. In the case of a baggage incident, the Reporting Staff Member must refer to the procedures outlined in AP-BAG-001 section 4 for escalation. For restricted-item incidents, the Reporting Staff Member must follow the guidelines in AP-SEC-003. The first response should ensure the safety of personnel and the continuity of operations while initiating the incident reporting process.
+
+## 4. Incident Coordinator Duties  
+The Incident Coordinator is responsible for managing the incident response process. The Incident Coordinator must open an incident record for every reported incident before the end of the shift in which it was reported. This record must include details of the incident, the time and location, and the initial response taken. The Incident Coordinator is also responsible for coordinating communication between relevant departments and ensuring that all necessary actions are taken to mitigate the impact of the incident. The Incident Coordinator must ensure that all incident records are accurately maintained and accessible for review.
+
+## 5. Post-Incident Review  
+Following the resolution of an incident, a review meeting is conducted to analyze the cause and determine corrective actions. The review meeting is led by the Airside Duty Manager and includes relevant personnel such as the Incident Coordinator and affected departments. The meeting aims to identify contributing factors and implement measures to prevent recurrence. All findings and corrective actions are documented and shared with relevant stakeholders. The review process supports continuous improvement and ensures that lessons learned are applied to enhance operational safety and efficiency.
+
+## 6. Records  
+All incident records must be maintained in a secure and accessible manner. Each incident record includes a detailed description of the event, the time and location, the actions taken, and the outcome. Records are retained for the duration required by regulatory and internal policies. Access to incident records is restricted to authorized personnel only. Records are reviewed periodically to ensure accuracy and completeness. All records are subject to audit and inspection as required by applicable regulations and internal procedures.

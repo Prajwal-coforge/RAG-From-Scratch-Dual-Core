@@ -1,0 +1,111 @@
+{
+  "run_id": "2026-09-25T143259Z",
+  "started_at": "2026-09-25T14:32:59.947505+00:00",
+  "commit": "622092fb9d3f53e834ea8d54a1d37951ebedbadb",
+  "ollama_version": "0.34.0",
+  "model": "qwen3:8b",
+  "model_blob_digest": "sha256:a3de86cd1c132c822487ededd47a324c50491393e6565cd14bafa40d0b8e686f",
+  "system_prompt": "You write internal operating policies for AeroPolicy Airport, a fictional airport. Write in plain, formal English prose. Output only the policy document in Markdown, with no preamble and no closing remarks.",
+  "options": {
+    "temperature": 0.4,
+    "num_ctx": 8192,
+    "num_predict": 2048
+  },
+  "documents": [
+    {
+      "key": "bag-v2",
+      "attempts": [
+        {
+          "seed": 1,
+          "revision_of_previous": false,
+          "raw_sha256": "sha256:b564668891f7c143221f7e039c1adfafee078bcd27ba5430f5378ec03c7bc97a",
+          "ok": false,
+          "prose_words": 617,
+          "problems": [
+            "contains forbidden phrase 'immediately'",
+            "contains forbidden phrase 'promptly'"
+          ]
+        },
+        {
+          "seed": 2,
+          "revision_of_previous": true,
+          "raw_sha256": "sha256:1b9f9cd6cbe988bc0260568caaee9f4240333e9dd25bb1c84fa18edafb4169bd",
+          "ok": true,
+          "prose_words": 611,
+          "problems": []
+        }
+      ]
+    },
+    {
+      "key": "inc-v1",
+      "attempts": [
+        {
+          "seed": 1,
+          "revision_of_previous": false,
+          "raw_sha256": "sha256:5f294e864e10c6e06795ffe1778170fc7a29f7232e7a7306615242c680abe6a6",
+          "ok": false,
+          "prose_words": 511,
+          "problems": [
+            "511 prose words, outside 550-750"
+          ]
+        },
+        {
+          "seed": 2,
+          "revision_of_previous": true,
+          "raw_sha256": "sha256:7e7a0a75af0ca3580341cd0949b50e209755226bc5d7cff293c349747dec2fe0",
+          "ok": true,
+          "prose_words": 616,
+          "problems": []
+        }
+      ]
+    },
+    {
+      "key": "sec-v1",
+      "attempts": [
+        {
+          "seed": 1,
+          "revision_of_previous": false,
+          "raw_sha256": "sha256:291ad2666398dff0b931bff5de100b0fef03366d2b9815388ba7c000f5849097",
+          "ok": false,
+          "prose_words": 472,
+          "problems": [
+            "472 prose words, outside 550-750"
+          ]
+        },
+        {
+          "seed": 2,
+          "revision_of_previous": true,
+          "raw_sha256": "sha256:c074c25d366ffedae92dd674384fe63b0137ea665ff56ffd95c75c9323db12cd",
+          "ok": true,
+          "prose_words": 600,
+          "problems": []
+        }
+      ]
+    },
+    {
+      "key": "bag-v1",
+      "attempts": [
+        {
+          "seed": 1,
+          "revision_of_previous": false,
+          "raw_sha256": "sha256:6a6c6381125b5f7a36e077b7bb975b1de89d19c6a89794647899b0df3306877b",
+          "ok": false,
+          "prose_words": 600,
+          "problems": [
+            "contains forbidden phrase 'immediately'",
+            "contains forbidden phrase 'promptly'"
+          ]
+        },
+        {
+          "seed": 2,
+          "revision_of_previous": true,
+          "raw_sha256": "sha256:f22ad55702f85538226263feec4b6245b2aa9890300e6f775cd37ee9b079871e",
+          "ok": true,
+          "prose_words": 599,
+          "problems": []
+        }
+      ]
+    }
+  ],
+  "finished_at": "2026-09-25T14:37:43.878900+00:00"
+}

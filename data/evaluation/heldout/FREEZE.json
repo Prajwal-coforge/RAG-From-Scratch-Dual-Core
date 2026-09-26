@@ -1,0 +1,21 @@
+{
+  "frozen_at": "2026-09-25T17:10:23.953081+00:00",
+  "reviewed_by": "Drafted by the coding agent from the source text; anchors and facts machine-checked against the sources. Project owner reviewed H-G03 only.",
+  "review_status": "partially owner-reviewed (H-G03 only)",
+  "review_note": "2026-09-25: the owner chose to run the held-out suite before reviewing labels. After that run, the owner reviewed H-G03 and widened its required fact. Other held-out labels are not owner-reviewed. Results after this refreeze follow a post-hoc label change and are reported as such.",
+  "case_count": 12,
+  "generated_cases": 9,
+  "hashes": {
+    "heldout_cases": "sha256:6a9950c56135a18434878186b904325f130185f796709d42be6f8bae32361672",
+    "clauses": "sha256:23c04f497d3a6236e38f316ecd5605e9a05f3477a473235ecfdcf62f1befdf46"
+  },
+  "history": [
+    {
+      "previous": {
+        "heldout_cases": "sha256:9069c3ca1dc0e2a73146a496fce6b79700095bdcd28f788ecb1d6ce096969cd3",
+        "clauses": "sha256:23c04f497d3a6236e38f316ecd5605e9a05f3477a473235ecfdcf62f1befdf46"
+      },
+      "reason": "H-G03 label widened after the first held-out run (2026-09-25T161343Z): the question has two correct answers in the labelled AP-BAG-001 section 5 text; required fact stop-handling became stop-handling-or-isolate. Decision by the project owner."
+    }
+  ]
+}

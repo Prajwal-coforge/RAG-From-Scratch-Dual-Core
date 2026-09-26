@@ -1,0 +1,19 @@
+generation run 2026-09-25T143810Z  commit 91f02079f6a5ac40d022182659c7ebff25f570e6  qwen3:8b sha256:a3de86cd1c13
+inc-v1 seed 1: 538 words, rejected: 538 prose words, outside 550-750; missing reference to AP-BAG-001; missing reference to AP-SEC-003; contains forbidden phrase 'immediately'; contains forbidden phrase 'promptly'
+inc-v1 seed 2: 669 words, rejected: contains forbidden phrase 'promptly'
+inc-v1 seed 3: 669 words, rejected: contains forbidden phrase 'promptly'
+inc-v1 seed 4: 511 words, rejected: 511 prose words, outside 550-750; contains forbidden phrase 'immediately'
+inc-v1 seed 5: 659 words, rejected: contains forbidden phrase 'as soon as'
+inc-v1 seed 6: 659 words, rejected: contains forbidden phrase 'as soon as'
+Traceback (most recent call last):
+  File "/Users/Prajwal.Kumar/Downloads/RAG-From-Scratch-Dual-Core/.venv/bin/policy-rag", line 10, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/Users/Prajwal.Kumar/Downloads/RAG-From-Scratch-Dual-Core/backend/app/cli.py", line 35, in main
+    return run_corpus(args)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/Prajwal.Kumar/Downloads/RAG-From-Scratch-Dual-Core/backend/app/cli.py", line 66, in run_corpus
+    generate_all(keys=tuple(args.only) if args.only else None, force=args.force)
+  File "/Users/Prajwal.Kumar/Downloads/RAG-From-Scratch-Dual-Core/backend/app/corpus/generate.py", line 170, in generate_all
+    raise GenerationFailed(f"{spec.key}: no draft passed the checks in {MAX_ATTEMPTS} attempts")
+app.corpus.generate.GenerationFailed: inc-v1: no draft passed the checks in 6 attempts

@@ -10,6 +10,11 @@ The system SHALL use a consistent pinned embedding configuration for indexing an
 - **WHEN** a query requests a different configuration
 - **THEN** retrieval is refused until a compatible index is selected.
 
+#### Scenario: Input over the embedding limit
+- **GIVEN** a formatted input longer than the embedding model's maximum sequence length
+- **WHEN** it is submitted through sentence-transformers, which would truncate it silently
+- **THEN** the input is refused before encoding and reported, not embedded in truncated form.
+
 ### Requirement: EMB-02 Real vector persistence and retrieval
 The system SHALL demonstrate a real two-text vector-store retrieval loop before full corpus ingestion.
 

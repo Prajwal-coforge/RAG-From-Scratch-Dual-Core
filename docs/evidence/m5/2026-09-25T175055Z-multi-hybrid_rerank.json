@@ -1,0 +1,980 @@
+{
+  "triage": {
+    "status": "routed",
+    "route": "cross_policy",
+    "mode": "graph_rerank",
+    "corpus_id": "airport-generated",
+    "snapshot_id": "clean",
+    "issuer": "AeroPolicy Airport",
+    "basis": "selected by the caller",
+    "policies": [
+      "AP-BAG-001",
+      "AP-INC-002"
+    ],
+    "follow_up_questions": [],
+    "signals": {
+      "policy_ids": [],
+      "named_contexts": [],
+      "distinctive_terms": {
+        "airport-generated": [
+          "escalation",
+          "incident",
+          "procedure",
+          "staff"
+        ]
+      },
+      "confident_context": "airport-generated",
+      "selected": "airport-generated"
+    },
+    "timing_ms": 2.1
+  },
+  "retrieval": {
+    "mode": "hybrid_rerank",
+    "query_input": "task: search result | query: To whom is an operational incident first reported, and where does the incident policy send staff for baggage escalation procedures?",
+    "k": 5,
+    "search": {
+      "method": "Memgraph vector_search.search on chunk_embedding, k = index size 238, filtered to the generation",
+      "generation_chunks": 18,
+      "eligible": 18,
+      "excluded": [],
+      "stages": {
+        "rrf": {
+          "k": 60,
+          "vector_k": 10,
+          "keyword_k": 10,
+          "fused": 13
+        },
+        "rerank": {
+          "model": "cross-encoder/ms-marco-MiniLM-L6-v2",
+          "revision": "233902d25c440f23af6f7d6e94d2946bac0bee0a",
+          "max_pair_tokens": 512,
+          "candidates": 13,
+          "windowed": 0,
+          "timing_ms": 37.6,
+          "score_meaning": "raw cross-encoder relevance logit; orders passages, not a probability"
+        }
+      }
+    },
+    "exact_check": {
+      "top_k_agrees": true,
+      "max_score_gap": 1.3053473091328982e-07,
+      "scores_agree": true
+    },
+    "candidates": [
+      {
+        "chunk_id": "493f7fcaeafb1a08fede9df39e70289a314fb51718b79c16e2eb4c929ee23a20",
+        "signals": {
+          "final_rank": 1,
+          "vector_rank": 1,
+          "similarity": 0.7396237850189209,
+          "exact_cosine": 0.7396237559557233,
+          "keyword_rank": 1,
+          "bm25": 9.403944813164989,
+          "boost": 0.0,
+          "exact_terms": [],
+          "keyword_score": 9.403944813164989,
+          "rrf": 0.03278688524590164,
+          "rrf_parts": {
+            "vector": 0.01639344262295082,
+            "keyword": 0.01639344262295082
+          },
+          "rrf_rank": 1,
+          "rerank_score": 6.6458282470703125,
+          "rank_before_rerank": 1,
+          "rerank_windows": 1,
+          "pair_tokens": 175
+        },
+        "document_version_id": "airport-generated:AP-INC-002:v1",
+        "document_title": "AP-INC-002 v1 Operational Incident Response and Review",
+        "heading_path": "3 Reporting and First Response",
+        "source_spans": [
+          [
+            1555,
+            2262
+          ]
+        ]
+      },
+      {
+        "chunk_id": "0dd86a10642186d9867d51e60f57e1b3ea2f88172b01c49b8c747030cb3d4ab4",
+        "signals": {
+          "final_rank": 2,
+          "vector_rank": 2,
+          "similarity": 0.6958948969841003,
+          "exact_cosine": 0.6958949955707553,
+          "keyword_rank": 4,
+          "bm25": 5.703580147832242,
+          "boost": 0.0,
+          "exact_terms": [],
+          "keyword_score": 5.703580147832242,
+          "rrf": 0.031754032258064516,
+          "rrf_parts": {
+            "vector": 0.016129032258064516,
+            "keyword": 0.015625
+          },
+          "rrf_rank": 3,
+          "rerank_score": 3.507963180541992,
+          "rank_before_rerank": 3,
+          "rerank_windows": 1,
+          "pair_tokens": 178
+        },
+        "document_version_id": "airport-generated:AP-BAG-001:v2",
+        "document_title": "AP-BAG-001 v2 Staff Baggage Handling and Escalation",
+        "heading_path": "4 Baggage Incident Escalation",
+        "source_spans": [
+          [
+            2171,
+            2875
+          ]
+        ]
+      },
+      {
+        "chunk_id": "9000befd6cd7350aed94214cec20960939cdc42d04efbf1b7b92af04bd2db2ae",
+        "signals": {
+          "final_rank": 3,
+          "vector_rank": 3,
+          "similarity": 0.6809324026107788,
+          "exact_cosine": 0.6809324260377972,
+          "keyword_rank": 2,
+          "bm25": 7.356241309360172,
+          "boost": 0.0,
+          "exact_terms": [],
+          "keyword_score": 7.356241309360172,
+          "rrf": 0.03200204813108039,
+          "rrf_parts": {
+            "vector": 0.015873015873015872,
+            "keyword": 0.016129032258064516
+          },
+          "rrf_rank": 2,
+          "rerank_score": 3.141411542892456,
+          "rank_before_rerank": 2,
+          "rerank_windows": 1,
+          "pair_tokens": 160
+        },
+        "document_version_id": "airport-generated:AP-BAG-001:v2",
+        "document_title": "AP-BAG-001 v2 Staff Baggage Handling and Escalation",
+        "heading_path": "6 Records and Review",
+        "source_spans": [
+          [
+            3670,
+            4339
+          ]
+        ]
+      },
+      {
+        "chunk_id": "50d15b7c028ab6eed8a1c9f40469f0b81921d919b98edbb382bca6f396624788",
+        "signals": {
+          "final_rank": 4,
+          "vector_rank": 4,
+          "similarity": 0.6041240096092224,
+          "exact_cosine": 0.6041238790744915,
+          "keyword_rank": 5,
+          "bm25": 5.523197731995629,
+          "boost": 0.0,
+          "exact_terms": [],
+          "keyword_score": 5.523197731995629,
+          "rrf": 0.031009615384615385,
+          "rrf_parts": {
+            "vector": 0.015625,
+            "keyword": 0.015384615384615385
+          },
+          "rrf_rank": 5,
+          "rerank_score": 2.458306312561035,
+          "rank_before_rerank": 5,
+          "rerank_windows": 1,
+          "pair_tokens": 148
+        },
+        "document_version_id": "airport-generated:AP-BAG-001:v2",
+        "document_title": "AP-BAG-001 v2 Staff Baggage Handling and Escalation",
+        "heading_path": "1 Purpose and Scope",
+        "source_spans": [
+          [
+            78,
+            706
+          ]
+        ]
+      },
+      {
+        "chunk_id": "64b2107e1a05f3febdd0263d9f6d3e24887f360c2eada0e6814cc5b038a3012a",
+        "signals": {
+          "final_rank": 5,
+          "vector_rank": 5,
+          "similarity": 0.5855262875556946,
+          "exact_cosine": 0.5855262754867628,
+          "keyword_rank": 3,
+          "bm25": 6.874570284963529,
+          "boost": 0.0,
+          "exact_terms": [],
+          "keyword_score": 6.874570284963529,
+          "rrf": 0.03125763125763126,
+          "rrf_parts": {
+            "vector": 0.015384615384615385,
+            "keyword": 0.015873015873015872
+          },
+          "rrf_rank": 4,
+          "rerank_score": 1.9493533372879028,
+          "rank_before_rerank": 4,
+          "rerank_windows": 1,
+          "pair_tokens": 169
+        },
+        "document_version_id": "airport-generated:AP-INC-002:v1",
+        "document_title": "AP-INC-002 v1 Operational Incident Response and Review",
+        "heading_path": "1 Purpose and Scope",
+        "source_spans": [
+          [
+            81,
+            791
+          ]
+        ]
+      },
+      {
+        "chunk_id": "67791b7820614ad499bb77d45a2210f685b15ee30d989735db539f991ee7fd5e",
+        "signals": {
+          "final_rank": 6,
+          "vector_rank": 7,
+          "similarity": 0.5448556542396545,
+          "exact_cosine": 0.5448555990234549,
+          "keyword_rank": 8,
+          "bm25": 4.642580748609427,
+          "boost": 0.0,
+          "exact_terms": [],
+          "keyword_score": 4.642580748609427,
+          "rrf": 0.029631255487269532,
+          "rrf_parts": {
+            "vector": 0.014925373134328358,
+            "keyword": 0.014705882352941176
+          },
+          "rrf_rank": 6,
+          "rerank_score": -0.7860090732574463,
+          "rank_before_rerank": 6,
+          "rerank_windows": 1,
+          "pair_tokens": 158
+        },
+        "document_version_id": "airport-generated:AP-BAG-001:v2",
+        "document_title": "AP-BAG-001 v2 Staff Baggage Handling and Escalation",
+        "heading_path": "2 Roles and Responsibilities",
+        "source_spans": [
+          [
+            741,
+            1435
+          ]
+        ]
+      },
+      {
+        "chunk_id": "f2bf060629a12a2a89d321fb1306bb571d97adeafe399def3efbc35d98a40d71",
+        "signals": {
+          "final_rank": 7,
+          "vector_rank": 8,
+          "similarity": 0.5355730056762695,
+          "exact_cosine": 0.5355730113042965,
+          "keyword_rank": 12,
+          "bm25": 3.9565864205735704,
+          "boost": 0.0,
+          "exact_terms": [],
+          "keyword_score": 3.9565864205735704,
+          "rrf": 0.014705882352941176,
+          "rrf_parts": {
+            "vector": 0.014705882352941176
+          },
+          "rrf_rank": 11,
+          "rerank_score": -0.8171350955963135,
+          "rank_before_rerank": 11,
+          "rerank_windows": 1,
+          "pair_tokens": 171
+        },
+        "document_version_id": "airport-generated:AP-SEC-003:v1",
+        "document_title": "AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals",
+        "heading_path": "5 Restricted Items Found in Baggage",
+        "source_spans": [
+          [
+            2917,
+            3597
+          ]
+        ]
+      },
+      {
+        "chunk_id": "c49776fbd681146fd2ac62fd39513511011801e811c554f640b76cdd59f05675",
+        "signals": {
+          "final_rank": 8,
+          "vector_rank": 10,
+          "similarity": 0.5025680065155029,
+          "exact_cosine": 0.5025679952992816,
+          "keyword_rank": 14,
+          "bm25": 2.9402831495566835,
+          "boost": 0.0,
+          "exact_terms": [],
+          "keyword_score": 2.9402831495566835,
+          "rrf": 0.014285714285714285,
+          "rrf_parts": {
+            "vector": 0.014285714285714285
+          },
+          "rrf_rank": 13,
+          "rerank_score": -0.9483499526977539,
+          "rank_before_rerank": 13,
+          "rerank_windows": 1,
+          "pair_tokens": 171
+        },
+        "document_version_id": "airport-generated:AP-BAG-001:v2",
+        "document_title": "AP-BAG-001 v2 Staff Baggage Handling and Escalation",
+        "heading_path": "5 Restricted Items Found in Baggage",
+        "source_spans": [
+          [
+            2917,
+            3643
+          ]
+        ]
+      },
+      {
+        "chunk_id": "b91129240731fef1d62a00bc17e3c135a62995f020653b1d8d7fdbed8966ac3c",
+        "signals": {
+          "final_rank": 9,
+          "vector_rank": 6,
+          "similarity": 0.5598714351654053,
+          "exact_cosine": 0.5598714334985554,
+          "keyword_rank": 13,
+          "bm25": 2.9443669425931622,
+          "boost": 0.0,
+          "exact_terms": [],
+          "keyword_score": 2.9443669425931622,
+          "rrf": 0.015151515151515152,
+          "rrf_parts": {
+            "vector": 0.015151515151515152
+          },
+          "rrf_rank": 9,
+          "rerank_score": -1.2294944524765015,
+          "rank_before_rerank": 9,
+          "rerank_windows": 1,
+          "pair_tokens": 164
+        },
+        "document_version_id": "airport-generated:AP-INC-002:v1",
+        "document_title": "AP-INC-002 v1 Operational Incident Response and Review",
+        "heading_path": "2 Incident Categories",
+        "source_spans": [
+          [
+            819,
+            1518
+          ]
+        ]
+      },
+      {
+        "chunk_id": "1a3c15e9c2a9760abd7c5ecc12fb2711826924a6061fbe58ea3052f9d965198d",
+        "signals": {
+          "final_rank": 10,
+          "vector_rank": 9,
+          "similarity": 0.5054998993873596,
+          "exact_cosine": 0.5054999244385259,
+          "keyword_rank": 10,
+          "bm25": 4.059298254274727,
+          "boost": 0.0,
+          "exact_terms": [],
+          "keyword_score": 4.059298254274727,
+          "rrf": 0.02877846790890269,
+          "rrf_parts": {
+            "vector": 0.014492753623188406,
+            "keyword": 0.014285714285714285
+          },
+          "rrf_rank": 7,
+          "rerank_score": -2.3411364555358887,
+          "rank_before_rerank": 7,
+          "rerank_windows": 1,
+          "pair_tokens": 164
+        },
+        "document_version_id": "airport-generated:AP-BAG-001:v2",
+        "document_title": "AP-BAG-001 v2 Staff Baggage Handling and Escalation",
+        "heading_path": "3 Handling Standards",
+        "source_spans": [
+          [
+            1462,
+            2135
+          ]
+        ]
+      },
+      {
+        "chunk_id": "33f44878601b07be073c70985ba8c86216aa891b07136cf7acadbd1dcaf55359",
+        "signals": {
+          "final_rank": 11,
+          "vector_rank": 11,
+          "similarity": 0.45607149600982666,
+          "exact_cosine": 0.4560714601952438,
+          "keyword_rank": 6,
+          "bm25": 5.503340976528865,
+          "boost": 0.0,
+          "exact_terms": [],
+          "keyword_score": 5.503340976528865,
+          "rrf": 0.015151515151515152,
+          "rrf_parts": {
+            "keyword": 0.015151515151515152
+          },
+          "rrf_rank": 8,
+          "rerank_score": -3.1982545852661133,
+          "rank_before_rerank": 8,
+          "rerank_windows": 1,
+          "pair_tokens": 161
+        },
+        "document_version_id": "airport-generated:AP-INC-002:v1",
+        "document_title": "AP-INC-002 v1 Operational Incident Response and Review",
+        "heading_path": "4 Incident Coordinator Duties",
+        "source_spans": [
+          [
+            2298,
+            3035
+          ]
+        ]
+      },
+      {
+        "chunk_id": "6120c8c53769b675f0f253e18a114a5178617854e1527fbd4036372a697ed6a4",
+        "signals": {
+          "final_rank": 12,
+          "vector_rank": 13,
+          "similarity": 0.419940710067749,
+          "exact_cosine": 0.41994071118643855,
+          "keyword_rank": 9,
+          "bm25": 4.080133580540541,
+          "boost": 0.0,
+          "exact_terms": [],
+          "keyword_score": 4.080133580540541,
+          "rrf": 0.014492753623188406,
+          "rrf_parts": {
+            "keyword": 0.014492753623188406
+          },
+          "rrf_rank": 12,
+          "rerank_score": -3.5445237159729004,
+          "rank_before_rerank": 12,
+          "rerank_windows": 1,
+          "pair_tokens": 175
+        },
+        "document_version_id": "airport-generated:AP-SEC-003:v1",
+        "document_title": "AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals",
+        "heading_path": "1 Purpose and Scope",
+        "source_spans": [
+          [
+            86,
+            805
+          ]
+        ]
+      },
+      {
+        "chunk_id": "bf84094fa0c6ff8dbb792e31273ffbb7c91896ed8f0d8974a9db343cd9b4e431",
+        "signals": {
+          "final_rank": 13,
+          "vector_rank": 17,
+          "similarity": 0.3366905450820923,
+          "exact_cosine": 0.33669047082771625,
+          "keyword_rank": 7,
+          "bm25": 4.883310534207932,
+          "boost": 0.0,
+          "exact_terms": [],
+          "keyword_score": 4.883310534207932,
+          "rrf": 0.014925373134328358,
+          "rrf_parts": {
+            "keyword": 0.014925373134328358
+          },
+          "rrf_rank": 10,
+          "rerank_score": -3.8396902084350586,
+          "rank_before_rerank": 10,
+          "rerank_windows": 1,
+          "pair_tokens": 162
+        },
+        "document_version_id": "airport-generated:AP-SEC-003:v1",
+        "document_title": "AP-SEC-003 v1 Staff Access, Restricted Items, and Approvals",
+        "heading_path": "6 Records and Review",
+        "source_spans": [
+          [
+            3624,
+            4315
+          ]
+        ]
+      }
+    ],
+    "hits": [
+      {
+        "rank": 1,
+        "chunk_id": "493f7fcaeafb1a08fede9df39e70289a314fb51718b79c16e2eb4c929ee23a20",
+        "document_version_id": "airport-generated:AP-INC-002:v1",
+        "document_title": "AP-INC-002 v1 Operational Incident Response and Review",
+        "corpus_id": "airport-generated",
+        "policy_id": "AP-INC-002",
+        "version": "1",
+        "publication_status": "active",
+        "effective_from": "2025-01-01",
+        "effective_to": null,
+        "section_id": "airport-generated:AP-INC-002:v1:3 Reporting and First Response",
+        "heading_path": "3 Reporting and First Response",
+        "text": "All operational incidents must be reported by the affected staff member to their supervisor or the Airside Duty Manager. The Reporting Staff Member is responsible for providing a clear and accurate description of the incident, including time, location, and any immediate actions taken. The Airside Duty Manager ensures that the incident is logged and that appropriate personnel are notified. For baggage incidents, the Reporting Staff Member must refer to AP-BAG-001 section 4 for escalation procedures. For restricted items, the Reporting Staff Member must follow the procedures outlined in AP-SEC-003. The first response should prioritize the safety of personnel and the integrity of airport operations.\n\n",
+        "source_spans": [
+          [
+            1555,
+            2262
+          ]
+        ],
+        "similarity": 0.7396237850189209,
+        "exact_cosine": 0.7396237559557233,
+        "signals": {
+          "final_rank": 1,
+          "vector_rank": 1,
+          "similarity": 0.7396237850189209,
+          "exact_cosine": 0.7396237559557233,
+          "keyword_rank": 1,
+          "bm25": 9.403944813164989,
+          "boost": 0.0,
+          "exact_terms": [],
+          "keyword_score": 9.403944813164989,
+          "rrf": 0.03278688524590164,
+          "rrf_parts": {
+            "vector": 0.01639344262295082,
+            "keyword": 0.01639344262295082
+          },
+          "rrf_rank": 1,
+          "rerank_score": 6.6458282470703125,
+          "rank_before_rerank": 1,
+          "rerank_windows": 1,
+          "pair_tokens": 175
+        },
+        "context": {
+          "mandatory": [],
+          "parent": []
+        }
+      },
+      {
+        "rank": 2,
+        "chunk_id": "0dd86a10642186d9867d51e60f57e1b3ea2f88172b01c49b8c747030cb3d4ab4",
+        "document_version_id": "airport-generated:AP-BAG-001:v2",
+        "document_title": "AP-BAG-001 v2 Staff Baggage Handling and Escalation",
+        "corpus_id": "airport-generated",
+        "policy_id": "AP-BAG-001",
+        "version": "2",
+        "publication_status": "active",
+        "effective_from": "2025-07-01",
+        "effective_to": null,
+        "section_id": "airport-generated:AP-BAG-001:v2:4 Baggage Incident Escalation",
+        "heading_path": "4 Baggage Incident Escalation",
+        "text": "When a baggage handler finds a damaged, leaking, or unattended checked bag in the baggage make-up area, the handler must escalate the incident to the Baggage Duty Supervisor within 10 minutes of discovery and must report it under AP-INC-002. All baggage incidents must be documented and reported to ensure proper follow-up. The Baggage Duty Supervisor is responsible for assessing the incident and determining the appropriate action. If necessary, the incident may be escalated to the ramp lead for further review. All staff must ensure that incidents are reported accurately and in a timely manner. This procedure ensures that all baggage issues are addressed in accordance with established protocols.\n\n",
+        "source_spans": [
+          [
+            2171,
+            2875
+          ]
+        ],
+        "similarity": 0.6958948969841003,
+        "exact_cosine": 0.6958949955707553,
+        "signals": {
+          "final_rank": 2,
+          "vector_rank": 2,
+          "similarity": 0.6958948969841003,
+          "exact_cosine": 0.6958949955707553,
+          "keyword_rank": 4,
+          "bm25": 5.703580147832242,
+          "boost": 0.0,
+          "exact_terms": [],
+          "keyword_score": 5.703580147832242,
+          "rrf": 0.031754032258064516,
+          "rrf_parts": {
+            "vector": 0.016129032258064516,
+            "keyword": 0.015625
+          },
+          "rrf_rank": 3,
+          "rerank_score": 3.507963180541992,
+          "rank_before_rerank": 3,
+          "rerank_windows": 1,
+          "pair_tokens": 178
+        },
+        "context": {
+          "mandatory": [],
+          "parent": []
+        }
+      },
+      {
+        "rank": 3,
+        "chunk_id": "9000befd6cd7350aed94214cec20960939cdc42d04efbf1b7b92af04bd2db2ae",
+        "document_version_id": "airport-generated:AP-BAG-001:v2",
+        "document_title": "AP-BAG-001 v2 Staff Baggage Handling and Escalation",
+        "corpus_id": "airport-generated",
+        "policy_id": "AP-BAG-001",
+        "version": "2",
+        "publication_status": "active",
+        "effective_from": "2025-07-01",
+        "effective_to": null,
+        "section_id": "airport-generated:AP-BAG-001:v2:6 Records and Review",
+        "heading_path": "6 Records and Review",
+        "text": "All baggage incidents must be recorded in a centralized incident log for review and analysis. The incident log must include details such as the time, location, and nature of the incident, as well as the actions taken. The Baggage Duty Supervisor is responsible for maintaining and updating the incident log. An annual review of this policy is required to ensure its continued relevance and effectiveness. The review process must include input from all relevant staff and management. Any changes to the policy must be communicated to all affected personnel. Regular reviews help ensure that the policy remains aligned with operational needs and regulatory requirements.\n",
+        "source_spans": [
+          [
+            3670,
+            4339
+          ]
+        ],
+        "similarity": 0.6809324026107788,
+        "exact_cosine": 0.6809324260377972,
+        "signals": {
+          "final_rank": 3,
+          "vector_rank": 3,
+          "similarity": 0.6809324026107788,
+          "exact_cosine": 0.6809324260377972,
+          "keyword_rank": 2,
+          "bm25": 7.356241309360172,
+          "boost": 0.0,
+          "exact_terms": [],
+          "keyword_score": 7.356241309360172,
+          "rrf": 0.03200204813108039,
+          "rrf_parts": {
+            "vector": 0.015873015873015872,
+            "keyword": 0.016129032258064516
+          },
+          "rrf_rank": 2,
+          "rerank_score": 3.141411542892456,
+          "rank_before_rerank": 2,
+          "rerank_windows": 1,
+          "pair_tokens": 160
+        },
+        "context": {
+          "mandatory": [],
+          "parent": []
+        }
+      },
+      {
+        "rank": 4,
+        "chunk_id": "50d15b7c028ab6eed8a1c9f40469f0b81921d919b98edbb382bca6f396624788",
+        "document_version_id": "airport-generated:AP-BAG-001:v2",
+        "document_title": "AP-BAG-001 v2 Staff Baggage Handling and Escalation",
+        "corpus_id": "airport-generated",
+        "policy_id": "AP-BAG-001",
+        "version": "2",
+        "publication_status": "active",
+        "effective_from": "2025-07-01",
+        "effective_to": null,
+        "section_id": "airport-generated:AP-BAG-001:v2:1 Purpose and Scope",
+        "heading_path": "1 Purpose and Scope",
+        "text": "This policy establishes procedures for the handling of checked baggage throughout the airport's baggage handling system. It outlines the responsibilities of staff involved in the movement and management of baggage, ensuring compliance with safety, security, and operational standards. The policy applies to all baggage handlers, baggage duty supervisors, and ramp leads. It ensures that baggage is processed efficiently and that any incidents or irregularities are addressed in a structured manner. This policy supports the safe and secure transportation of baggage while maintaining the integrity of the airport's operations.\n\n",
+        "source_spans": [
+          [
+            78,
+            706
+          ]
+        ],
+        "similarity": 0.6041240096092224,
+        "exact_cosine": 0.6041238790744915,
+        "signals": {
+          "final_rank": 4,
+          "vector_rank": 4,
+          "similarity": 0.6041240096092224,
+          "exact_cosine": 0.6041238790744915,
+          "keyword_rank": 5,
+          "bm25": 5.523197731995629,
+          "boost": 0.0,
+          "exact_terms": [],
+          "keyword_score": 5.523197731995629,
+          "rrf": 0.031009615384615385,
+          "rrf_parts": {
+            "vector": 0.015625,
+            "keyword": 0.015384615384615385
+          },
+          "rrf_rank": 5,
+          "rerank_score": 2.458306312561035,
+          "rank_before_rerank": 5,
+          "rerank_windows": 1,
+          "pair_tokens": 148
+        },
+        "context": {
+          "mandatory": [],
+          "parent": []
+        }
+      },
+      {
+        "rank": 5,
+        "chunk_id": "64b2107e1a05f3febdd0263d9f6d3e24887f360c2eada0e6814cc5b038a3012a",
+        "document_version_id": "airport-generated:AP-INC-002:v1",
+        "document_title": "AP-INC-002 v1 Operational Incident Response and Review",
+        "corpus_id": "airport-generated",
+        "policy_id": "AP-INC-002",
+        "version": "1",
+        "publication_status": "active",
+        "effective_from": "2025-01-01",
+        "effective_to": null,
+        "section_id": "airport-generated:AP-INC-002:v1:1 Purpose and Scope",
+        "heading_path": "1 Purpose and Scope",
+        "text": "This policy establishes the procedures for reporting, coordinating, and reviewing operational incidents at AeroPolicy Airport. It ensures a consistent and timely response to incidents that may affect safety, security, or operational efficiency. The policy applies to all incidents involving baggage, restricted items, ramp safety, and equipment. It defines the roles and responsibilities of personnel involved in incident management and outlines the process for post-incident review. The goal is to identify root causes, implement corrective actions, and prevent recurrence of similar incidents. All staff are required to be familiar with this policy and to follow its procedures in the event of an incident.\n\n",
+        "source_spans": [
+          [
+            81,
+            791
+          ]
+        ],
+        "similarity": 0.5855262875556946,
+        "exact_cosine": 0.5855262754867628,
+        "signals": {
+          "final_rank": 5,
+          "vector_rank": 5,
+          "similarity": 0.5855262875556946,
+          "exact_cosine": 0.5855262754867628,
+          "keyword_rank": 3,
+          "bm25": 6.874570284963529,
+          "boost": 0.0,
+          "exact_terms": [],
+          "keyword_score": 6.874570284963529,
+          "rrf": 0.03125763125763126,
+          "rrf_parts": {
+            "vector": 0.015384615384615385,
+            "keyword": 0.015873015873015872
+          },
+          "rrf_rank": 4,
+          "rerank_score": 1.9493533372879028,
+          "rank_before_rerank": 4,
+          "rerank_windows": 1,
+          "pair_tokens": 169
+        },
+        "context": {
+          "mandatory": [],
+          "parent": []
+        }
+      }
+    ],
+    "context_chunks": {},
+    "stage_timing_ms": {
+      "embed_ms": 125.7,
+      "vector_ms": 7.7,
+      "rank_ms": 39.2
+    },
+    "snapshot_id": "clean",
+    "corpus_id": "airport-generated",
+    "index_generation_id": "gen-df05ee25f1357f41",
+    "as_of": "2025-08-01",
+    "include_history": false,
+    "question": "To whom is an operational incident first reported, and where does the incident policy send staff for baggage escalation procedures?",
+    "embedder": {
+      "runtime": "sentence-transformers",
+      "model": "google/embeddinggemma-300m",
+      "revision": "57c266a740f537b4dc058e1b0cda161fd15afa75",
+      "dimensions": 768,
+      "max_seq_length": 2048,
+      "tokenizer": "embeddinggemma-hf-57c266a740f5"
+    },
+    "timing_ms": 194.1
+  },
+  "answer": {
+    "request_id": "req-35b0251fd9a4",
+    "trace_id": "trace-0b9c181d33fa",
+    "mode_used": "hybrid_rerank",
+    "corpus_id": "airport-generated",
+    "snapshot_id": "clean",
+    "index_generation_id": "gen-df05ee25f1357f41",
+    "as_of": "2025-08-01",
+    "question": "To whom is an operational incident first reported, and where does the incident policy send staff for baggage escalation procedures?",
+    "follow_up_questions": [],
+    "evidence_budget": {
+      "limit_tokens": 3500,
+      "used_tokens": 835,
+      "counted_with": "embeddinggemma-hf-57c266a740f5",
+      "omitted": []
+    },
+    "status": "answered",
+    "answer": "An operational incident is first reported to the supervisor or the Airside Duty Manager [1]. The incident policy sends staff to AP-BAG-001 section 4 for baggage escalation procedures [1].",
+    "validation_problems": [],
+    "invented_citation_ids": [],
+    "claims": [
+      {
+        "text": "An operational incident is first reported to the supervisor or the Airside Duty Manager [1].",
+        "citation_ids": [
+          1
+        ]
+      },
+      {
+        "text": "The incident policy sends staff to AP-BAG-001 section 4 for baggage escalation procedures [1].",
+        "citation_ids": [
+          1
+        ]
+      }
+    ],
+    "citations": [
+      {
+        "citation_id": 1,
+        "chunk_id": "493f7fcaeafb1a08fede9df39e70289a314fb51718b79c16e2eb4c929ee23a20",
+        "document_version_id": "airport-generated:AP-INC-002:v1",
+        "document_title": "AP-INC-002 v1 Operational Incident Response and Review",
+        "version": "1",
+        "section_path": "3 Reporting and First Response",
+        "source_spans": [
+          [
+            1555,
+            2262
+          ]
+        ],
+        "source_url": "/api/sources/493f7fcaeafb1a08fede9df39e70289a314fb51718b79c16e2eb4c929ee23a20",
+        "path": "data/sources/generated/AP-INC-002-v1.md",
+        "resolved": true,
+        "excerpt": "All operational incidents must be reported by the affected staff member to their supervisor or the Airside Duty Manager. The Reporting Staff Member is responsible for providing a clear and accurate description of the incident, including time, location, and any immediate actions taken. The Airside Duty Manager ensures that the incident is logged and that appropriate personnel are notified. For baggage incidents, the Reporting Staff Member must refer to AP-BAG-001 section 4 for escalation procedures. For restricted items, the Reporting Staff Member must follow the procedures outlined in AP-SEC-003. The first response should prioritize the safety of personnel and the integrity of airport operations.\n\n",
+        "reason": null
+      }
+    ],
+    "evidence": [
+      {
+        "evidence_id": 1,
+        "chunk_id": "493f7fcaeafb1a08fede9df39e70289a314fb51718b79c16e2eb4c929ee23a20",
+        "document_title": "AP-INC-002 v1 Operational Incident Response and Review",
+        "heading_path": "3 Reporting and First Response",
+        "role": "retrieved",
+        "linked_to": null,
+        "tokens": 176,
+        "text": "All operational incidents must be reported by the affected staff member to their supervisor or the Airside Duty Manager. The Reporting Staff Member is responsible for providing a clear and accurate description of the incident, including time, location, and any immediate actions taken. The Airside Duty Manager ensures that the incident is logged and that appropriate personnel are notified. For baggage incidents, the Reporting Staff Member must refer to AP-BAG-001 section 4 for escalation procedures. For restricted items, the Reporting Staff Member must follow the procedures outlined in AP-SEC-003. The first response should prioritize the safety of personnel and the integrity of airport operations.\n\n",
+        "signals": {
+          "final_rank": 1,
+          "vector_rank": 1,
+          "similarity": 0.7396237850189209,
+          "exact_cosine": 0.7396237559557233,
+          "keyword_rank": 1,
+          "bm25": 9.403944813164989,
+          "boost": 0.0,
+          "exact_terms": [],
+          "keyword_score": 9.403944813164989,
+          "rrf": 0.03278688524590164,
+          "rrf_parts": {
+            "vector": 0.01639344262295082,
+            "keyword": 0.01639344262295082
+          },
+          "rrf_rank": 1,
+          "rerank_score": 6.6458282470703125,
+          "rank_before_rerank": 1,
+          "rerank_windows": 1,
+          "pair_tokens": 175
+        }
+      },
+      {
+        "evidence_id": 2,
+        "chunk_id": "0dd86a10642186d9867d51e60f57e1b3ea2f88172b01c49b8c747030cb3d4ab4",
+        "document_title": "AP-BAG-001 v2 Staff Baggage Handling and Escalation",
+        "heading_path": "4 Baggage Incident Escalation",
+        "role": "retrieved",
+        "linked_to": null,
+        "tokens": 181,
+        "text": "When a baggage handler finds a damaged, leaking, or unattended checked bag in the baggage make-up area, the handler must escalate the incident to the Baggage Duty Supervisor within 10 minutes of discovery and must report it under AP-INC-002. All baggage incidents must be documented and reported to ensure proper follow-up. The Baggage Duty Supervisor is responsible for assessing the incident and determining the appropriate action. If necessary, the incident may be escalated to the ramp lead for further review. All staff must ensure that incidents are reported accurately and in a timely manner. This procedure ensures that all baggage issues are addressed in accordance with established protocols.\n\n",
+        "signals": {
+          "final_rank": 2,
+          "vector_rank": 2,
+          "similarity": 0.6958948969841003,
+          "exact_cosine": 0.6958949955707553,
+          "keyword_rank": 4,
+          "bm25": 5.703580147832242,
+          "boost": 0.0,
+          "exact_terms": [],
+          "keyword_score": 5.703580147832242,
+          "rrf": 0.031754032258064516,
+          "rrf_parts": {
+            "vector": 0.016129032258064516,
+            "keyword": 0.015625
+          },
+          "rrf_rank": 3,
+          "rerank_score": 3.507963180541992,
+          "rank_before_rerank": 3,
+          "rerank_windows": 1,
+          "pair_tokens": 178
+        }
+      },
+      {
+        "evidence_id": 3,
+        "chunk_id": "9000befd6cd7350aed94214cec20960939cdc42d04efbf1b7b92af04bd2db2ae",
+        "document_title": "AP-BAG-001 v2 Staff Baggage Handling and Escalation",
+        "heading_path": "6 Records and Review",
+        "role": "retrieved",
+        "linked_to": null,
+        "tokens": 162,
+        "text": "All baggage incidents must be recorded in a centralized incident log for review and analysis. The incident log must include details such as the time, location, and nature of the incident, as well as the actions taken. The Baggage Duty Supervisor is responsible for maintaining and updating the incident log. An annual review of this policy is required to ensure its continued relevance and effectiveness. The review process must include input from all relevant staff and management. Any changes to the policy must be communicated to all affected personnel. Regular reviews help ensure that the policy remains aligned with operational needs and regulatory requirements.\n",
+        "signals": {
+          "final_rank": 3,
+          "vector_rank": 3,
+          "similarity": 0.6809324026107788,
+          "exact_cosine": 0.6809324260377972,
+          "keyword_rank": 2,
+          "bm25": 7.356241309360172,
+          "boost": 0.0,
+          "exact_terms": [],
+          "keyword_score": 7.356241309360172,
+          "rrf": 0.03200204813108039,
+          "rrf_parts": {
+            "vector": 0.015873015873015872,
+            "keyword": 0.016129032258064516
+          },
+          "rrf_rank": 2,
+          "rerank_score": 3.141411542892456,
+          "rank_before_rerank": 2,
+          "rerank_windows": 1,
+          "pair_tokens": 160
+        }
+      },
+      {
+        "evidence_id": 4,
+        "chunk_id": "50d15b7c028ab6eed8a1c9f40469f0b81921d919b98edbb382bca6f396624788",
+        "document_title": "AP-BAG-001 v2 Staff Baggage Handling and Escalation",
+        "heading_path": "1 Purpose and Scope",
+        "role": "retrieved",
+        "linked_to": null,
+        "tokens": 150,
+        "text": "This policy establishes procedures for the handling of checked baggage throughout the airport's baggage handling system. It outlines the responsibilities of staff involved in the movement and management of baggage, ensuring compliance with safety, security, and operational standards. The policy applies to all baggage handlers, baggage duty supervisors, and ramp leads. It ensures that baggage is processed efficiently and that any incidents or irregularities are addressed in a structured manner. This policy supports the safe and secure transportation of baggage while maintaining the integrity of the airport's operations.\n\n",
+        "signals": {
+          "final_rank": 4,
+          "vector_rank": 4,
+          "similarity": 0.6041240096092224,
+          "exact_cosine": 0.6041238790744915,
+          "keyword_rank": 5,
+          "bm25": 5.523197731995629,
+          "boost": 0.0,
+          "exact_terms": [],
+          "keyword_score": 5.523197731995629,
+          "rrf": 0.031009615384615385,
+          "rrf_parts": {
+            "vector": 0.015625,
+            "keyword": 0.015384615384615385
+          },
+          "rrf_rank": 5,
+          "rerank_score": 2.458306312561035,
+          "rank_before_rerank": 5,
+          "rerank_windows": 1,
+          "pair_tokens": 148
+        }
+      },
+      {
+        "evidence_id": 5,
+        "chunk_id": "64b2107e1a05f3febdd0263d9f6d3e24887f360c2eada0e6814cc5b038a3012a",
+        "document_title": "AP-INC-002 v1 Operational Incident Response and Review",
+        "heading_path": "1 Purpose and Scope",
+        "role": "retrieved",
+        "linked_to": null,
+        "tokens": 166,
+        "text": "This policy establishes the procedures for reporting, coordinating, and reviewing operational incidents at AeroPolicy Airport. It ensures a consistent and timely response to incidents that may affect safety, security, or operational efficiency. The policy applies to all incidents involving baggage, restricted items, ramp safety, and equipment. It defines the roles and responsibilities of personnel involved in incident management and outlines the process for post-incident review. The goal is to identify root causes, implement corrective actions, and prevent recurrence of similar incidents. All staff are required to be familiar with this policy and to follow its procedures in the event of an incident.\n\n",
+        "signals": {
+          "final_rank": 5,
+          "vector_rank": 5,
+          "similarity": 0.5855262875556946,
+          "exact_cosine": 0.5855262754867628,
+          "keyword_rank": 3,
+          "bm25": 6.874570284963529,
+          "boost": 0.0,
+          "exact_terms": [],
+          "keyword_score": 6.874570284963529,
+          "rrf": 0.03125763125763126,
+          "rrf_parts": {
+            "vector": 0.015384615384615385,
+            "keyword": 0.015873015873015872
+          },
+          "rrf_rank": 4,
+          "rerank_score": 1.9493533372879028,
+          "rank_before_rerank": 4,
+          "rerank_windows": 1,
+          "pair_tokens": 169
+        }
+      }
+    ],
+    "generation": {
+      "model": "qwen3:8b",
+      "model_blob_digest": "sha256:a3de86cd1c132c822487ededd47a324c50491393e6565cd14bafa40d0b8e686f",
+      "options": {
+        "temperature": 0,
+        "seed": 7,
+        "num_ctx": 8192,
+        "num_predict": 1024
+      },
+      "think": false,
+      "prompt_eval_count": 1117,
+      "eval_count": 42,
+      "raw_answer": "An operational incident is first reported to the supervisor or the Airside Duty Manager [1]. The incident policy sends staff to AP-BAG-001 section 4 for baggage escalation procedures [1]."
+    },
+    "timing_ms": 3574.1
+  }
+}

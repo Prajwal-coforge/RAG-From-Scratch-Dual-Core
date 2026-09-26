@@ -8,9 +8,13 @@ version = "0.1.0"
 description = "Local airport and airline policy RAG lab"
 requires-python = ">=3.11"
 dependencies = [
+  "deepagents>=0.7.19",
+  "fastapi>=0.141.1",
   "httpx",
+  "langchain-ollama>=1.1.0",
   "neo4j",
   "sentence-transformers",
+  "uvicorn[standard]>=0.54.0",
 ]
 
 [project.scripts]
@@ -25,6 +29,8 @@ where = ["backend"]
 [tool.pytest.ini_options]
 testpaths = ["backend/tests"]
 pythonpath = ["backend"]
+addopts = "-m 'not live'"
+markers = ["live: needs real Ollama and Memgraph; run with -m live"]
 
 [dependency-groups]
 dev = ["pytest>=8"]

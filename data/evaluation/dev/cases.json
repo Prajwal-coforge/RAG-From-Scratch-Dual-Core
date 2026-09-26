@@ -1,0 +1,220 @@
+{
+  "schema_version": 1,
+  "split": "dev",
+  "note": "Development cases. Tuning and the hybrid demonstration use these only. Fact patterns are case-insensitive regular expressions checked against the answer text.",
+  "cases": [
+    {
+      "id": "D-G01",
+      "corpus_kind": "generated",
+      "corpus_id": "airport-generated",
+      "snapshot_id": "clean",
+      "as_of": "2025-08-01",
+      "include_history": false,
+      "question": "A baggage handler finds a leaking checked bag in the make-up area. Who must they escalate it to, and how quickly?",
+      "expected_status": "answered",
+      "acceptable_evidence_sets": [["BAG2-4-ESCALATE"]],
+      "required_answer_facts": [
+        {"id": "supervisor", "patterns": ["baggage duty supervisor"]},
+        {"id": "ten-minutes", "patterns": ["\\b(10|ten)[\\s-]*min(ute)?s?\\b"]}
+      ],
+      "prohibited_answer_facts": [
+        {"id": "obsolete-thirty-minutes", "patterns": ["\\b(30|thirty)[\\s-]*min(ute)?s?\\b"]}
+      ],
+      "rationale": "The diagnosis question, on the clean snapshot."
+    },
+    {
+      "id": "D-G02",
+      "corpus_kind": "generated",
+      "corpus_id": "airport-generated",
+      "snapshot_id": "clean",
+      "as_of": "2025-08-01",
+      "include_history": false,
+      "question": "Who runs the meeting held after an operational incident is resolved?",
+      "expected_status": "answered",
+      "acceptable_evidence_sets": [["INC-5-LEAD"]],
+      "required_answer_facts": [
+        {"id": "incident-coordinator", "patterns": ["incident coordinator"]}
+      ],
+      "prohibited_answer_facts": [],
+      "rationale": "Paraphrased question: the source says 'review meeting is led by'."
+    },
+    {
+      "id": "D-G03",
+      "corpus_kind": "generated",
+      "corpus_id": "airport-generated",
+      "snapshot_id": "clean",
+      "as_of": "2025-08-01",
+      "include_history": false,
+      "question": "To whom is an operational incident first reported, and where does the incident policy send staff for baggage escalation steps?",
+      "expected_status": "answered",
+      "acceptable_evidence_sets": [["INC-3-REPORT", "INC-3-BAGREF"]],
+      "required_answer_facts": [
+        {"id": "supervisor-or-adm", "patterns": ["airside duty manager"]},
+        {"id": "bag-section-4", "patterns": ["AP-BAG-001[^.]{0,20}(section|§)\\s*4"]}
+      ],
+      "prohibited_answer_facts": [],
+      "rationale": "Two clauses in one section, one of them a cross-policy section reference."
+    },
+    {
+      "id": "D-G04",
+      "corpus_kind": "generated",
+      "corpus_id": "airport-generated",
+      "snapshot_id": "clean",
+      "as_of": "2025-08-01",
+      "include_history": false,
+      "question": "What does AP-SEC-003 section 2 say about the baggage make-up area?",
+      "expected_status": "answered",
+      "acceptable_evidence_sets": [["SEC-2-MAKEUP"]],
+      "required_answer_facts": [
+        {"id": "authorized-only", "patterns": ["authori[sz]ed personnel"]}
+      ],
+      "prohibited_answer_facts": [],
+      "rationale": "Direct section-code lookup. The make-up area is mentioned in several sections of three policies."
+    },
+    {
+      "id": "D-G07",
+      "corpus_kind": "generated",
+      "corpus_id": "airport-generated",
+      "snapshot_id": "clean",
+      "as_of": "2025-08-01",
+      "include_history": false,
+      "question": "What does AP-SEC-003 section 2 say?",
+      "expected_status": "answered",
+      "acceptable_evidence_sets": [["SEC-2-MAKEUP"]],
+      "required_answer_facts": [
+        {"id": "authorized-only", "patterns": ["authori[sz]ed personnel"]}
+      ],
+      "prohibited_answer_facts": [],
+      "rationale": "Hybrid demonstration, added after the first dev retrieval run (2026-09-25) showed every mode ranking the labelled clause first on the original twelve. With only the identifier and section number, the question has no topic words for vector search; BM25 matches ap-sec-003 and §2 exactly."
+    },
+    {
+      "id": "D-G05",
+      "corpus_kind": "generated",
+      "corpus_id": "airport-generated",
+      "snapshot_id": "clean",
+      "as_of": "2025-08-01",
+      "include_history": false,
+      "question": "Before the Security Duty Manager reviews a request to carry a restricted item airside, who has to endorse it?",
+      "expected_status": "answered",
+      "acceptable_evidence_sets": [["SEC-4-ENDORSE"]],
+      "required_answer_facts": [
+        {"id": "line-manager", "patterns": ["line manager"]}
+      ],
+      "prohibited_answer_facts": [],
+      "rationale": "Role lookup inside the approval procedure."
+    },
+    {
+      "id": "D-G06",
+      "corpus_kind": "generated",
+      "corpus_id": "airport-generated",
+      "snapshot_id": "clean",
+      "as_of": "2025-08-01",
+      "include_history": false,
+      "question": "What is the maximum weight of a checked bag under AP-BAG-001?",
+      "expected_status": "insufficient_evidence",
+      "acceptable_evidence_sets": [],
+      "required_answer_facts": [],
+      "prohibited_answer_facts": [
+        {"id": "invented-weight", "patterns": ["\\b\\d+\\s*(kg|kilograms?|lbs?|pounds?)\\b"]}
+      ],
+      "rationale": "AP-BAG-001 refers to weight limits but never states one."
+    },
+    {
+      "id": "D-I01",
+      "corpus_kind": "imported",
+      "corpus_id": "skywings-baggage",
+      "snapshot_id": "imported:skywings-baggage",
+      "as_of": null,
+      "include_history": false,
+      "question": "What happens to a bag that weighs more than 32 kg?",
+      "expected_status": "answered",
+      "acceptable_evidence_sets": [["SKY-5-CARGO"]],
+      "required_answer_facts": [
+        {"id": "cargo", "patterns": ["\\bcargo\\b"]}
+      ],
+      "prohibited_answer_facts": [],
+      "rationale": "Reviewed source answer listed in PROJECT_SPEC section 16."
+    },
+    {
+      "id": "D-I02",
+      "corpus_kind": "imported",
+      "corpus_id": "skywings-baggage",
+      "snapshot_id": "imported:skywings-baggage",
+      "as_of": null,
+      "include_history": false,
+      "question": "Give me the complete SkyWings dangerous goods list.",
+      "expected_status": "insufficient_evidence",
+      "acceptable_evidence_sets": [["SKY-7-DG-REFERENCE"]],
+      "required_answer_facts": [],
+      "prohibited_answer_facts": [],
+      "rationale": "The list lives in a referenced policy that is not in the corpus. The answer must abstain rather than invent a list."
+    },
+    {
+      "id": "D-I03",
+      "corpus_kind": "imported",
+      "corpus_id": "skywings-baggage",
+      "snapshot_id": "imported:skywings-baggage",
+      "as_of": null,
+      "include_history": false,
+      "question": "What do passengers with disabilities pay to carry a wheelchair, and how much notice must they give?",
+      "expected_status": "answered",
+      "acceptable_evidence_sets": [["SKY-12-MOBILITY-FREE", "SKY-12-NOTICE"]],
+      "required_answer_facts": [
+        {"id": "free", "patterns": ["free of charge", "\\bfree\\b", "no (charge|cost|fee)"]},
+        {"id": "48-hours", "patterns": ["\\b48[\\s-]*hours?\\b"]}
+      ],
+      "prohibited_answer_facts": [],
+      "rationale": "Reviewed source answer listed in PROJECT_SPEC section 16; two clauses."
+    },
+    {
+      "id": "D-I04",
+      "corpus_kind": "imported",
+      "corpus_id": "aethersky-compensation",
+      "snapshot_id": "imported:aethersky-compensation",
+      "as_of": null,
+      "include_history": false,
+      "question": "What are the domestic and international per diem rates for pilots?",
+      "expected_status": "answered",
+      "acceptable_evidence_sets": [["AE-3-PER-DIEM"]],
+      "required_answer_facts": [
+        {"id": "domestic-3.25", "patterns": ["3\\.25"]},
+        {"id": "international-5.00", "patterns": ["\\$\\s?5(\\.00)?\\b", "\\b5\\.00\\b"]}
+      ],
+      "prohibited_answer_facts": [],
+      "rationale": "Reviewed source answer listed in PROJECT_SPEC section 16."
+    },
+    {
+      "id": "D-I05",
+      "corpus_kind": "imported",
+      "corpus_id": "aethersky-compensation",
+      "snapshot_id": "imported:aethersky-compensation",
+      "as_of": null,
+      "include_history": false,
+      "question": "What is the exact hourly base pay for a Captain flying a wide-body aircraft?",
+      "expected_status": "insufficient_evidence",
+      "acceptable_evidence_sets": [["AE-2.1-RATE-UNSTATED"]],
+      "required_answer_facts": [],
+      "prohibited_answer_facts": [
+        {"id": "invented-rate", "patterns": ["(base|hourly)\\s+(pay|rate)[^.]{0,40}\\$\\s?\\d"]}
+      ],
+      "rationale": "The policy describes the rate but gives no table. Reviewed source answer listed in PROJECT_SPEC section 16."
+    },
+    {
+      "id": "D-I06",
+      "corpus_kind": "imported",
+      "corpus_id": "synthetic-emissions",
+      "snapshot_id": "imported:synthetic-emissions",
+      "as_of": null,
+      "include_history": false,
+      "question": "What nitrogen oxide limit applies to aircraft engines during landing and takeoff?",
+      "expected_status": "answered",
+      "acceptable_evidence_sets": [["GAEA-2.2-NOX"]],
+      "required_answer_facts": [
+        {"id": "15-grams", "patterns": ["\\b15\\s*(grams?|g)\\b"]},
+        {"id": "per-kilonewton", "patterns": ["kilonewton", "\\bkN\\b"]}
+      ],
+      "prohibited_answer_facts": [],
+      "rationale": "Paraphrased question: the source says 'NOx' and 'LTO cycle'."
+    }
+  ]
+}

@@ -3,19 +3,19 @@
 ## ADDED Requirements
 
 ### Requirement: UI-01 Evidence inspection
-The system SHALL let authenticated users inspect authorized citations and concise retrieval traces.
+The system SHALL let users inspect citations and concise retrieval traces.
 
 #### Scenario: Open citation
-- **GIVEN** an answer contains an authorized citation
+- **GIVEN** an answer contains a citation
 - **WHEN** the user opens it
-- **THEN** the original excerpt, document version, and section are displayed after reauthorization.
+- **THEN** the original excerpt, document version, and section are displayed.
 
 ### Requirement: UI-02 Scoped corpus selection
-The system SHALL expose only entitled corpus contexts and distinguish policy issuers.
+The system SHALL expose the available corpus contexts and distinguish policy issuers.
 
 #### Scenario: Multiple aviation examples
-- **GIVEN** a user can access several imported corpora
-- **WHEN** they ask an issuer-ambiguous question
+- **GIVEN** several imported corpora are available
+- **WHEN** the user asks an issuer-ambiguous question
 - **THEN** the interface or triage requests a context instead of blending airline rules.
 
 ### Requirement: UI-03 Accessible and honest status

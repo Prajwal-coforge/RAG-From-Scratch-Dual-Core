@@ -6,12 +6,15 @@
   "vector_store": "Memgraph",
   "metadata_store": "SQLite",
   "embedding": {
-    "runtime": "Ollama",
-    "model": "embeddinggemma",
-    "resolved_digest": null,
+    "runtime": "sentence-transformers",
+    "model": "google/embeddinggemma-300m",
+    "resolved_revision": null,
+    "gated": "accept the Gemma license on Hugging Face and authenticate locally; never commit the token",
+    "builtin_prompts": "unused; inputs are formatted once in code",
     "dimensions": 768,
     "similarity": "cosine",
     "truncate": false,
+    "over_limit": "refuse before encoding; sentence-transformers would truncate silently",
     "document_format": "title: {title_and_section} | text: {chunk}",
     "query_format": "task: search result | query: {question}"
   },
@@ -39,13 +42,22 @@
     "tokenizer": "pinned embedding tokenizer",
     "hard_boundaries": [
       "document_version",
-      "access_policy"
+      "parent_section"
     ],
     "reranker_pair_recheck": true
   },
   "retrieval": {
     "vector_k": 10,
     "keyword_k": 10,
+    "keyword": {
+      "method": "BM25, implemented locally",
+      "k1": 1.5,
+      "b": 0.75,
+      "fields": "child text plus title and heading",
+      "single_term_patterns": ["policy identifiers", "section numbers", "number-unit pairs"],
+      "exact_match_boost": "documented constant, recorded per candidate"
+    },
+    "fusion": "reciprocal rank fusion",
     "rrf_constant": 60,
     "max_graph_hops": 1,
     "max_graph_additions": 10,
@@ -54,8 +66,7 @@
     "report_k": [
       3,
       5
-    ],
-    "permission_filtered_exact_search_allowed": true
+    ]
   },
   "agents": {
     "framework": "Deep Agents",
@@ -63,15 +74,9 @@
     "max_delegation_depth": 1,
     "max_subagents": 2,
     "timeout_seconds": 120,
-    "persistent_cross_user_memory": false
+    "persistent_memory_across_runs": false
   },
-  "governance": {
-    "default_deny": true,
-    "deny_precedence": true,
-    "authoritative_principal_source": "backend",
-    "answer_cache_enabled": false,
-    "reauthorize_before_response": true
-  },
+  "data_governance_layer": false,
   "evaluation": {
     "development_cases": 12,
     "heldout_cases": 12,
@@ -80,7 +85,16 @@
     "target_final_recall_at_5": 0.85,
     "target_fact_accuracy": 0.85,
     "required_citation_validity": 1,
-    "required_mandatory_dgs_pass_rate": 1,
-    "max_unauthorized_disclosures": 0
+    "answer_grading": "deterministic required/prohibited facts decide pass or fail",
+    "llm_judge": {
+      "role": "reported support score, never gating",
+      "model": "same local chat model as generation; disclosed",
+      "temperature": 0
+    },
+    "needle_check": {
+      "index": "isolated evaluation index, never published",
+      "queries": ["by code", "by paraphrase"],
+      "modes": ["vector", "keyword", "hybrid", "hybrid_rerank"]
+    }
   }
 }

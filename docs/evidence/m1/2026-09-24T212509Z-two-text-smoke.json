@@ -1,0 +1,96 @@
+{
+  "checked_at": "2026-09-24T21:25:10.059675+00:00",
+  "ok": true,
+  "commit": "cbbbd9b9c0e77a86c206c9ec9a6e767060ebb1af",
+  "namespace": "m1-smoke",
+  "runtime": {
+    "ollama_version": "0.34.0",
+    "embedding_model": "embeddinggemma",
+    "embedding_blob_digest": "sha256:0800cbac9c2064dde519420e75e512a83cb360de3ad5df176185dc69652fc515",
+    "dimensions": 768,
+    "document_format": "title: {title} | text: {text}",
+    "query_format": "task: search result | query: {question}",
+    "memgraph_version": "3.13.0"
+  },
+  "index": {
+    "index_name": "smoke_text_embedding",
+    "index_type": "label+property_vector",
+    "label": ":SmokeText",
+    "property": "embedding",
+    "dimension": 768,
+    "metric": "cos",
+    "scalar_kind": "f32",
+    "capacity": 64,
+    "size": 2,
+    "size_after_each_step": [
+      0,
+      1,
+      2
+    ]
+  },
+  "production_index_size": 0,
+  "stored": [
+    {
+      "id": "m1-smoke:baggage",
+      "title": "Smoke test | Checked baggage",
+      "text": "Checked bags heavier than 23 kg must carry a heavy-bag tag before they are loaded onto the aircraft.",
+      "formatted_sha256": "sha256:17b77141c2685ef8ef277a8bd74f41f0745220df22967883f547e2c1a31c9a44",
+      "stored_dimensions": 768,
+      "max_readback_drift": 3.6783409096408093e-09
+    },
+    {
+      "id": "m1-smoke:fuel-spill",
+      "title": "Smoke test | Apron safety",
+      "text": "Report any fuel spill on the apron to the airside duty manager within 15 minutes and keep vehicles away.",
+      "formatted_sha256": "sha256:58dcf8b3f84a29388ec2fd949837e2fd0f155a2007036e574aab974468bbf51c",
+      "stored_dimensions": 768,
+      "max_readback_drift": 3.6881637605068462e-09
+    }
+  ],
+  "queries": [
+    {
+      "question": "How heavy can a checked suitcase be before it needs a special tag?",
+      "expected_id": "m1-smoke:baggage",
+      "index_hits": [
+        {
+          "id": "m1-smoke:baggage",
+          "similarity": 0.6241880059242249,
+          "distance": 0.37581199407577515
+        },
+        {
+          "id": "m1-smoke:fuel-spill",
+          "similarity": 0.12656182050704956,
+          "distance": 0.8734381794929504
+        }
+      ],
+      "exact_cosine": {
+        "m1-smoke:baggage": 0.6241879212599366,
+        "m1-smoke:fuel-spill": 0.1265618304490128
+      },
+      "margin": 0.4976261854171753,
+      "passed": true
+    },
+    {
+      "question": "Who should I tell about leaking jet fuel near a parked plane?",
+      "expected_id": "m1-smoke:fuel-spill",
+      "index_hits": [
+        {
+          "id": "m1-smoke:fuel-spill",
+          "similarity": 0.5522603988647461,
+          "distance": 0.4477396011352539
+        },
+        {
+          "id": "m1-smoke:baggage",
+          "similarity": 0.20376241207122803,
+          "distance": 0.796237587928772
+        }
+      ],
+      "exact_cosine": {
+        "m1-smoke:baggage": 0.20376238737186247,
+        "m1-smoke:fuel-spill": 0.5522603772429804
+      },
+      "margin": 0.34849798679351807,
+      "passed": true
+    }
+  ]
+}
